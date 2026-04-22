@@ -3,29 +3,31 @@ package com.example.musicbuddy
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.adaptive.navigationsuite.NavigationSuiteScaffold
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.tooling.preview.PreviewScreenSizes
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import com.example.musicbuddy.ui.navigation.NavigationGraph
+import com.example.musicbuddy.ui.navigation.Screen
 import com.example.musicbuddy.ui.theme.MusicBuddyTheme
 
+/**
+ * MainActivity - Activity principale dell'app MusicBuddy
+ * Gestisce il layout generale e la navigazione
+ */
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             MusicBuddyTheme {
                 MusicBuddyApp()
@@ -34,58 +36,111 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@PreviewScreenSizes
+/**
+ * MusicBuddyApp - Composable principale
+ * Gestisce:
+ * - NavController (pilota della navigazione)
+ * - Scaffold (struttura con navbar in basso)
+ * - NavigationGraph (tutte le schermate)
+ */
 @Composable
 fun MusicBuddyApp() {
-    var currentDestination by rememberSaveable { mutableStateOf(AppDestinations.HOME) }
+    // Crea il NavController - gestisce la navigazione tra schermate
+    val navController = rememberNavController()
 
-    NavigationSuiteScaffold(
-        navigationSuiteItems = {
-            AppDestinations.entries.forEach {
-                item(
-                    icon = {
-                        Icon(
-                            painterResource(it.icon),
-                            contentDescription = it.label
-                        )
-                    },
-                    label = { Text(it.label) },
-                    selected = it == currentDestination,
-                    onClick = { currentDestination = it }
-                )
+    // Ottiene la schermata corrente dal back stack
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    // Definisce quali schermate devono mostrare la navbar
+    // La navbar NON si mostra su: Start, Login, SignUp
+    val showBottomBar = currentDestination?.route in listOf(
+        Screen.Home.route,
+        Screen.Search.route,
+        Screen.Profile.route
+    )
+
+    Scaffold(
+        // BottomNavigationBar - Navbar con 3 bottoni
+        bottomBar = {
+            if (showBottomBar) {
+                BottomNavigationBar(navController, currentDestination)
             }
         }
-    ) {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-            Greeting(
-                name = "Android",
-                modifier = Modifier.padding(innerPadding)
+    ) { paddingValues ->
+        // NavigationGraph - Mostra le schermate
+        NavigationGraph(
+            navController = navController,
+            modifier = Modifier.padding(paddingValues)
+        )
+    }
+}
+
+/**
+ * BottomNavigationBar - Navbar con 3 bottoni (Home, Search, Profile)
+ * Mostra solo quando siamo nelle schermate principali
+ */
+@Composable
+fun BottomNavigationBar(
+    navController: androidx.navigation.NavHostController,
+    currentDestination: androidx.navigation.NavDestination?
+) {
+    // Definisce i bottoni della navbar
+    val items = listOf(
+        BottomNavItem(
+            screen = Screen.Home,
+            icon = Icons.Default.Home,
+            label = "Home"
+        ),
+        BottomNavItem(
+            screen = Screen.Search,
+            icon = Icons.Default.Search,
+            label = "Search"
+        ),
+        BottomNavItem(
+            screen = Screen.Profile,
+            icon = Icons.Default.Person,
+            label = "Profile"
+        )
+    )
+
+    NavigationBar {
+        items.forEach { item ->
+            // Verifica se il bottone è selezionato
+            val isSelected = currentDestination?.hierarchy?.any {
+                it.route == item.screen.route
+            } ?: false
+
+            NavigationBarItem(
+                icon = {
+                    Icon(
+                        imageVector = item.icon,
+                        contentDescription = item.label
+                    )
+                },
+                label = { Text(item.label) },
+                selected = isSelected,
+                onClick = {
+                    // Naviga alla schermata quando clicchi il bottone
+                    navController.navigate(item.screen.route) {
+                        // Evita di creare più copie della stessa schermata
+                        popUpTo(navController.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
             )
         }
     }
 }
 
-enum class AppDestinations(
-    val label: String,
-    val icon: Int,
-) {
-    HOME("Home", R.drawable.ic_home),
-    FAVORITES("Favorites", R.drawable.ic_favorite),
-    PROFILE("Profile", R.drawable.ic_account_box),
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MusicBuddyTheme {
-        Greeting("Android")
-    }
-}
+/**
+ * BottomNavItem - Dati per ogni bottone della navbar
+ */
+data class BottomNavItem(
+    val screen: Screen,
+    val icon: ImageVector,
+    val label: String
+)
