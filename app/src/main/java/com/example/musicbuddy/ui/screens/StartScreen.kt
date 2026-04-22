@@ -1,6 +1,5 @@
 package com.example.musicbuddy.ui.screens
 
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -8,14 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil3.compose.AsyncImage
-
+import coil.compose.AsyncImage
 
 /**
  * StartScreen - Landing page per MusicBuddy
@@ -66,14 +63,37 @@ fun StartScreen(
  */
 @Composable
 fun LogoSection(primaryColor: Color) {
-    AsyncImage(
-        model = "https://it.wikipedia.org/wiki/JPEG#/media/File:Felis_silvestris_silvestris_small_gradual_decrease_of_quality.png",
-        contentDescription = "Logo caricato dal web",
+    Column(
         modifier = Modifier
-            .fillMaxWidth(0.5f) // Prende il 50% della larghezza disponibile
-            .height(200.dp),    // Altezza fissa
-        contentScale = ContentScale.Fit
-    )
+            .fillMaxWidth()
+            .padding(top = 40.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Placeholder per logo - Sostituisci con Image() o Icon()
+        AsyncImage(
+            model = "file:///android_asset/newyork_skyline.jpg",
+            contentDescription = "Immagine skyline di New York",
+            modifier = Modifier.size(300.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Nome app
+        Text(
+            text = "MusicBuddy",
+            fontSize = 32.sp,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF1F2937),
+            textAlign = TextAlign.Center
+        )
+
+        Text(
+            text = "Your Music Companion",
+            fontSize = 14.sp,
+            color = Color(0xFF6B7280),
+            textAlign = TextAlign.Center
+        )
+    }
 }
 
 /**
@@ -151,6 +171,7 @@ fun ButtonSection(
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = primaryBlue
             ),
+
             shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
         ) {
             Text(
