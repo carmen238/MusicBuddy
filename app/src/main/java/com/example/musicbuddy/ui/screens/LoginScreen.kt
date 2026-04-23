@@ -21,6 +21,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.musicbuddy.ui.components.SignUpTextField
+import com.example.musicbuddy.ui.components.Validators
+import com.example.musicbuddy.ui.theme.AppColors
 
 /**
  * StartScreen - Landing page per MusicBuddy
@@ -67,8 +70,8 @@ fun LoginScreen(
  */
 @Composable
 fun MainSection(primaryColor: Color) {
-    var name by remember { mutableStateOf("") }
-    var surname by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -83,34 +86,58 @@ fun MainSection(primaryColor: Color) {
                 .fillMaxHeight(0.4f)
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+       Column(
+           modifier = Modifier.
+           padding(horizontal = 23.dp)
+       ) {
+           Spacer(modifier = Modifier.height(16.dp))
 
-        // HEADER - Titolo
-        Text(
-            text = "Sign Up",
-            fontSize = 32.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color(0xFF1F2937),
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(bottom = 32.dp)
-        )
+           // HEADER - Titolo
+           Text(
+               text = "Login",
+               fontSize = 32.sp,
+               fontWeight = FontWeight.Bold,
+               color = Color(0xFF1F2937),
+               modifier = Modifier
+                   .align(Alignment.Start)
 
-        // CAMPO NAME
-        SignUpTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = "Name",
-            placeholder = "Enter your name",
-            inputBackground = Color(0xFFFFFFFF),
-            hintColor = Color(0xFF1F2937),
-            textColor = Color(0xFF1F2937),
-            accentColor = Color(0xFF1F2937)
-        )
+           )
 
-        Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
+
+           Spacer(modifier = Modifier.height(16.dp))
+
+           // CAMPO PASSWORD
+           SignUpTextField(
+               value = email,
+               onValueChange = { password = it },
+               label = "Email",
+               placeholder = "Enter your email",
+               inputBackground = AppColors.InputBackground,
+               hintColor = AppColors.HintText,
+               textColor = AppColors.DarkText,
+               accentColor = AppColors.AccentYellow,
+               validator = { Validators.isValidEmail(it) }
+           )
+
+           Spacer(modifier = Modifier.height(16.dp))
+
+           // CAMPO PASSWORD
+           SignUpTextField(
+               value = password,
+               onValueChange = { password = it },
+               label = "Password",
+               placeholder = "Enter your password",
+               inputBackground = AppColors.InputBackground,
+               hintColor = AppColors.HintText,
+               textColor = AppColors.DarkText,
+               isPassword = true,
+               accentColor = AppColors.AccentYellow,
+               validator = { Validators.isValidPassword(it) }
+           )
+
+           Spacer(modifier = Modifier.height(26.dp))
+       }
     }
 }
 
@@ -131,8 +158,7 @@ fun ButtonLogin(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 40.dp)
-            .padding(24.dp),
+            .padding(bottom = 40.dp),
 
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -142,7 +168,9 @@ fun ButtonLogin(
             onClick = onLogInClick,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(56.dp),
+                .height(56.dp)
+                .padding(horizontal = 23.dp)
+            ,
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = green,
             ),
@@ -161,75 +189,7 @@ fun ButtonLogin(
 /**
  * SignUpTextField - Componente riutilizzabile per i campi di input
  */
-@Composable
-fun SignUpTextField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    placeholder: String,
-    inputBackground: Color,
-    hintColor: Color,
-    textColor: Color,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    isPassword: Boolean = false,
-    accentColor: Color
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp)
-    ) {
-        // Campo di input
-        TextField(
-            value = value,
-            onValueChange = onValueChange,
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            placeholder = {
-                Text(
-                    text = placeholder,
-                    color = hintColor,
-                    fontSize = 14.sp
-                )
-            },
-            colors = TextFieldDefaults.colors(
-                focusedContainerColor = inputBackground,
-                unfocusedContainerColor = inputBackground,
-                focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedTextColor = textColor,
-                unfocusedTextColor = textColor
-            ),
-            shape = RoundedCornerShape(12.dp),
-            singleLine = true
-        )
 
-        // Avatar con iniziale (solo per il primo campo)
-        if (label == "Name" && value.isNotEmpty()) {
-            Surface(
-                modifier = Modifier
-                    .size(48.dp)
-                    .align(Alignment.CenterEnd)
-                    .padding(end = 8.dp),
-                shape = RoundedCornerShape(50),
-                color = accentColor
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = value.first().uppercase(),
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                }
-            }
-        }
-    }
-}
 @Composable
 fun LoginScreenPreview() {
     LoginScreen(
