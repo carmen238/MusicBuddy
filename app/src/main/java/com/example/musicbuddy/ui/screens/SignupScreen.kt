@@ -20,9 +20,8 @@ import coil.compose.AsyncImage
  * Schermata iniziale con opzioni di Sign Up e Log In
  */
 @Composable
-fun StartScreen(
+fun SignupScreen(
     onSignUpClick: () -> Unit,
-    onLogInClick: () -> Unit
 ) {
     // Colori personalizzati per MusicBuddy (Blu e Viola)
     val green = Color(0xFF708F3B)      // Indigo/Blu
@@ -37,19 +36,17 @@ fun StartScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             // SEZIONE SUPERIORE - Logo/Branding
-            LogoSection(green)
+            Section(green)
 
             // SEZIONE CENTRALE - Testo di benvenuto
-            WelcomeSection(green)
+
 
             // SEZIONE INFERIORE - Bottoni di azione
-            ButtonSection(
+            ButtonSignup(
                 onSignUpClick = onSignUpClick,
-                onLogInClick = onLogInClick,
                 yellow = yellow,
                 green = green
             )
@@ -62,7 +59,7 @@ fun StartScreen(
  * Personalizza qui con la tua immagine o icona
  */
 @Composable
-fun LogoSection(primaryColor: Color) {
+fun Section(primaryColor: Color) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -100,41 +97,14 @@ fun LogoSection(primaryColor: Color) {
 /**
  * WelcomeSection - Testo di benvenuto e descrizione
  */
-@Composable
-fun WelcomeSection(textColor: Color) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = "Welcome to MusicBuddy",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = textColor,
-            textAlign = TextAlign.Center
-        )
 
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Text(
-            text = "Discover, stream, and enjoy your favorite music anytime, anywhere",
-            fontSize = 14.sp,
-            color = Color(0xFF6B7280),
-            textAlign = TextAlign.Center,
-            lineHeight = 20.sp
-        )
-    }
-}
 
 /**
  * ButtonSection - Bottoni di Sign Up e Log In
  */
 @Composable
-fun ButtonSection(
+fun ButtonSignup(
     onSignUpClick: () -> Unit,
-    onLogInClick: () -> Unit,
     green: Color,
     yellow: Color
 ) {
@@ -165,24 +135,6 @@ fun ButtonSection(
             )
         }
 
-        // Bottone Log In - Outlined con colore secondario
-        OutlinedButton(
-            onClick = onLogInClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp),
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = green,
-            ),
-
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
-        ) {
-            Text(
-                text = "Log In",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
     }
 }
 
@@ -191,9 +143,8 @@ fun ButtonSection(
  */
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun StartScreenPreview() {
-    StartScreen(
+fun SignupScreenPreview() {
+    SignupScreen(
         onSignUpClick = { /* Preview action */ },
-        onLogInClick = { /* Preview action */ }
     )
 }

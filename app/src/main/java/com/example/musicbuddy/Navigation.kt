@@ -5,6 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.musicbuddy.ui.screens.LoginScreen
+import com.example.musicbuddy.ui.screens.SignupScreen
 import com.example.musicbuddy.ui.screens.StartScreen
 
 /**
@@ -50,14 +52,22 @@ fun NavigationGraph(
 
         // SCHERMATA 2: LoginScreen (placeholder per ora)
         composable(Screen.Login.route) {
-            // TODO: Implementare LoginScreen
-            // Per ora mostra un placeholder
+            LoginScreen(
+                onLogInClick = {
+                    // Naviga a Login quando clicchi il bottone "Log In"
+                    navController.navigate(Screen.Login.route)
+                }
+            )
         }
 
         // SCHERMATA 3: SignUpScreen (placeholder per ora)
         composable(Screen.SignUp.route) {
-            // TODO: Implementare SignUpScreen
-            // Per ora mostra un placeholder
+            SignupScreen(
+                onSignUpClick = {
+                    // Naviga a SignUp quando clicchi il bottone "Sign Up"
+                    navController.navigate(Screen.SignUp.route)
+                },
+            )
         }
 
         // SCHERMATA 4: HomeScreen (schermata principale con navbar)
