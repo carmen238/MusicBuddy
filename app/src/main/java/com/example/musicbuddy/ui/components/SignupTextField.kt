@@ -20,10 +20,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/**
- * SignUpTextField - Componente riutilizzabile per i campi di input
- * Con validazione, feedback visivo e gestione password
- */
+
 @Composable
 fun SignUpTextField(
     value: String,

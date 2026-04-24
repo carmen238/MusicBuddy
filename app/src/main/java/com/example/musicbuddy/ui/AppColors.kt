@@ -14,7 +14,7 @@ object AppColors {
     val AccentYellow = Color(0xFFFCD34D)
 
     // Colori di Background
-    val LightBackground = Color(0xFFF8F9FA)
+    val LightBackground = Color(0xFFFFFFFF)
     val InputBackground = Color(0xFFF5F5F5)  // Grigio medio
     val InputBackgroundError = Color(0xFFFFEBEE)
 

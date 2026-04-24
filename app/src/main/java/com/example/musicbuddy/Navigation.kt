@@ -6,8 +6,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.musicbuddy.ui.screens.LoginScreen
-import com.example.musicbuddy.ui.screens.SignupScreen
+import com.example.musicbuddy.ui.screens.SignUpScreen
 import com.example.musicbuddy.ui.screens.StartScreen
+
 
 /**
  * Definizione delle route dell'app
@@ -50,42 +51,55 @@ fun NavigationGraph(
             )
         }
 
-        // SCHERMATA 2: LoginScreen (placeholder per ora)
+        // SCHERMATA 2: LoginScreen
         composable(Screen.Login.route) {
             LoginScreen(
-                onLogInClick = {
-                    // Naviga a Login quando clicchi il bottone "Log In"
-                    navController.navigate(Screen.Login.route)
+                onContinueClick = { email, password ->
+                    // Gestisci il login
+                    println("Login: $email")
+                    // Naviga a Home dopo il login
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Start.route) { inclusive = true }
+                    }
+                },
+                onBackClick = {
+                    // Torna indietro quando clicchi la freccia
+                    navController.popBackStack()
                 }
             )
         }
 
-        // SCHERMATA 3: SignUpScreen (placeholder per ora)
+        // SCHERMATA 3: SignUpScreen
         composable(Screen.SignUp.route) {
-            SignupScreen(
-                onSignUpClick = {
-                    // Naviga a SignUp quando clicchi il bottone "Sign Up"
-                    navController.navigate(Screen.SignUp.route)
+            SignUpScreen(
+                onContinueClick = { name, surname, phone, email, password ->
+                    // Gestisci la registrazione
+                    println("Registrazione: $name $surname, Email: $email")
+                    // Naviga a Home dopo la registrazione
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Start.route) { inclusive = true }
+                    }
                 },
+                onBackClick = {
+                    // Torna indietro quando clicchi la freccia
+                    navController.popBackStack()
+                }
             )
         }
 
-        // SCHERMATA 4: HomeScreen (schermata principale con navbar)
-        composable(Screen.Home.route) {
-            // TODO: Implementare HomeScreen
-            // Per ora mostra un placeholder
-        }
-
-        // SCHERMATA 5: SearchScreen (collegata alla navbar)
-        composable(Screen.Search.route) {
-            // TODO: Implementare SearchScreen
-            // Per ora mostra un placeholder
-        }
-
-        // SCHERMATA 6: ProfileScreen (collegata alla navbar)
-        composable(Screen.Profile.route) {
-            // TODO: Implementare ProfileScreen
-            // Per ora mostra un placeholder
-        }
+//        // SCHERMATA 4: HomeScreen (schermata principale con navbar)
+//        composable(Screen.Home.route) {
+//            HomeScreen()
+//        }
+//
+//        // SCHERMATA 5: SearchScreen (collegata alla navbar)
+//        composable(Screen.Search.route) {
+//            SearchScreen()
+//        }
+//
+//        // SCHERMATA 6: ProfileScreen (collegata alla navbar)
+//        composable(Screen.Profile.route) {
+//            ProfileScreen()
+//        }
     }
 }

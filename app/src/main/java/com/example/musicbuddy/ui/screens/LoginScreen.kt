@@ -1,6 +1,9 @@
 package com.example.musicbuddy.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -13,176 +16,145 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.musicbuddy.ui.components.SignUpTextField
 import com.example.musicbuddy.ui.components.Validators
 import com.example.musicbuddy.ui.theme.AppColors
 
+/**
+ * LoginScreen - Schermata di login per MusicBuddy
+ */
 @Composable
 fun LoginScreen(
-    onLogInClick: () -> Unit
+    onContinueClick: (email: String, password: String) -> Unit,
+    onBackClick: () -> Unit = {}
 ) {
-    val green = Color(0xFF708F3B)
-    val yellow = Color(0xFFFDBC31)
-    val lightBackground = Color(0xFFFFFFFF)
-    val navController = rememberNavController()
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+
+    // Validazione
+    val isFormValid =
+        Validators.isValidEmail(email) &&
+                Validators.isValidPassword(password)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = lightBackground
+        color = Color(0xFFFFFFFF)
     ) {
         Column(
             modifier = Modifier
-                .fillMaxSize(),
-
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            MainSection()
-            // Login button
-            ButtonLogin(
-                onLogInClick = onLogInClick,
-                green = green
+            // HEADER - Freccia indietro
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = AppColors.DarkText,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
+
+            // IMMAGINE
+            AsyncImage(
+                model = "file:///android_asset/newyork_skyline.jpg",
+                contentDescription = "Immagine skyline di New York",
+                modifier = Modifier.fillMaxWidth()
+                    .fillMaxHeight(0.3f)
             )
+
+            // CONTENUTO FORM
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // TITOLO
+                Text(
+                    text = "Login",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.DarkText,
+                    modifier = Modifier.align(Alignment.Start)
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                // CAMPO EMAIL
+                SignUpTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    label = "Email",
+                    placeholder = "Enter your email",
+                    inputBackground = AppColors.InputBackground,
+                    hintColor = AppColors.HintText,
+                    textColor = AppColors.DarkText,
+                    keyboardType = KeyboardType.Email,
+                    accentColor = AppColors.AccentYellow,
+                    validator = { Validators.isValidEmail(it) }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // CAMPO PASSWORD
+                SignUpTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = "Password",
+                    placeholder = "Enter your password",
+                    inputBackground = AppColors.InputBackground,
+                    hintColor = AppColors.HintText,
+                    textColor = AppColors.DarkText,
+                    isPassword = true,
+                    accentColor = AppColors.AccentYellow,
+                    validator = { Validators.isValidPassword(it) }
+                )
+
+                Spacer(modifier = Modifier.height(48.dp))
+
+                // BOTTONE LOGIN
+                Button(
+                    onClick = {
+                        onContinueClick(email, password)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AppColors.PrimaryGreen,
+                        disabledContainerColor = AppColors.DisabledButton
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = isFormValid
+                ) {
+                    Text(
+                        text = "Log In",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+            }
         }
     }
-}
-
-@Composable
-fun MainSection() {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-        ,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        backButton()
-        AsyncImage(
-            model = "file:///android_asset/newyork_skyline.jpg",
-            contentDescription = "Immagine skyline di New York",
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.4f)
-        )
-
-       Column(
-           modifier = Modifier.
-           padding(horizontal = 23.dp)
-       ) {
-           Spacer(modifier = Modifier.height(16.dp))
-
-           // HEADER - Titolo
-           Text(
-               text = "Login",
-               fontSize = 32.sp,
-               fontWeight = FontWeight.Bold,
-               color = Color(0xFF1F2937),
-               modifier = Modifier
-                   .align(Alignment.Start)
-
-           )
-
-
-           Spacer(modifier = Modifier.height(16.dp))
-
-           // CAMPO PASSWORD
-           SignUpTextField(
-               value = email,
-               onValueChange = { password = it },
-               label = "Email",
-               placeholder = "Enter your email",
-               inputBackground = AppColors.InputBackground,
-               hintColor = AppColors.HintText,
-               textColor = AppColors.DarkText,
-               accentColor = AppColors.AccentYellow,
-               validator = { Validators.isValidEmail(it) }
-           )
-
-           Spacer(modifier = Modifier.height(16.dp))
-
-           // CAMPO PASSWORD
-           SignUpTextField(
-               value = password,
-               onValueChange = { password = it },
-               label = "Password",
-               placeholder = "Enter your password",
-               inputBackground = AppColors.InputBackground,
-               hintColor = AppColors.HintText,
-               textColor = AppColors.DarkText,
-               isPassword = true,
-               accentColor = AppColors.AccentYellow,
-               validator = { Validators.isValidPassword(it) }
-           )
-
-           Spacer(modifier = Modifier.height(26.dp))
-       }
-    }
-}
-
-
-@Composable
-fun ButtonLogin(
-    onLogInClick: () -> Unit,
-    green: Color,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 40.dp),
-
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-
-        OutlinedButton(
-            onClick = onLogInClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .padding(horizontal = 23.dp)
-            ,
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = green,
-            ),
-
-            shape = androidx.compose.foundation.shape.RoundedCornerShape(12.dp)
-        ) {
-            Text(
-                text = "Log In",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
-    }
-}
-@Composable
-fun backButton() {
-    val navController = rememberNavController()
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        IconButton(
-            onClick = { navController.popBackStack()},
-            modifier = Modifier.size(48.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = "Back",
-                tint = AppColors.DarkText,
-                modifier = Modifier.size(28.dp)
-            )
-        }
-    }
-
-}
-
-@Composable
-fun LoginScreenPreview() {
-    LoginScreen(
-        onLogInClick = { }
-    )
 }
