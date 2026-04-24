@@ -51,7 +51,7 @@ fun LoginScreen(
 
         ) {
             // SEZIONE SUPERIORE - Logo/Branding
-            MainSection(green)
+            MainSection()
 
 
             // SEZIONE INFERIORE - Bottoni di azione
@@ -69,7 +69,7 @@ fun LoginScreen(
  * Personalizza qui con la tua immagine o icona
  */
 @Composable
-fun MainSection(primaryColor: Color) {
+fun MainSection() {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     Column(

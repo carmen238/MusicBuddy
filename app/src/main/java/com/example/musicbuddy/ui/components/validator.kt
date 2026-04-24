@@ -65,17 +65,9 @@ object Validators {
     }
 
     /**
-     * Calcola la forza della password (0-3)
-     * 0 = Debole, 1 = Media, 2 = Forte, 3 = Molto Forte
+     * verica se la pssword di conferma matcha con la password
      */
-    fun getPasswordStrength(password: String): Int {
-        var strength = 0
-
-        if (password.length >= 6) strength++
-        if (password.length >= 8) strength++
-        if (password.any { it.isUpperCase() } && password.any { it.isDigit() }) strength++
-        if (password.any { !it.isLetterOrDigit() }) strength++
-
-        return minOf(strength, 3)
+    fun verifyConfirmPassword(password: String, confirmPassword: String): Boolean {
+        return password == confirmPassword
     }
 }

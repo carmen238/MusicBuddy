@@ -1,6 +1,7 @@
 package com.example.musicbuddy
 
 import android.os.Bundle
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.padding
@@ -28,6 +29,12 @@ import com.example.musicbuddy.ui.theme.MusicBuddyTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_FULLSCREEN,
+            WindowManager.LayoutParams.FLAG_FULLSCREEN
+        )
+
         setContent {
             MusicBuddyTheme {
                 MusicBuddyApp()
@@ -78,7 +85,6 @@ fun MusicBuddyApp() {
 
 /**
  * BottomNavigationBar - Navbar con 3 bottoni (Home, Search, Profile)
- * Mostra solo quando siamo nelle schermate principali
  */
 @Composable
 fun BottomNavigationBar(
@@ -136,9 +142,7 @@ fun BottomNavigationBar(
     }
 }
 
-/**
- * BottomNavItem - Dati per ogni bottone della navbar
- */
+
 data class BottomNavItem(
     val screen: Screen,
     val icon: ImageVector,
