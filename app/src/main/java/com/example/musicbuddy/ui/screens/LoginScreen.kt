@@ -1,6 +1,8 @@
 package com.example.musicbuddy.ui.screens
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.musicbuddy.ui.components.SignUpTextField
 import com.example.musicbuddy.ui.components.Validators
@@ -25,6 +28,7 @@ fun LoginScreen(
     val green = Color(0xFF708F3B)
     val yellow = Color(0xFFFDBC31)
     val lightBackground = Color(0xFFFFFFFF)
+    val navController = rememberNavController()
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -55,11 +59,12 @@ fun MainSection() {
         ,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
+        backButton()
         AsyncImage(
             model = "file:///android_asset/newyork_skyline.jpg",
             contentDescription = "Immagine skyline di New York",
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .fillMaxHeight(0.4f)
         )
 
@@ -151,6 +156,28 @@ fun ButtonLogin(
             )
         }
     }
+}
+@Composable
+fun backButton() {
+    val navController = rememberNavController()
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(
+            onClick = { navController.popBackStack()},
+            modifier = Modifier.size(48.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back",
+                tint = AppColors.DarkText,
+                modifier = Modifier.size(28.dp)
+            )
+        }
+    }
+
 }
 
 @Composable
