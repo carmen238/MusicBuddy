@@ -79,10 +79,10 @@ fun SignUpScreen(
             }
 
             AsyncImage(
-                model = "file:///android_asset/newyork_skyline.jpg",
-                contentDescription = "Immagine skyline di New York",
+                model = "file:///android_asset/music_crowd_cut.jpg",
+                contentDescription = "Crowd of people with music instruments",
                 modifier = Modifier.fillMaxWidth()
-                    .fillMaxHeight(0.2f)
+                    .fillMaxHeight(0.4f)
             )
 
             // CONTENUTO FORM
@@ -92,6 +92,7 @@ fun SignUpScreen(
                     .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(20.dp))
 
                 // TITOLO
                 Text(
@@ -102,7 +103,7 @@ fun SignUpScreen(
                     modifier = Modifier.align(Alignment.Start)
                 )
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
                 // CAMPO NAME
                 SignUpTextField(

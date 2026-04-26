@@ -72,10 +72,10 @@ fun LoginScreen(
 
             // IMMAGINE
             AsyncImage(
-                model = "file:///android_asset/newyork_skyline.jpg",
-                contentDescription = "Immagine skyline di New York",
+                model = "file:///android_asset/music_crowd_cut.jpg",
+                contentDescription = "Crowd of people with music instruments",
                 modifier = Modifier.fillMaxWidth()
-                    .fillMaxHeight(0.3f)
+                    .fillMaxHeight(0.4f)
             )
 
             // CONTENUTO FORM

@@ -19,16 +19,18 @@ import coil.compose.AsyncImage
  * StartScreen - Landing page per MusicBuddy
  * Schermata iniziale con opzioni di Sign Up e Log In
  */
+
+// Colori personalizzati per MusicBuddy (Blu e Viola)
+val green = Color(0xFF337F00)      // Indigo/Blu
+val yellow = Color(0xFFFDBC31)    // Viola
+val lightBackground = Color(0xFFFFFFFF)  // Sfondo chiaro
+val darkText = Color(0xFF1F2937)         // Testo scuro
+
 @Composable
 fun StartScreen(
     onSignUpClick: () -> Unit,
     onLogInClick: () -> Unit
 ) {
-    // Colori personalizzati per MusicBuddy (Blu e Viola)
-    val green = Color(0xFF708F3B)      // Indigo/Blu
-    val yellow = Color(0xFFFDBC31)    // Viola
-    val lightBackground = Color(0xFFFFFFFF)  // Sfondo chiaro
-    val darkText = Color(0xFF1F2937)         // Testo scuro
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -71,8 +73,8 @@ fun LogoSection(primaryColor: Color) {
     ) {
         // Placeholder per logo - Sostituisci con Image() o Icon()
         AsyncImage(
-            model = "file:///android_asset/newyork_skyline.jpg",
-            contentDescription = "Immagine skyline di New York",
+            model = "file:///android_asset/music_crowd_cut.jpg",
+            contentDescription = "Crowd of people with music instruments",
             modifier = Modifier.fillMaxWidth()
                 .fillMaxHeight(0.4f)
         )
@@ -82,16 +84,18 @@ fun LogoSection(primaryColor: Color) {
         // Nome app
         Text(
             text = "MusicBuddy",
-            fontSize = 32.sp,
+            fontSize = 42.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF708F3B),
+            color = green,
             textAlign = TextAlign.Center
         )
 
+        Spacer(modifier = Modifier.height(12.dp))
+
         Text(
-            text = "Your Music Companion",
-            fontSize = 14.sp,
-            color = Color(0xFF6B7280),
+            text = "Your music friends finder",
+            fontSize = 16.sp,
+            color = darkText,
             textAlign = TextAlign.Center
         )
     }
@@ -119,9 +123,9 @@ fun WelcomeSection(textColor: Color) {
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Discover, stream, and enjoy your favorite music anytime, anywhere",
-            fontSize = 14.sp,
-            color = Color(0xFF6B7280),
+            text = "Find people to play music with near you. \nBe creative, together",
+            fontSize = 16.sp,
+            color = darkText,
             textAlign = TextAlign.Center,
             lineHeight = 20.sp
         )
@@ -159,7 +163,7 @@ fun ButtonSection(
         ) {
             Text(
                 text = "Sign Up",
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = Color.White
             )
@@ -179,7 +183,7 @@ fun ButtonSection(
         ) {
             Text(
                 text = "Log In",
-                fontSize = 16.sp,
+                fontSize = 18.sp,
                 fontWeight = FontWeight.SemiBold
             )
         }
