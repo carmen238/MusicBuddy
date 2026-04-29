@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "101579018478",
+    "project_id": "musicbuddy-backend",
+    "storage_bucket": "musicbuddy-backend.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:101579018478:android:fb150949c4389153a8a3ff",
+        "android_client_info": {
+          "package_name": "com.example.musicbuddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9UQ3kjtDycIc1vqCNyO27qdn-O0helm4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
