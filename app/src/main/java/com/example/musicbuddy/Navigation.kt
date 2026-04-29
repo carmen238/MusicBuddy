@@ -6,6 +6,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.musicbuddy.ui.screens.LoginScreen
+import com.example.musicbuddy.ui.screens.ProfileScreen
+import com.example.musicbuddy.ui.screens.SearchScreen
 import com.example.musicbuddy.ui.screens.SignUpScreen
 import com.example.musicbuddy.ui.screens.StartScreen
 
@@ -87,19 +89,17 @@ fun NavigationGraph(
             )
         }
 
-//        // SCHERMATA 4: HomeScreen (schermata principale con navbar)
-//        composable(Screen.Home.route) {
-//            HomeScreen()
-//        }
-//
-//        // SCHERMATA 5: SearchScreen (collegata alla navbar)
-//        composable(Screen.Search.route) {
-//            SearchScreen()
-//        }
-//
-//        // SCHERMATA 6: ProfileScreen (collegata alla navbar)
-//        composable(Screen.Profile.route) {
-//            ProfileScreen()
-//        }
+        // SCHERMATA 4: HomeScreen (schermata principale con navbar)
+        composable(Screen.Home.route) {
+
+        }
+       // SCHERMATA 5: SearchScreen (collegata alla navbar)
+       composable(Screen.Search.route) {
+            SearchScreen()
+       }
+        // SCHERMATA 6: ProfileScreen (collegata alla navbar)
+       composable(Screen.Profile.route) {
+           ProfileScreen()
+       }
     }
 }
