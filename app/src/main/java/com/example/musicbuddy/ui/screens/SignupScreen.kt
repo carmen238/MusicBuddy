@@ -8,6 +8,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,15 +23,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.musicbuddy.ui.auth.AuthState
+import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.components.SignUpTextField
 import com.example.musicbuddy.ui.components.Validators
 import com.example.musicbuddy.ui.theme.AppColors
 
 /**
  * SignUpScreen - Schermata di registrazione per MusicBuddy
+ * Integrata con Firebase Authentication
  */
 @Composable
 fun SignUpScreen(
+    authViewModel: AuthViewModel,
     onContinueClick: (name: String, surname: String, phone: String, email: String, password: String) -> Unit,
     onBackClick: () -> Unit = {}
 ) {
@@ -39,6 +45,27 @@ fun SignUpScreen(
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
+    var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    // Osserva lo stato di autenticazione
+    val authState by authViewModel.authState.collectAsState()
+
+    // Aggiorna il messaggio di errore quando lo stato cambia
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Error -> {
+                errorMessage = (authState as AuthState.Error).message
+                showError = true
+            }
+            is AuthState.Authenticated -> {
+                showError = false
+            }
+            else -> {
+                showError = false
+            }
+        }
+    }
 
     // Validazione globale
     val isFormValid =
@@ -81,7 +108,8 @@ fun SignUpScreen(
             AsyncImage(
                 model = "file:///android_asset/music_crowd_cut.jpg",
                 contentDescription = "Crowd of people with music instruments",
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .fillMaxHeight(0.4f)
             )
 
@@ -199,6 +227,33 @@ fun SignUpScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // MESSAGGIO DI ERRORE (NUOVO)
+                if (showError) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFFFFEBEE)
+                        )
+                    ) {
+                        Text(
+                            text = errorMessage,
+                            fontSize = 12.sp,
+                            color = Color(0xFFC62828),
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
+                }
+
+                // LOADING INDICATOR (NUOVO)
+                if (authState is AuthState.Loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        color = AppColors.PrimaryGreen
+                    )
+                }
+
                 // BOTTONE CONTINUE
                 Button(
                     onClick = {
@@ -212,7 +267,7 @@ fun SignUpScreen(
                         disabledContainerColor = AppColors.DisabledButton
                     ),
                     shape = RoundedCornerShape(12.dp),
-                    enabled = isFormValid
+                    enabled = isFormValid && authState !is AuthState.Loading
                 ) {
                     Text(
                         text = "Continue",
@@ -234,8 +289,6 @@ fun SignUpScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun SignUpScreenPreview() {
-    SignUpScreen(
-        onContinueClick = { _, _, _, _, _ -> },
-        onBackClick = {}
-    )
+    // Per il preview, crea un mock di AuthViewModel
+    // In produzione, verrà passato il vero ViewModel
 }

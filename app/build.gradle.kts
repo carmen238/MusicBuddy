@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.text)
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.auth)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -14,13 +14,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.navigation.NavigationGraph
 import com.example.musicbuddy.ui.navigation.Screen
 import com.example.musicbuddy.ui.theme.MusicBuddyTheme
+import com.google.firebase.Firebase
+import com.google.firebase.initialize
+import kotlin.concurrent.thread
 
 /**
  * MainActivity - Activity principale dell'app MusicBuddy
@@ -29,6 +34,15 @@ import com.example.musicbuddy.ui.theme.MusicBuddyTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // INIZIALIZZA FIREBASE IN UN THREAD SEPARATO
+        thread {
+            try {
+                Firebase.initialize(this)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
 
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -47,6 +61,7 @@ class MainActivity : ComponentActivity() {
  * MusicBuddyApp - Composable principale
  * Gestisce:
  * - NavController (pilota della navigazione)
+ * - AuthViewModel (stato di autenticazione)
  * - Scaffold (struttura con navbar in basso)
  * - NavigationGraph (tutte le schermate)
  */
@@ -54,6 +69,9 @@ class MainActivity : ComponentActivity() {
 fun MusicBuddyApp() {
     // Crea il NavController - gestisce la navigazione tra schermate
     val navController = rememberNavController()
+
+    // Crea il ViewModel per l'autenticazione
+    val authViewModel: AuthViewModel = viewModel()
 
     // Ottiene la schermata corrente dal back stack
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -78,7 +96,8 @@ fun MusicBuddyApp() {
         // NavigationGraph - Mostra le schermate
         NavigationGraph(
             navController = navController,
-            modifier = Modifier.padding(paddingValues)
+            modifier = Modifier.padding(paddingValues),
+            authViewModel = authViewModel
         )
     }
 }
@@ -141,7 +160,6 @@ fun BottomNavigationBar(
         }
     }
 }
-
 
 data class BottomNavItem(
     val screen: Screen,

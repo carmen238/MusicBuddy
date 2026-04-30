@@ -22,7 +22,7 @@ sealed class AuthState {
      * Authenticated - Utente autenticato con successo
      * @param user Dati dell'utente Firebase
      */
-    data class Authenticated(val user: FirebaseUser) : AuthState()
+    object Authenticated : AuthState()
 
     /**
      * Unauthenticated - Utente non autenticato (logout o nessun login)
