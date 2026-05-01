@@ -28,6 +28,8 @@ import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.components.SignUpTextField
 import com.example.musicbuddy.ui.components.Validators
 import com.example.musicbuddy.ui.theme.AppColors
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
  * SignUpScreen - Schermata di registrazione per MusicBuddy
@@ -57,6 +59,11 @@ fun SignUpScreen(
             is AuthState.Error -> {
                 errorMessage = (authState as AuthState.Error).message
                 showError = true
+
+                launch {
+                    delay(3000L)
+                    showError = false
+                }
             }
             is AuthState.Authenticated -> {
                 showError = false
@@ -227,7 +234,7 @@ fun SignUpScreen(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // MESSAGGIO DI ERRORE (NUOVO)
+                // MESSAGGIO DI ERRORE
                 if (showError) {
                     Card(
                         modifier = Modifier
@@ -289,6 +296,5 @@ fun SignUpScreen(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun SignUpScreenPreview() {
-    // Per il preview, crea un mock di AuthViewModel
-    // In produzione, verrà passato il vero ViewModel
+
 }

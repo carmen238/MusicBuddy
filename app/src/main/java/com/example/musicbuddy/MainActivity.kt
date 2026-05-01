@@ -28,7 +28,6 @@ import com.google.firebase.initialize
 import kotlin.concurrent.thread
 
 /**
- * MainActivity - Activity principale dell'app MusicBuddy
  * Gestisce il layout generale e la navigazione
  */
 class MainActivity : ComponentActivity() {
@@ -58,7 +57,6 @@ class MainActivity : ComponentActivity() {
 }
 
 /**
- * MusicBuddyApp - Composable principale
  * Gestisce:
  * - NavController (pilota della navigazione)
  * - AuthViewModel (stato di autenticazione)
@@ -78,7 +76,6 @@ fun MusicBuddyApp() {
     val currentDestination = navBackStackEntry?.destination
 
     // Definisce quali schermate devono mostrare la navbar
-    // La navbar NON si mostra su: Start, Login, SignUp
     val showBottomBar = currentDestination?.route in listOf(
         Screen.Home.route,
         Screen.Search.route,
@@ -103,7 +100,7 @@ fun MusicBuddyApp() {
 }
 
 /**
- * BottomNavigationBar - Navbar con 3 bottoni (Home, Search, Profile)
+ * BottomNavigationBar
  */
 @Composable
 fun BottomNavigationBar(
@@ -131,7 +128,7 @@ fun BottomNavigationBar(
 
     NavigationBar {
         items.forEach { item ->
-            // Verifica se il bottone è selezionato
+
             val isSelected = currentDestination?.hierarchy?.any {
                 it.route == item.screen.route
             } ?: false
@@ -146,7 +143,7 @@ fun BottomNavigationBar(
                 label = { Text(item.label) },
                 selected = isSelected,
                 onClick = {
-                    // Naviga alla schermata quando clicchi il bottone
+                    
                     navController.navigate(item.screen.route) {
                         // Evita di creare più copie della stessa schermata
                         popUpTo(navController.graph.findStartDestination().id) {

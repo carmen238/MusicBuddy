@@ -27,10 +27,12 @@ import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.components.SignUpTextField
 import com.example.musicbuddy.ui.components.Validators
 import com.example.musicbuddy.ui.theme.AppColors
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 /**
- * LoginScreen - Schermata di login per MusicBuddy
- * Integrata con Firebase Authentication
+ * LoginScreen
+ * + Firebase Authentication
  */
 @Composable
 fun LoginScreen(
@@ -52,6 +54,11 @@ fun LoginScreen(
             is AuthState.Error -> {
                 errorMessage = (authState as AuthState.Error).message
                 showError = true
+                launch {
+                    delay(3000L)
+                    showError = false
+                }
+
             }
             is AuthState.Authenticated -> {
                 showError = false
@@ -59,6 +66,7 @@ fun LoginScreen(
             else -> {
                 showError = false
             }
+
         }
     }
 

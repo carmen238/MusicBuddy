@@ -16,11 +16,10 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 
 /**
- * StartScreen - Landing page per MusicBuddy
  * Schermata iniziale con opzioni di Sign Up e Log In
  */
 
-// Colori personalizzati per MusicBuddy (Blu e Viola)
+
 val green = Color(0xFF337F00)      // Indigo/Blu
 val yellow = Color(0xFFFDBC31)    // Viola
 val lightBackground = Color(0xFFFFFFFF)  // Sfondo chiaro
@@ -42,13 +41,10 @@ fun StartScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // SEZIONE SUPERIORE - Logo/Branding
             LogoSection(green)
 
-            // SEZIONE CENTRALE - Testo di benvenuto
             WelcomeSection(green)
 
-            // SEZIONE INFERIORE - Bottoni di azione
             ButtonSection(
                 onSignUpClick = onSignUpClick,
                 onLogInClick = onLogInClick,
@@ -59,10 +55,6 @@ fun StartScreen(
     }
 }
 
-/**
- * LogoSection - Area di branding con logo/icona musicale
- * Personalizza qui con la tua immagine o icona
- */
 @Composable
 fun LogoSection(primaryColor: Color) {
     Column(
@@ -150,7 +142,7 @@ fun ButtonSection(
 
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Bottone Sign Up - Filled con colore primario
+
         Button(
             onClick = onSignUpClick,
             modifier = Modifier
@@ -169,7 +161,6 @@ fun ButtonSection(
             )
         }
 
-        // Bottone Log In - Outlined con colore secondario
         OutlinedButton(
             onClick = onLogInClick,
             modifier = Modifier
@@ -190,9 +181,7 @@ fun ButtonSection(
     }
 }
 
-/**
- * Preview - Anteprima della StartScreen in Android Studio
- */
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun StartScreenPreview() {
