@@ -75,7 +75,7 @@ fun LogoSection(primaryColor: Color) {
 
         // Nome app
         Text(
-            text = "MusicBuddy",
+            text = "Croma",
             fontSize = 42.sp,
             fontWeight = FontWeight.Bold,
             color = green,
@@ -105,7 +105,7 @@ fun WelcomeSection(textColor: Color) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Welcome to MusicBuddy",
+            text = "Welcome to Croma",
             fontSize = 24.sp,
             fontWeight = FontWeight.SemiBold,
             color = textColor,

@@ -79,7 +79,8 @@ fun MusicBuddyApp() {
     val showBottomBar = currentDestination?.route in listOf(
         Screen.Home.route,
         Screen.Search.route,
-        Screen.Profile.route
+        Screen.Profile.route,
+        Screen.Tuner.route
     )
 
     Scaffold(

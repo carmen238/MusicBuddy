@@ -16,6 +16,7 @@ import com.example.musicbuddy.ui.screens.ProfileScreen
 import com.example.musicbuddy.ui.screens.SearchScreen
 import com.example.musicbuddy.ui.screens.SignUpScreen
 import com.example.musicbuddy.ui.screens.StartScreen
+import com.example.musicbuddy.ui.screens.TunerScreen
 
 /**
  * Definizione delle route dell'app
@@ -28,6 +29,7 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Search : Screen("search")
     object Profile : Screen("profile")
+    object Tuner : Screen("tuner")
 }
 
 /**
@@ -59,7 +61,7 @@ fun NavigationGraph(
             StartScreen(
                 onSignUpClick = {
                     // Naviga a SignUp quando clicchi il bottone "Sign Up"
-                    navController.navigate(Screen.SignUp.route) {
+                    navController.navigate(Screen.Tuner.route) {
                         popUpTo(Screen.Start.route) { saveState = true }
                         launchSingleTop = true
                     }
@@ -134,6 +136,11 @@ fun NavigationGraph(
         // SCHERMATA 6: ProfileScreen (collegata alla navbar)
         composable(Screen.Profile.route) {
             ProfileScreen()
+        }
+
+        // SCHERMATA 7: TunerScreen
+        composable(Screen.Tuner.route) {
+            TunerScreen()
         }
     }
 }
