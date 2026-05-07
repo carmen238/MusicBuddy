@@ -133,7 +133,14 @@ fun NavigationGraph(
 
         // SCHERMATA 6: ProfileScreen (collegata alla navbar)
         composable(Screen.Profile.route) {
-            ProfileScreen()
+            ProfileScreen(
+                onLogoutClick = {
+                    authViewModel.logout()
+                    navController.navigate(Screen.Start.route) {
+                        popUpTo(Screen.Profile.route) { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }
