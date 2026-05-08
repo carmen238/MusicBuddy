@@ -97,19 +97,19 @@ fun TunerScreen(tunerLogic: TunerLogic = viewModel()) {
         val closestNote = getClosestNotePitch(tunerLogic.pitch.floatValue, notesMatrix)
         //We consider the note out of tune if it is above or below 0,7% of the closest note
         if (tunerLogic.pitch.floatValue < (closestNote - 0.007 * closestNote)) {    //Under tuned
-            if (handState == 0) {}//targetAngle = 0f
-            else if (handState == 1) targetAngle = -55f
-            else targetAngle = -100f
+            if (handState == 0) {}//targetAngle += 0f
+            else if (handState == 1) targetAngle -= 55f
+            else targetAngle -= 100f
             handState = 0
         } else if (tunerLogic.pitch.floatValue > (closestNote + 0.007 * closestNote)) {      //Over tuned
-            if (handState == 0) targetAngle = 100f
-            else if (handState == 1) targetAngle = 55f
-            else {}//targetAngle = 0f
+            if (handState == 0) targetAngle += 100f
+            else if (handState == 1) targetAngle += 55f
+            else {}//targetAngle += 0f
             handState = 2
         } else {              //In tune
-            if (handState == 0) targetAngle = 55f
+            if (handState == 0) targetAngle += 55f
             else if (handState == 1) targetAngle = 0f
-            else targetAngle = -55f
+            else targetAngle -= 55f
             handState = 1
         }
 
@@ -224,7 +224,7 @@ fun TunerScreen(tunerLogic: TunerLogic = viewModel()) {
     }
     else {
         Button(onClick = { launcher.launch(Manifest.permission.RECORD_AUDIO) }) {
-            Text("Richiedi Permesso Microfono")
+            Text("Give permission to use the microphone?")
         }
     }
 }

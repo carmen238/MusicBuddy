@@ -72,7 +72,7 @@ class TunerLogic : ViewModel() {
 
     fun startListening() {
         val sampleRate = 44100
-        val bufferSize = 5632
+        val bufferSize = 4096
         val overlap = 0
 
         dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(sampleRate, bufferSize, overlap)
