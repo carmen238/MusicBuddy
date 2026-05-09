@@ -1,5 +1,6 @@
 package com.example.musicbuddy.ui.auth
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -12,6 +13,7 @@ import kotlinx.coroutines.tasks.await
 
 /**
  * AuthViewModel - Gestisce l'autenticazione con Firebase
+ * Salva i dati localmente con SharedPreferences
  */
 class AuthViewModel : ViewModel() {
 
@@ -22,6 +24,20 @@ class AuthViewModel : ViewModel() {
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState
 
+    // StateFlow per i dati dell'utente
+    private val _userData = MutableStateFlow<Map<String, String>?>(null)
+    val userData: StateFlow<Map<String, String>?> = _userData
+
+    // SharedPreferences
+    private var userPreferences: UserPreferences? = null
+
+    /**
+     * Inizializza il contesto per SharedPreferences
+     */
+    fun setContext(context: Context) {
+        userPreferences = UserPreferences(context)
+    }
+
     /**
      * Login con email e password
      */
@@ -30,8 +46,11 @@ class AuthViewModel : ViewModel() {
             try {
                 _authState.value = AuthState.Loading
 
-                // Chiama Firebase Authentication
+                // Autentica con Firebase
                 auth.signInWithEmailAndPassword(email, password).await()
+
+                // Carica i dati salvati
+                fetchUserData()
 
                 // Se successo
                 _authState.value = AuthState.Authenticated
@@ -56,13 +75,22 @@ class AuthViewModel : ViewModel() {
     /**
      * Registrazione con email e password
      */
-    fun signUp(email: String, password: String) {
+    fun signUp(
+        email: String,
+        password: String,
+        name: String,
+        surname: String,
+        phone: String
+    ) {
         viewModelScope.launch {
             try {
                 _authState.value = AuthState.Loading
 
-                // Chiama Firebase Authentication
+                // Crea l'utente su Firebase
                 auth.createUserWithEmailAndPassword(email, password).await()
+
+                // Salva i dati localmente in SharedPreferences
+                userPreferences?.saveUserData(name, surname, email, phone)
 
                 // Se successo
                 _authState.value = AuthState.Authenticated
@@ -85,10 +113,19 @@ class AuthViewModel : ViewModel() {
     }
 
     /**
+     * Recupera i dati dell'utente da SharedPreferences
+     */
+    fun fetchUserData() {
+        _userData.value = userPreferences?.getUserData()
+    }
+
+    /**
      * Logout
      */
     fun logout() {
         auth.signOut()
+        userPreferences?.clearUserData()
+        _userData.value = null
         _authState.value = AuthState.Unauthenticated
     }
 

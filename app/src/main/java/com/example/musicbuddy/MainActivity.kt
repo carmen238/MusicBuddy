@@ -14,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -70,6 +71,7 @@ fun MusicBuddyApp() {
 
     // Crea il ViewModel per l'autenticazione
     val authViewModel: AuthViewModel = viewModel()
+    authViewModel.setContext(LocalContext.current)
 
     // Ottiene la schermata corrente dal back stack
     val navBackStackEntry by navController.currentBackStackEntryAsState()

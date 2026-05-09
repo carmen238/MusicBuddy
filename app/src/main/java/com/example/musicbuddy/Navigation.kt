@@ -97,22 +97,21 @@ fun NavigationGraph(
 
         // SCHERMATA 3: SignUpScreen
         composable(Screen.SignUp.route) {
+            val authState by authViewModel.authState.collectAsState()
+
             SignUpScreen(
                 authViewModel = authViewModel,
                 onContinueClick = { name, surname, phone, email, password ->
-                    // Chiama la registrazione di Firebase tramite AuthViewModel
-                    authViewModel.signUp(email, password)
+                    authViewModel.signUp(email, password, name, surname, phone)
                 },
                 onBackClick = {
-                    // Torna indietro quando clicchi la freccia
                     navController.popBackStack()
                 }
             )
 
-            // Osserva lo stato di autenticazione e naviga se la registrazione ha successo
+            // Naviga a Home quando l'autenticazione ha successo
             LaunchedEffect(authState) {
                 if (authState is AuthState.Authenticated) {
-                    // Registrazione riuscita, naviga a Home
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Start.route) { inclusive = true }
                     }
@@ -133,7 +132,15 @@ fun NavigationGraph(
 
         // SCHERMATA 6: ProfileScreen (collegata alla navbar)
         composable(Screen.Profile.route) {
-            ProfileScreen()
+            ProfileScreen(
+                authViewModel = authViewModel,
+                onLogoutClick = {
+                    authViewModel.logout()
+                    navController.navigate(Screen.Start.route) {
+                        popUpTo(Screen.Profile.route) { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }
