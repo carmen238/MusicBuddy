@@ -53,24 +53,10 @@ fun ProfileScreen(
         modifier = Modifier.fillMaxSize(),
         color = Color(0xFFF5F5F5)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            // HEADER - Titolo "Profile"
-            Text(
-                text = "Profile",
-                fontSize = 14.sp,
-                color = Color.Gray,
-                modifier = Modifier.padding(start = 16.dp, top = 16.dp)
-            )
-
             // CONTENUTO PRINCIPALE
             Card(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
+                    .fillMaxWidth(),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
                 ),
@@ -100,8 +86,7 @@ fun ProfileScreen(
                             .padding(bottom = 24.dp),
                         contentAlignment = Alignment.TopEnd
                     ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
+                        Row(
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             // AVATAR CON INIZIALE
@@ -128,6 +113,7 @@ fun ProfileScreen(
                                 modifier = Modifier
                                     .size(24.dp)
                                     .padding(top = 8.dp)
+                                    .align(Alignment.CenterVertically)
                             )
                         }
                     }
@@ -226,7 +212,7 @@ fun ProfileScreen(
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(32.dp))
+                    Spacer(modifier = Modifier.height(52.dp))
 
                     // BOTTONE LOG OUT
                     Button(
@@ -252,7 +238,7 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(24.dp))
         }
     }
-}
+
 
 /**
  * ProfileInfoRow - Componente per mostrare una riga di informazioni
