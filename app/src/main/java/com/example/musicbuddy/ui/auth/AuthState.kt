@@ -1,7 +1,5 @@
 package com.example.musicbuddy.ui.auth
 
-import com.google.firebase.auth.FirebaseUser
-
 
 /**
  * AuthState - Rappresenta i possibili stati di autenticazione dell'app

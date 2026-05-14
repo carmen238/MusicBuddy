@@ -4,52 +4,122 @@ import android.content.Context
 import android.content.SharedPreferences
 
 /**
- * UserPreferences - Gestisce il salvataggio dei dati utente in SharedPreferences
+ * UserPreferences - Manages user data and JWT token storage
+ * Uses SharedPreferences for local persistence
  */
 class UserPreferences(context: Context) {
 
     private val sharedPreferences: SharedPreferences =
         context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
-    /**
-     * Salva i dati dell'utente
-     */
-    fun saveUserData(name: String, surname: String, email: String, phone: String) {
-        sharedPreferences.edit().apply {
-            putString("name", name)
-            putString("surname", surname)
-            putString("email", email)
-            putString("phone", phone)
-            putString("bio", "")
-            putInt("rating", 0)
-            apply()
-        }
+    companion object {
+        private const val KEY_AUTH_TOKEN = "auth_token"
+        private const val KEY_USER_ID = "user_id"
+        private const val KEY_NAME = "name"
+        private const val KEY_SURNAME = "surname"
+        private const val KEY_EMAIL = "email"
+        private const val KEY_PHONE = "phone"
+        private const val KEY_BIO = "bio"
+        private const val KEY_RATING = "rating"
     }
 
     /**
-     * Recupera i dati dell'utente
+     * Save JWT authentication token
+     */
+    fun saveAuthToken(token: String) {
+        sharedPreferences.edit().apply {
+            putString(KEY_AUTH_TOKEN, token)
+            apply()
+        }
+        println("✅ Auth token saved")
+    }
+
+    /**
+     * Get JWT authentication token
+     */
+    fun getAuthToken(): String? {
+        return sharedPreferences.getString(KEY_AUTH_TOKEN, null)
+    }
+
+    /**
+     * Clear JWT authentication token
+     */
+    fun clearAuthToken() {
+        sharedPreferences.edit().apply {
+            remove(KEY_AUTH_TOKEN)
+            apply()
+        }
+        println("✅ Auth token cleared")
+    }
+
+    /**
+     * Check if user is logged in (has valid token)
+     */
+    fun isUserLoggedIn(): Boolean {
+        return !getAuthToken().isNullOrEmpty()
+    }
+
+    /**
+     * Save user data
+     */
+    fun saveUserData(name: String, surname: String, email: String, phone: String) {
+        sharedPreferences.edit().apply {
+            putString(KEY_NAME, name)
+            putString(KEY_SURNAME, surname)
+            putString(KEY_EMAIL, email)
+            putString(KEY_PHONE, phone)
+            putString(KEY_BIO, "")
+            putInt(KEY_RATING, 0)
+            apply()
+        }
+        println("✅ User data saved: $name $surname")
+    }
+
+    /**
+     * Get user data
      */
     fun getUserData(): Map<String, String> {
         return mapOf(
-            "name" to (sharedPreferences.getString("name", "Nome") ?: "Nome"),
-            "surname" to (sharedPreferences.getString("surname", "Cognome") ?: "Cognome"),
-            "email" to (sharedPreferences.getString("email", "Email") ?: "Email"),
-            "phone" to (sharedPreferences.getString("phone", "Telefono") ?: "Telefono"),
-            "bio" to (sharedPreferences.getString("bio", "") ?: "")
+            "name" to (sharedPreferences.getString(KEY_NAME, "Nome") ?: "Nome"),
+            "surname" to (sharedPreferences.getString(KEY_SURNAME, "Cognome") ?: "Cognome"),
+            "email" to (sharedPreferences.getString(KEY_EMAIL, "Email") ?: "Email"),
+            "phone" to (sharedPreferences.getString(KEY_PHONE, "Telefono") ?: "Telefono"),
+            "bio" to (sharedPreferences.getString(KEY_BIO, "") ?: "")
         )
     }
 
     /**
-     * Pulisce tutti i dati dell'utente
+     * Update a single user field
      */
-    fun clearUserData() {
-        sharedPreferences.edit().clear().apply()
+    fun saveUserField(field: String, value: String) {
+        sharedPreferences.edit().apply {
+            putString(field, value)
+            apply()
+        }
+        println("✅ User field updated: $field = $value")
     }
 
     /**
-     * Verifica se l'utente ha dati salvati
+     * Clear all user data
      */
-    fun hasUserData(): Boolean {
-        return sharedPreferences.contains("name")
+    fun clearUserData() {
+        sharedPreferences.edit().apply {
+            remove(KEY_NAME)
+            remove(KEY_SURNAME)
+            remove(KEY_EMAIL)
+            remove(KEY_PHONE)
+            remove(KEY_BIO)
+            remove(KEY_RATING)
+            apply()
+        }
+        println("✅ User data cleared")
+    }
+
+    /**
+     * Clear all data (logout)
+     */
+    fun clearAll() {
+        sharedPreferences.edit().clear().apply()
+        println("✅ All preferences cleared")
     }
 }

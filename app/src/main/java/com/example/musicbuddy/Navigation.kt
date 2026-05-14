@@ -74,12 +74,13 @@ fun NavigationGraph(
             )
         }
 
-        // SCHERMATA 2: LoginScreen
-        composable(Screen.Login.route) {
-            LoginScreen(
+        composable(Screen.SignUp.route) {
+            val authState by authViewModel.authState.collectAsState()
+
+            SignUpScreen(
                 authViewModel = authViewModel,
-                onContinueClick = { email, password ->
-                    authViewModel.login(email, password)
+                onContinueClick = { name, surname, phone, email, password ->
+                    authViewModel.signUp(email, password, name, surname, phone)
                 },
                 onBackClick = {
                     navController.popBackStack()
@@ -95,21 +96,19 @@ fun NavigationGraph(
             }
         }
 
-        // SCHERMATA 3: SignUpScreen
-        composable(Screen.SignUp.route) {
+        composable(Screen.Login.route) {
             val authState by authViewModel.authState.collectAsState()
 
-            SignUpScreen(
+            LoginScreen(
                 authViewModel = authViewModel,
-                onContinueClick = { name, surname, phone, email, password ->
-                    authViewModel.signUp(email, password, name, surname, phone)
+                onContinueClick = { email, password ->
+                    authViewModel.login(email, password)
                 },
                 onBackClick = {
                     navController.popBackStack()
                 }
             )
 
-            // Naviga a Home quando l'autenticazione ha successo
             LaunchedEffect(authState) {
                 if (authState is AuthState.Authenticated) {
                     navController.navigate(Screen.Home.route) {

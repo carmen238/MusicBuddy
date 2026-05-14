@@ -24,9 +24,6 @@ import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.navigation.NavigationGraph
 import com.example.musicbuddy.ui.navigation.Screen
 import com.example.musicbuddy.ui.theme.MusicBuddyTheme
-import com.google.firebase.Firebase
-import com.google.firebase.initialize
-import kotlin.concurrent.thread
 
 /**
  * Gestisce il layout generale e la navigazione
@@ -35,14 +32,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // INIZIALIZZA FIREBASE IN UN THREAD SEPARATO
-        thread {
-            try {
-                Firebase.initialize(this)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
+
 
         window.setFlags(
             WindowManager.LayoutParams.FLAG_FULLSCREEN,

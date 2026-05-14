@@ -64,13 +64,23 @@ dependencies {
     // Image Loading
     implementation("io.coil-kt:coil-compose:2.4.0")
 
-    // Firebase (senza Firestore per ora)
-    implementation(platform(libs.firebase.bom))
-    implementation(libs.firebase.auth)
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // OkHttp
+    implementation("com.squareup.okhttp3:okhttp:4.11.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+
+    // Gson
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    // Coroutines (if not already present)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.7.3")
-    implementation("com.google.firebase:firebase-firestore-ktx")
 
     // TarsosDSP library (local)
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
