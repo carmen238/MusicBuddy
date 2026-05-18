@@ -20,8 +20,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.musicbuddy.ui.auth.AuthViewModel
-import com.example.musicbuddy.ui.navigation.NavigationGraph
-import com.example.musicbuddy.ui.navigation.Screen
 import com.example.musicbuddy.ui.theme.MusicBuddyTheme
 import com.google.firebase.Firebase
 import com.google.firebase.initialize

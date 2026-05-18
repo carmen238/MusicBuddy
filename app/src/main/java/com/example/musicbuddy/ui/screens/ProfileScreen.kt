@@ -1,4 +1,8 @@
 package com.example.musicbuddy.ui.screens
 
-class ProfileScreen {
+import androidx.compose.runtime.Composable
+
+@Composable
+fun ProfileScreen() {
+
 }

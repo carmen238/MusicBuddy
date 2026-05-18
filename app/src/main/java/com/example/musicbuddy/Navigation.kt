@@ -1,4 +1,4 @@
-package com.example.musicbuddy.ui.navigation
+package com.example.musicbuddy
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -11,12 +11,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.musicbuddy.ui.auth.AuthState
 import com.example.musicbuddy.ui.auth.AuthViewModel
-import com.example.musicbuddy.ui.screens.LoginScreen
-import com.example.musicbuddy.ui.screens.ProfileScreen
-import com.example.musicbuddy.ui.screens.SearchScreen
-import com.example.musicbuddy.ui.screens.SignUpScreen
-import com.example.musicbuddy.ui.screens.StartScreen
-import com.example.musicbuddy.ui.screens.TunerScreen
+import com.example.musicbuddy.ui.components.TunerLogic
+import com.example.musicbuddy.ui.screens.*
 
 /**
  * Definizione delle route dell'app
@@ -26,10 +22,12 @@ sealed class Screen(val route: String) {
     object Start : Screen("start_screen")
     object Login : Screen("login")
     object SignUp : Screen("signup")
+    object SignUp2 : Screen("signup2")
     object Home : Screen("home")
     object Search : Screen("search")
     object Profile : Screen("profile")
     object Tuner : Screen("tuner")
+    object Chat : Screen("chat")
 }
 
 /**
@@ -61,7 +59,7 @@ fun NavigationGraph(
             StartScreen(
                 onSignUpClick = {
                     // Naviga a SignUp quando clicchi il bottone "Sign Up"
-                    navController.navigate(Screen.Tuner.route) {
+                    navController.navigate(Screen.SignUp.route) {
                         popUpTo(Screen.Start.route) { saveState = true }
                         launchSingleTop = true
                     }
@@ -101,9 +99,29 @@ fun NavigationGraph(
         composable(Screen.SignUp.route) {
             SignUpScreen(
                 authViewModel = authViewModel,
-                onContinueClick = { name, surname, phone, email, password ->
+                onContinueClick = {
+                    navController.navigate(Screen.SignUp2.route) {
+                        popUpTo(Screen.Start.route) { saveState = true }
+                        launchSingleTop = true
+                    }
+                    //authViewModel.signUp(email, password)
+                },
+                onBackClick = {
+                    // Torna indietro quando clicchi la freccia
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        // SCHERMATA 3 (parte 2): SignUpScreen2
+        composable(Screen.SignUp2.route) {
+            SignUpScreen2(
+                authViewModel = authViewModel,
+                onCreateClick = { name, surname, phone, email, password, playedInstrument, favoriteMusicGenre, favoriteMusicSubgenre, currentFavoriteBand, profilePhoto ->
                     // Chiama la registrazione di Firebase tramite AuthViewModel
                     authViewModel.signUp(email, password)
+                    //QUI FARE ROBA CON ALTRI PARAMETRI (MANDARLI AL NOSTRO DATABASE ATTRAVERSO L'API)
+                    //...
                 },
                 onBackClick = {
                     // Torna indietro quando clicchi la freccia
@@ -124,8 +142,18 @@ fun NavigationGraph(
 
         // SCHERMATA 4: HomeScreen (schermata principale con navbar)
         composable(Screen.Home.route) {
-            // TODO: Implementare HomeScreen
-            // Per ora mostra un placeholder
+            HomeScreen(onNavigateToSearch = {
+                navController.navigate(Screen.Search.route) { popUpTo(Screen.Home.route) { inclusive = true } }
+                },
+                onNavigateToProfile = {
+                    navController.navigate(Screen.Profile.route) { popUpTo(Screen.Home.route) { inclusive = true } }
+                },
+                onNavigateToTuner = {
+                    navController.navigate(Screen.Tuner.route) { popUpTo(Screen.Home.route) { inclusive = true } }
+                },
+                onNavigateToChat = {
+                    navController.navigate(Screen.Chat.route) { popUpTo(Screen.Home.route) { inclusive = true } }
+                })
         }
 
         // SCHERMATA 5: SearchScreen (collegata alla navbar)
@@ -140,7 +168,12 @@ fun NavigationGraph(
 
         // SCHERMATA 7: TunerScreen
         composable(Screen.Tuner.route) {
-            TunerScreen()
+            TunerScreen(tunerLogic = TunerLogic())
+        }
+
+        // SCHERMATA 8: ChatScreen
+        composable(Screen.Chat.route) {
+            ChatScreen()
         }
     }
 }

@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.musicbuddy.ui.theme.AppColors
 
 
 @Composable
@@ -45,6 +46,16 @@ fun SignUpTextField(
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
+        Text(
+            text = label,
+            fontSize = 16.sp,
+            fontWeight = FontWeight.Normal,
+            color = AppColors.DarkText,
+            modifier = Modifier.align(Alignment.Start)
+        )
+
+        Spacer(modifier = Modifier.height(6.dp))
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()

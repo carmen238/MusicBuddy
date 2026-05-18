@@ -1,4 +1,8 @@
 package com.example.musicbuddy.ui.screens
 
-class SearchScreen {
+import androidx.compose.runtime.Composable
+
+@Composable
+fun SearchScreen() {
+
 }

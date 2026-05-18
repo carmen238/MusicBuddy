@@ -1,5 +1,8 @@
 package com.example.musicbuddy.ui.auth
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -21,6 +24,23 @@ class AuthViewModel : ViewModel() {
     // StateFlow autenticazione
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState
+
+    //Campi per prima pagina di signup
+    var name by mutableStateOf("")
+    var surname by mutableStateOf("")
+    var phone by mutableStateOf("")
+    var email by mutableStateOf("")
+    var password by mutableStateOf("")
+    var confirmPassword by mutableStateOf("")
+    var showError by mutableStateOf(false)
+    var errorMessage by mutableStateOf("")
+    //Campi per seconda pagina di signup
+    var playedInstrument by mutableStateOf("")
+    var favoriteMusicGenre by mutableStateOf("")    //QUESTA SI SCEGLIE DA UN DROP DOWN MENU
+    var favoriteMusicSubgenre by mutableStateOf("")     //QUESTA INVECE è UNA STRINGA SEMPLICE (TROPPI SOTTO-GENERI POSSIBILI)
+    var currentFavoriteBand by mutableStateOf("")
+    var profilePhoto by mutableStateOf(byteArrayOf())    //QUI è IMMAGINE BITMAP CONVERTITA A JPEG (E A BYTE ARRAY) CARICATA DA UTENTE E DA MANDARE AL NOSTRO DATABASE CON API
+    //Ricordarsi di usare "profilePhoto.isEmpty()" per vedere se immagine è vuota
 
     /**
      * Login con email e password

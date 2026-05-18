@@ -22,11 +22,13 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import coil.compose.AsyncImage
 import com.example.musicbuddy.ui.auth.AuthState
 import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.components.SignUpTextField
 import com.example.musicbuddy.ui.components.Validators
+import com.example.musicbuddy.ui.components.DropdownMenuField
 import com.example.musicbuddy.ui.theme.AppColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -38,17 +40,21 @@ import kotlinx.coroutines.launch
 @Composable
 fun SignUpScreen(
     authViewModel: AuthViewModel,
-    onContinueClick: (name: String, surname: String, phone: String, email: String, password: String) -> Unit,
+    onContinueClick: () -> Unit,
     onBackClick: () -> Unit = {}
 ) {
-    var name by remember { mutableStateOf("") }
+    //SPOSTARE QUESTE VARIABILI IN AuthViewModel COSÌ CHE I DATI SONO VISIBILI A TUTTE LE SCHERMATE MULTIPLE DEL SIGN UP
+    //(AGGIUNGENDO ANCHE NUOVI CAMPI DELLA SECONDA PAGINA)
+    //COSì I DATI DEL LOGIN SARANNO SALVATI DA GOOGLE (FIREBASE) E I DATI AGGIUNTIVI CE LI SALVIAMO IN UN NOSTRO DATABASE SQL
+    //INOLTRE, VISTO CHE FIREBASE SALVA SOLO EMAIL E PASSWORD, GLI ALTRI DATI LI USIAMO NOI NEL NOSTRO DATABASE
+    /*var name by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }
     var phone by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var showError by remember { mutableStateOf(false) }
-    var errorMessage by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf("") }*/
 
     // Osserva lo stato di autenticazione
     val authState by authViewModel.authState.collectAsState()
@@ -57,31 +63,31 @@ fun SignUpScreen(
     LaunchedEffect(authState) {
         when (authState) {
             is AuthState.Error -> {
-                errorMessage = (authState as AuthState.Error).message
-                showError = true
+                authViewModel.errorMessage = (authState as AuthState.Error).message
+                authViewModel.showError = true
 
                 launch {
                     delay(3000L)
-                    showError = false
+                    authViewModel.showError = false
                 }
             }
             is AuthState.Authenticated -> {
-                showError = false
+                authViewModel.showError = false
             }
             else -> {
-                showError = false
+                authViewModel.showError = false
             }
         }
     }
 
     // Validazione globale
     val isFormValid =
-        Validators.isValidName(name) &&
-                Validators.isValidName(surname) &&
-                Validators.isValidPhone(phone) &&
-                Validators.isValidEmail(email) &&
-                Validators.isValidPassword(password) &&
-                Validators.verifyConfirmPassword(password, confirmPassword)
+        Validators.isValidName(authViewModel.name) &&
+                Validators.isValidName(authViewModel.surname) &&
+                Validators.isValidPhone(authViewModel.phone) &&
+                Validators.isValidEmail(authViewModel.email) &&
+                Validators.isValidPassword(authViewModel.password) &&
+                Validators.verifyConfirmPassword(authViewModel.password, authViewModel.confirmPassword)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -142,8 +148,8 @@ fun SignUpScreen(
 
                 // CAMPO NAME
                 SignUpTextField(
-                    value = name,
-                    onValueChange = { name = it },
+                    value = authViewModel.name,
+                    onValueChange = { authViewModel.name = it },
                     label = "Name",
                     placeholder = "Enter your name",
                     inputBackground = AppColors.InputBackground,
@@ -157,8 +163,8 @@ fun SignUpScreen(
 
                 // CAMPO SURNAME
                 SignUpTextField(
-                    value = surname,
-                    onValueChange = { surname = it },
+                    value = authViewModel.surname,
+                    onValueChange = { authViewModel.surname = it },
                     label = "Surname",
                     placeholder = "Enter your surname",
                     inputBackground = AppColors.InputBackground,
@@ -172,8 +178,8 @@ fun SignUpScreen(
 
                 // CAMPO PHONE NUMBER
                 SignUpTextField(
-                    value = phone,
-                    onValueChange = { phone = it },
+                    value = authViewModel.phone,
+                    onValueChange = { authViewModel.phone = it },
                     label = "Phone number",
                     placeholder = "Enter your phone number",
                     inputBackground = AppColors.InputBackground,
@@ -188,8 +194,8 @@ fun SignUpScreen(
 
                 // CAMPO EMAIL
                 SignUpTextField(
-                    value = email,
-                    onValueChange = { email = it },
+                    value = authViewModel.email,
+                    onValueChange = { authViewModel.email = it },
                     label = "Email",
                     placeholder = "Enter your email",
                     inputBackground = AppColors.InputBackground,
@@ -204,8 +210,8 @@ fun SignUpScreen(
 
                 // CAMPO PASSWORD
                 SignUpTextField(
-                    value = password,
-                    onValueChange = { password = it },
+                    value = authViewModel.password,
+                    onValueChange = { authViewModel.password = it },
                     label = "Password",
                     placeholder = "Enter your password",
                     inputBackground = AppColors.InputBackground,
@@ -220,8 +226,8 @@ fun SignUpScreen(
 
                 // CAMPO CONFIRM PASSWORD
                 SignUpTextField(
-                    value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
+                    value = authViewModel.confirmPassword,
+                    onValueChange = { authViewModel.confirmPassword = it },
                     label = "Confirm password",
                     placeholder = "Confirm your password",
                     inputBackground = AppColors.InputBackground,
@@ -229,13 +235,13 @@ fun SignUpScreen(
                     textColor = AppColors.DarkText,
                     isPassword = true,
                     accentColor = AppColors.AccentYellow,
-                    validator = { Validators.verifyConfirmPassword(password, confirmPassword) }
+                    validator = { Validators.verifyConfirmPassword(authViewModel.password, authViewModel.confirmPassword) }
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 // MESSAGGIO DI ERRORE
-                if (showError) {
+                if (authViewModel.showError) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -245,7 +251,7 @@ fun SignUpScreen(
                         )
                     ) {
                         Text(
-                            text = errorMessage,
+                            text = authViewModel.errorMessage,
                             fontSize = 12.sp,
                             color = Color(0xFFC62828),
                             modifier = Modifier.padding(12.dp)
@@ -264,7 +270,7 @@ fun SignUpScreen(
                 // BOTTONE CONTINUE
                 Button(
                     onClick = {
-                        onContinueClick(name, surname, phone, email, password)
+                        onContinueClick()
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -278,6 +284,222 @@ fun SignUpScreen(
                 ) {
                     Text(
                         text = "Continue",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun SignUpScreen2(
+    authViewModel: AuthViewModel,
+    onCreateClick: (name: String, surname: String, phone: String, email: String, password: String, playedInstrument: String, favoriteMusicGenre: String, favoriteMusicSubgenre: String, currentFavoriteBand: String, profilePhoto: ByteArray) -> Unit,
+    onBackClick: () -> Unit = {}
+) {
+    //STESSA COSA DI SOPRA
+    /*var name by remember { mutableStateOf("") }
+    var surname by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    var confirmPassword by remember { mutableStateOf("") }
+    var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }*/
+
+    // Osserva lo stato di autenticazione
+    val authState by authViewModel.authState.collectAsState()
+
+    // Aggiorna il messaggio di errore quando lo stato cambia
+    LaunchedEffect(authState) {
+        when (authState) {
+            is AuthState.Error -> {
+                authViewModel.errorMessage = (authState as AuthState.Error).message
+                authViewModel.showError = true
+
+                launch {
+                    delay(3000L)
+                    authViewModel.showError = false
+                }
+            }
+            is AuthState.Authenticated -> {
+                authViewModel.showError = false
+            }
+            else -> {
+                authViewModel.showError = false
+            }
+        }
+    }
+
+    // Validazione globale
+    val isFormValid =
+        Validators.isValidName(authViewModel.playedInstrument) && Validators.isValidName(authViewModel.currentFavoriteBand)
+
+    //Dropdown menu for music genres
+    val dropdownItems = listOf("Classical", "Pop", "Hip-Pop", "Rock", "Blues", "Folk/Traditional", "Jazz", "Metal", "Punk", "Electronic", "R&B/Soul")
+    var selectedItem by remember { mutableStateOf("") }
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = AppColors.LightBackground
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            // HEADER - Freccia indietro
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = AppColors.DarkText,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            }
+
+            AsyncImage(
+                model = "file:///android_asset/music_crowd_cut.jpg",
+                contentDescription = "Crowd of people with music instruments",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.4f)
+            )
+
+            // CONTENUTO FORM
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // TITOLO
+                Text(
+                    text = "Sign Up - step 2",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.DarkText,
+                    modifier = Modifier.align(Alignment.Start)
+                )
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                SignUpTextField(
+                    value = authViewModel.playedInstrument,
+                    onValueChange = { authViewModel.playedInstrument = it },
+                    label = "Music instrument that you play",
+                    placeholder = "Music instrument",
+                    inputBackground = AppColors.InputBackground,
+                    hintColor = AppColors.HintText,
+                    textColor = AppColors.DarkText,
+                    accentColor = AppColors.AccentYellow,
+                    validator = { Validators.isValidName(it) }
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                DropdownMenuField(
+                    options = dropdownItems,
+                    label = "Favorite music genre",
+                    placeholder = "Music genre",
+                    onOptionSelected = { choice ->
+                        selectedItem = choice
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                SignUpTextField(
+                    value = authViewModel.favoriteMusicSubgenre,
+                    onValueChange = { authViewModel.favoriteMusicSubgenre = it },
+                    label = "Favorite music sub-genre (if any)",
+                    placeholder = "Music sub-genre",
+                    inputBackground = AppColors.InputBackground,
+                    hintColor = AppColors.HintText,
+                    textColor = AppColors.DarkText,
+                    accentColor = AppColors.AccentYellow,
+                    //No validator, this field can be empty
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                SignUpTextField(
+                    value = authViewModel.currentFavoriteBand,
+                    onValueChange = { authViewModel.currentFavoriteBand = it },
+                    label = "Current favorite band or singer",
+                    placeholder = "Band/Singer",
+                    inputBackground = AppColors.InputBackground,
+                    hintColor = AppColors.HintText,
+                    textColor = AppColors.DarkText,
+                    accentColor = AppColors.AccentYellow,
+                    validator = { Validators.isValidName(it) }
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                //LA FOTO DEL PROFILO LA FACCIAMO CARICARE DOPO DALLA PAGINA DEL PROFILO
+
+                // MESSAGGIO DI ERRORE
+                if (authViewModel.showError) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFFFFEBEE)
+                        )
+                    ) {
+                        Text(
+                            text = authViewModel.errorMessage,
+                            fontSize = 12.sp,
+                            color = Color(0xFFC62828),
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
+                }
+
+                // LOADING INDICATOR (NUOVO)
+                if (authState is AuthState.Loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.padding(bottom = 16.dp),
+                        color = AppColors.PrimaryGreen
+                    )
+                }
+
+                // BOTTONE CREATE ACCOUNT
+                Button(
+                    onClick = {
+                        onCreateClick(authViewModel.name, authViewModel.surname, authViewModel.phone, authViewModel.email, authViewModel.password, authViewModel.playedInstrument, authViewModel.favoriteMusicGenre, authViewModel.favoriteMusicSubgenre, authViewModel.currentFavoriteBand, authViewModel.profilePhoto)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(46.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AppColors.PrimaryGreen,
+                        disabledContainerColor = AppColors.DisabledButton
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = isFormValid && authState !is AuthState.Loading
+                ) {
+                    Text(
+                        text = "Create account",
                         fontSize = 16.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.White
