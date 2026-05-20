@@ -66,7 +66,7 @@ class AuthViewModel : ViewModel() {
                 Log.d("AuthViewModel", "✅ Registration successful: ${response.message}")
 
                 // Save user data locally
-                userPreferences?.saveUserData(name, surname, email, phone)
+                userPreferences?.saveUserData(name, surname, email, phone, response.userId)
 
                 // Update state
                 _authState.value = AuthState.Authenticated
@@ -121,7 +121,7 @@ class AuthViewModel : ViewModel() {
                 // Call backend API
                 val response = authApiService.login(request)
 
-                Log.d("AuthViewModel", "✅ Login successful: ${response.message}")
+                Log.d("AuthViewModel", "✅ Login successful: ${response.message} " + response.user.id.toString() )
 
                 // Save JWT token
                 userPreferences?.saveAuthToken(response.token)
@@ -132,19 +132,19 @@ class AuthViewModel : ViewModel() {
                     user.name,
                     user.surname,
                     user.email,
-                    user.phone ?: ""
+                    phone = user.phone ?: "",
+                    userId = response.user.id
                 )
 
                 // Update userData state
                 _userData.value = mapOf(
-                    "id" to user.id.toString(),
+                    "userId" to response.user.id.toString(),
                     "name" to user.name,
                     "surname" to user.surname,
                     "email" to user.email,
                     "phone" to (user.phone ?: ""),
                     "bio" to (user.bio ?: "")
                 )
-
                 // Update auth state
                 _authState.value = AuthState.Authenticated
 
@@ -185,7 +185,12 @@ class AuthViewModel : ViewModel() {
      */
     fun fetchUserData() {
         try {
-            _userData.value = userPreferences?.getUserData()
+            val data = userPreferences?.getUserData()?.toMutableMap()
+            // Assicurati che userId sia una String
+            if (data != null && data["userId"] is Int) {
+                data["userId"] = data["userId"].toString()
+            }
+            _userData.value = data
             Log.d("AuthViewModel", "User data loaded: ${_userData.value}")
         } catch (e: Exception) {
             Log.e("AuthViewModel", "Error fetching user data: ${e.message}")
@@ -195,7 +200,7 @@ class AuthViewModel : ViewModel() {
     /**
      * Update user field with the backend
      */
-    fun updateUserField(id: Int, field: String, value: String) {
+    fun updateUserField(id: Int?, field: String, value: String) {
         viewModelScope.launch {
             try {
                 _authState.value = AuthState.Loading

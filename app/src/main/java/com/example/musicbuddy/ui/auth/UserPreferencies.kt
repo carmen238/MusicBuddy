@@ -62,7 +62,7 @@ class UserPreferences(context: Context) {
     /**
      * Save user data
      */
-    fun saveUserData(name: String, surname: String, email: String, phone: String) {
+    fun saveUserData(name: String, surname: String, email: String, phone: String, userId: Int) {
         sharedPreferences.edit().apply {
             putString(KEY_NAME, name)
             putString(KEY_SURNAME, surname)
@@ -70,6 +70,7 @@ class UserPreferences(context: Context) {
             putString(KEY_PHONE, phone)
             putString(KEY_BIO, "")
             putInt(KEY_RATING, 0)
+            putString(KEY_USER_ID, userId.toString())
             apply()
         }
         println("✅ User data saved: $name $surname")
@@ -84,7 +85,8 @@ class UserPreferences(context: Context) {
             "surname" to (sharedPreferences.getString(KEY_SURNAME, "Cognome") ?: "Cognome"),
             "email" to (sharedPreferences.getString(KEY_EMAIL, "Email") ?: "Email"),
             "phone" to (sharedPreferences.getString(KEY_PHONE, "Telefono") ?: "Telefono"),
-            "bio" to (sharedPreferences.getString(KEY_BIO, "") ?: "")
+            "bio" to (sharedPreferences.getString(KEY_BIO, "") ?: ""),
+            "userId" to (sharedPreferences.getString(KEY_USER_ID, "0") ?: "0")
         )
     }
 

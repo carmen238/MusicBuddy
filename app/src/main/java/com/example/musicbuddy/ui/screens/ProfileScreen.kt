@@ -2,10 +2,8 @@ package com.example.musicbuddy.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.*
@@ -39,7 +37,7 @@ fun ProfileScreen(
     val userData by authViewModel.userData.collectAsState()
 
     // Estrai i dati
-    val userId = userData?.get("id") as? String ?: "Id"
+    val userId = userData?.get("userId") as? String
     val userName = userData?.get("name") as? String ?: "Nome"
     val userSurname = userData?.get("surname") as? String ?: "Cognome"
     val userEmail = userData?.get("email") as? String ?: "Email"
@@ -71,17 +69,12 @@ fun ProfileScreen(
             // BOTTONE LOG OUT
             Button(
                 onClick = {
-                    println("userData?.get(\"id\")" + userId)
-//                    authViewModel.updateUserField(
-//                        id = 1,
-//                        field = "bio",
-//                        value = "userBio"
-//                    )
-//                    authViewModel.updateUserField(
-//                        userData?.get("id") as Int,
-//                        "bio",
-//                        userBio
-//                    )
+
+                    authViewModel.updateUserField(
+                        userId?.toInt(),
+                        "bio",
+                        userBio
+                    )
                 },
                 modifier = Modifier
                     .width(36.dp)

@@ -20,7 +20,7 @@ data class LoginRequest(
 )
 
 data class UpdateFieldRequest(
-    val idUser: Int,
+    val idUser: Int?,
     val keyField: String,
     val valueField: String,
 )
