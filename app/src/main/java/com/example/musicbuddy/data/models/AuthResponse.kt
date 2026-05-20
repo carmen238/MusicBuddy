@@ -35,3 +35,7 @@ data class User(
 data class ErrorResponse(
     val error: String
 )
+
+data class UdateFieldResponse(
+    val message: String
+)

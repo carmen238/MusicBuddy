@@ -18,3 +18,9 @@ data class LoginRequest(
     val email: String,
     val password: String
 )
+
+data class UpdateFieldRequest(
+    val idUser: Int,
+    val keyField: String,
+    val valueField: String,
+)

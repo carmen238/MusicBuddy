@@ -6,12 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.musicbuddy.data.models.LoginRequest
 import com.example.musicbuddy.data.models.RegisterRequest
+import com.example.musicbuddy.data.models.UpdateFieldRequest
 import com.example.musicbuddy.network.RetrofitClient
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
+import kotlin.Int
 
 /**
  * AuthViewModel - Handles authentication with Node.js backend
@@ -187,6 +189,65 @@ class AuthViewModel : ViewModel() {
             Log.d("AuthViewModel", "User data loaded: ${_userData.value}")
         } catch (e: Exception) {
             Log.e("AuthViewModel", "Error fetching user data: ${e.message}")
+        }
+    }
+
+    /**
+     * Update user field with the backend
+     */
+    fun updateUserField(id: Int, field: String, value: String) {
+        viewModelScope.launch {
+            try {
+                _authState.value = AuthState.Loading
+                Log.d("AuthViewModel", "Update user field for: $id")
+
+                // Create update request
+                val request = UpdateFieldRequest(
+                    idUser = id,
+                    keyField = field,
+                    valueField = value
+                )
+
+                // Call backend API
+                val response = authApiService.updateFieldUser(request = request)
+
+                Log.d("AuthViewModel", "✅ Update of $field successful: ${response.message}")
+
+                // Update local preferences
+                userPreferences?.saveUserField(field, value)
+
+                // Fetch updated data
+                fetchUserData()
+
+                // Reset state to Authenticated (IMPORTANTE!)
+                _authState.value = AuthState.Authenticated
+
+            } catch (e: retrofit2.HttpException) {
+                Log.e("AuthViewModel", "HTTP Error: ${e.code()} - ${e.message()}")
+
+                val errorBody = e.response()?.errorBody()?.string()
+                val errorMessage = try {
+                    val gson = Gson()
+                    val errorResponse = gson.fromJson(errorBody, Map::class.java)
+                    errorResponse["error"]?.toString() ?: "Update failed"
+                } catch (ex: Exception) {
+                    "Update failed: ${e.message()}"
+                }
+
+                _authState.value = AuthState.Error(message = errorMessage)
+
+            } catch (e: IOException) {
+                Log.e("AuthViewModel", "Network error: ${e.message}")
+                _authState.value = AuthState.Error(
+                    message = "Network error. Check your connection and backend URL."
+                )
+
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Unexpected error: ${e.message}")
+                _authState.value = AuthState.Error(
+                    message = "Update failed: ${e}"
+                )
+            }
         }
     }
 
