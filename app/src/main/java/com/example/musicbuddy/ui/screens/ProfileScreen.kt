@@ -3,16 +3,34 @@ package com.example.musicbuddy.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material3.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,6 +42,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -31,6 +52,37 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.theme.AppColors
+
+/**
+ * Funzione helper per la validazione dei campi
+ */
+fun validateField(field: String, value: String): Boolean {
+    return when (field) {
+        "email" -> {
+            val emailRegex = Regex("^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$")
+            emailRegex.matches(value)
+        }
+        "phone" -> {
+            val phoneRegex = Regex("^[0-9+\\-\\s()]{7,}$")
+            phoneRegex.matches(value)
+        }
+        "name", "surname" -> value.length >= 2
+        else -> value.isNotEmpty()
+    }
+}
+
+/**
+ * Funzione helper per i messaggi di errore
+ */
+fun getFieldErrorMessage(field: String): String {
+    return when (field) {
+        "email" -> "Email non valida"
+        "phone" -> "Numero di telefono non valido"
+        "name" -> "Nome deve avere almeno 2 caratteri"
+        "surname" -> "Cognome deve avere almeno 2 caratteri"
+        else -> "Campo non valido"
+    }
+}
 
 /**
  * ProfileScreen - Schermata del profilo utente
@@ -72,92 +124,134 @@ fun ProfileScreen(
         var isEditing by remember { mutableStateOf(false) }
         var textValue by remember(value) { mutableStateOf(value) }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = label,
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
+        // Validazione
+        val isValid = validateField(field, textValue)
+        val hasError = textValue.isNotEmpty() && !isValid
 
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (isEditing) {
-                    Row {
+                Text(
+                    text = label,
+                    fontSize = 14.sp,
+                    color = Color.Gray
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (isEditing) {
+                        Row {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = "Conferma",
+                                tint = if (isValid) AppColors.PrimaryGreen else Color.Gray,
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .clickable(enabled = isValid) {
+                                        isEditing = false
+                                        authViewModel.updateUserField(
+                                            userId?.toInt(),
+                                            field,
+                                            textValue
+                                        )
+                                    }
+                            )
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Annulla modifiche",
+                                tint = AppColors.ErrorRed,
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .clickable {
+                                        isEditing = false
+                                        textValue = value
+                                    }
+                            )
+                        }
+                    } else {
                         Icon(
-                            imageVector = Icons.Default.Check,
-                            contentDescription = "Conferma",
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Modifica",
                             tint = AppColors.PrimaryGreen,
                             modifier = Modifier
-                                .size(18.dp)
+                                .size(16.dp)
                                 .clickable {
-                                    isEditing = false
-                                    authViewModel.updateUserField(
-                                        userId?.toInt(),
-                                        field,
-                                        textValue
-                                    )
-                                }
-                        )
-                        Icon(
-                            imageVector = Icons.Default.Remove,
-                            contentDescription = "Elimina modifiche",
-                            tint = AppColors.ErrorRed,
-                            modifier = Modifier
-                                .size(18.dp)
-                                .clickable {
-                                    isEditing = false
-                                    textValue = value;
+                                    isEditing = true // Attiva la modifica
                                 }
                         )
                     }
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Edit,
-                        contentDescription = "Modifica",
-                        tint = AppColors.PrimaryGreen,
-                        modifier = Modifier
-                            .size(16.dp)
-                            .clickable {
-                                isEditing = true // Attiva la modifica
-                            }
-                    )
-                }
 
-                if (isEditing) {
-                    BasicTextField(
-                        value = textValue,
-                        onValueChange = { textValue = it },
-                        textStyle = TextStyle(
+                    if (isEditing) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(40.dp)
+                                .background(
+                                    color = if (hasError) Color(0xFFFFEBEE) else Color(0xFFF5F5F5),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(horizontal = 12.dp),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            BasicTextField(
+                                value = textValue,
+                                onValueChange = { textValue = it },
+                                textStyle = TextStyle(
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color.Black
+                                ),
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = value,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = Color.Black
-                        ),
-                        singleLine = true
-                    )
-                } else {
-                    Text(
-                        text = value,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        color = Color.Black
-                    )
+                        )
+                    }
                 }
+            }
+
+            // Messaggio di errore
+            if (hasError) {
+                Text(
+                    text = getFieldErrorMessage(field),
+                    color = Color(0xFFE53935),
+                    fontSize = 12.sp,
+                    modifier = Modifier.padding(top = 4.dp, start = 8.dp)
+                )
             }
         }
     }
 
 
     @Composable
-    fun BioInput() {
+    fun BioInput(
+        onDiscard: () -> Unit
+    ) {
         var bio by remember { mutableStateOf("") }
+
+        val focusRequester = remember { FocusRequester() }
+        var hasBeenFocused by remember { mutableStateOf(false) }
+
+        // Richiede il focus AUTOMATICAMENTE appena compare il componente
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -167,7 +261,18 @@ fun ProfileScreen(
                 onValueChange = { bio = it },
                 placeholder = { Text("Scrivi qui...") },
                 maxLines = 5,
-                modifier = Modifier.weight(0.85f)
+                modifier = Modifier
+                    .weight(0.85f)
+                    .focusRequester(focusRequester) // Collega il gestore del focus
+                    .onFocusChanged { focusState ->
+                        if (focusState.isFocused || focusState.hasFocus) {
+                            // Il campo ha preso il focus con successo
+                            hasBeenFocused = true
+                        } else if (hasBeenFocused) {
+                            // Chiude SOLO se aveva il focus in precedenza e ora lo ha perso
+                            onDiscard()
+                        }
+                    }
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -181,10 +286,11 @@ fun ProfileScreen(
                         bio
                     )
                 },
-                modifier = Modifier
-                    .size(36.dp),
+                enabled = bio.isNotBlank(),
+                modifier = Modifier.size(36.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = AppColors.PrimaryGreen
+                    containerColor = AppColors.PrimaryGreen,
+                    disabledContainerColor = AppColors.PrimaryGreen.copy(alpha = 0.5f)
                 ),
                 shape = RoundedCornerShape(50.dp),
                 contentPadding = PaddingValues(0.dp)
@@ -198,6 +304,8 @@ fun ProfileScreen(
             }
         }
     }
+
+
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -316,7 +424,12 @@ fun ProfileScreen(
                                 }
                         )
                     }
-                } else BioInput()
+                } else  BioInput(
+                    onDiscard = {
+                        // Quando l'utente clicca fuori, rimetti lo stato iniziale senza salvare
+                        notEditingField = true
+                    }
+                )
 
                 // SEZIONE "Personal Info"
                 Text(
@@ -391,4 +504,3 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
-

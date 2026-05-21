@@ -231,6 +231,7 @@ class AuthViewModel : ViewModel() {
 
                 // Fetch updated data
                 fetchUserData()
+                _authState.value = AuthState.Authenticated
 
             } catch (e: retrofit2.HttpException) {
                 Log.e("AuthViewModel", "HTTP Error: ${e.code()} - ${e.message()}")
