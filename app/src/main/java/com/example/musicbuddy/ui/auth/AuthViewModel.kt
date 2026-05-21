@@ -66,7 +66,14 @@ class AuthViewModel : ViewModel() {
                 Log.d("AuthViewModel", "✅ Registration successful: ${response.message}")
 
                 // Save user data locally
-                userPreferences?.saveUserData(name, surname, email, phone, response.userId)
+                userPreferences?.saveUserData(
+                    name,
+                    surname,
+                    email,
+                    phone,
+                    response.userId,
+                    ""
+                )
 
                 // Update state
                 _authState.value = AuthState.Authenticated
@@ -133,7 +140,8 @@ class AuthViewModel : ViewModel() {
                     user.surname,
                     user.email,
                     phone = user.phone ?: "",
-                    userId = response.user.id
+                    userId = response.user.id,
+                    user.bio
                 )
 
                 // Update userData state
@@ -223,9 +231,6 @@ class AuthViewModel : ViewModel() {
 
                 // Fetch updated data
                 fetchUserData()
-
-                // Reset state to Authenticated (IMPORTANTE!)
-                _authState.value = AuthState.Authenticated
 
             } catch (e: retrofit2.HttpException) {
                 Log.e("AuthViewModel", "HTTP Error: ${e.code()} - ${e.message()}")

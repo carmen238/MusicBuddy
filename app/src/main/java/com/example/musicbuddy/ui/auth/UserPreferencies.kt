@@ -62,13 +62,20 @@ class UserPreferences(context: Context) {
     /**
      * Save user data
      */
-    fun saveUserData(name: String, surname: String, email: String, phone: String, userId: Int) {
+    fun saveUserData(
+        name: String,
+        surname: String,
+        email: String,
+        phone: String,
+        userId: Int,
+        bio: String?
+    ) {
         sharedPreferences.edit().apply {
             putString(KEY_NAME, name)
             putString(KEY_SURNAME, surname)
             putString(KEY_EMAIL, email)
             putString(KEY_PHONE, phone)
-            putString(KEY_BIO, "")
+            putString(KEY_BIO, bio)
             putInt(KEY_RATING, 0)
             putString(KEY_USER_ID, userId.toString())
             apply()

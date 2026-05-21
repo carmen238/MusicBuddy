@@ -1,11 +1,17 @@
 package com.example.musicbuddy.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -15,9 +21,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,45 +52,142 @@ fun ProfileScreen(
     val userPhone = userData?.get("phone") as? String ?: "Telefono"
     val userBio = userData?.get("bio") as? String ?: "Bio non disponibile"
     val userInitial = userName.firstOrNull()?.uppercaseChar() ?: "U"
-    val userRating = (userData?.get("rating") as? Number)?.toInt() ?: 0
+
+    var notEditingField by remember { mutableStateOf(true) }
+
 
     // Carica i dati quando la schermata si apre
     LaunchedEffect(Unit) {
         authViewModel.fetchUserData()
+        println("user" + userData)
     }
+
+    @Composable
+    fun ProfileInfoRow(
+        label: String,
+        value: String,
+        field: String
+    ) {
+        // Stato per capire se siamo in modalità modifica
+        var isEditing by remember { mutableStateOf(false) }
+        var textValue by remember(value) { mutableStateOf(value) }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = label,
+                fontSize = 14.sp,
+                color = Color.Gray
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (isEditing) {
+                    Row {
+                        Icon(
+                            imageVector = Icons.Default.Check,
+                            contentDescription = "Conferma",
+                            tint = AppColors.PrimaryGreen,
+                            modifier = Modifier
+                                .size(18.dp)
+                                .clickable {
+                                    isEditing = false
+                                    authViewModel.updateUserField(
+                                        userId?.toInt(),
+                                        field,
+                                        textValue
+                                    )
+                                }
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Remove,
+                            contentDescription = "Elimina modifiche",
+                            tint = AppColors.ErrorRed,
+                            modifier = Modifier
+                                .size(18.dp)
+                                .clickable {
+                                    isEditing = false
+                                    textValue = value;
+                                }
+                        )
+                    }
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Modifica",
+                        tint = AppColors.PrimaryGreen,
+                        modifier = Modifier
+                            .size(16.dp)
+                            .clickable {
+                                isEditing = true // Attiva la modifica
+                            }
+                    )
+                }
+
+                if (isEditing) {
+                    BasicTextField(
+                        value = textValue,
+                        onValueChange = { textValue = it },
+                        textStyle = TextStyle(
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color.Black
+                        ),
+                        singleLine = true
+                    )
+                } else {
+                    Text(
+                        text = value,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color.Black
+                    )
+                }
+            }
+        }
+    }
+
 
     @Composable
     fun BioInput() {
         var bio by remember { mutableStateOf("") }
-
-        Column {
-            Text(text = "Inserisci bio")
-
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             OutlinedTextField(
                 value = bio,
                 onValueChange = { bio = it },
-                placeholder = { Text(if (userBio.isNotEmpty()) userBio else "Scrivi qui...") },
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 5
+                placeholder = { Text("Scrivi qui...") },
+                maxLines = 5,
+                modifier = Modifier.weight(0.85f)
             )
 
-            // BOTTONE LOG OUT
+            Spacer(modifier = Modifier.width(8.dp))
+
             Button(
                 onClick = {
-
+                    notEditingField = !notEditingField
                     authViewModel.updateUserField(
                         userId?.toInt(),
                         "bio",
-                        userBio
+                        bio
                     )
                 },
                 modifier = Modifier
-                    .width(36.dp)
-                    .height(36.dp),
+                    .size(36.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppColors.PrimaryGreen
                 ),
-                shape = RoundedCornerShape(50.dp)
+                shape = RoundedCornerShape(50.dp),
+                contentPadding = PaddingValues(0.dp)
             ) {
                 Text(
                     text = "+",
@@ -91,7 +196,6 @@ fun ProfileScreen(
                     color = Color.White
                 )
             }
-
         }
     }
 
@@ -112,7 +216,7 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = CenterHorizontally
             ) {
                 // TITOLO "Profile"
                 Text(
@@ -176,22 +280,43 @@ fun ProfileScreen(
                 )
 
                 // BIO
-
-                BioInput()
-
-
-
-                if (userBio.isNotEmpty()) {
-                    Text(
-                        text = userBio,
-                        fontSize = 14.sp,
-                        color = Color.Black,
+                if (userBio.isNotEmpty() && notEditingField) {
+                    Row(
                         modifier = Modifier
-                            .align(Alignment.Start)
+                            .fillMaxWidth()
                             .padding(bottom = 24.dp),
-                        lineHeight = 20.sp
-                    )
-                }
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Text(
+                            text = userBio,
+                            fontSize = 14.sp,
+                            color = Color.Black,
+                            lineHeight = 20.sp,
+                            modifier = Modifier.weight(1f, fill = false)
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        Icon(
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Modifica bio",
+                            tint = AppColors.PrimaryGreen,
+                            modifier = Modifier
+                                .size(24.dp) // Aumentato a 24.dp per rendere l'area di tocco più confortevole
+                                .padding(top = 2.dp)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = ripple(
+                                        bounded = false,
+                                        radius = 20.dp
+                                    ) // Effetto feedback visivo circolare
+                                ) {
+                                    notEditingField = false
+                                }
+                        )
+                    }
+                } else BioInput()
 
                 // SEZIONE "Personal Info"
                 Text(
@@ -207,7 +332,8 @@ fun ProfileScreen(
                 // CAMPO NOME
                 ProfileInfoRow(
                     label = "Nome",
-                    value = userName
+                    value = userName,
+                    field = "name"
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -215,7 +341,9 @@ fun ProfileScreen(
                 // CAMPO COGNOME
                 ProfileInfoRow(
                     label = "Cognome",
-                    value = userSurname
+                    value = userSurname,
+                    field = "surname"
+
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -223,7 +351,8 @@ fun ProfileScreen(
                 // CAMPO EMAIL
                 ProfileInfoRow(
                     label = "Email",
-                    value = userEmail
+                    value = userEmail,
+                    field = "email"
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -231,39 +360,10 @@ fun ProfileScreen(
                 // CAMPO TELEFONO
                 ProfileInfoRow(
                     label = "Mobile Phone",
-                    value = userPhone
+                    value = userPhone,
+                    field = "phone"
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // CAMPO RATING
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Rating",
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
-
-                    // STELLE
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        repeat(5) { index ->
-                            Text(
-                                text = "★",
-                                fontSize = 20.sp,
-                                color = if (index < userRating) Color(0xFFCCCCCC) else Color(
-                                    0xFFCCCCCC
-                                )
-                            )
-                        }
-                    }
-                }
 
                 Spacer(modifier = Modifier.height(52.dp))
 
@@ -292,44 +392,3 @@ fun ProfileScreen(
     }
 }
 
-
-/**
- * ProfileInfoRow - Componente per mostrare una riga di informazioni
- */
-@Composable
-fun ProfileInfoRow(
-    label: String,
-    value: String
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = label,
-            fontSize = 14.sp,
-            color = Color.Gray
-        )
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = "Edit",
-                tint = AppColors.PrimaryGreen,
-                modifier = Modifier.size(16.dp)
-            )
-
-            Text(
-                text = value,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = Color.Black
-            )
-        }
-    }
-}
