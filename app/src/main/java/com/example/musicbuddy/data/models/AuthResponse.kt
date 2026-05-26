@@ -36,6 +36,6 @@ data class ErrorResponse(
     val error: String
 )
 
-data class UdateFieldResponse(
+data class UpdateFieldResponse(
     val message: String
 )

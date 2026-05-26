@@ -4,7 +4,7 @@ import com.example.musicbuddy.data.models.LoginRequest
 import com.example.musicbuddy.data.models.LoginResponse
 import com.example.musicbuddy.data.models.RegisterRequest
 import com.example.musicbuddy.data.models.RegisterResponse
-import com.example.musicbuddy.data.models.UdateFieldResponse
+import com.example.musicbuddy.data.models.UpdateFieldResponse
 import com.example.musicbuddy.data.models.UpdateFieldRequest
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -34,5 +34,5 @@ interface AuthApiService {
      * POST /api/auth/updateFieldUser
      */
     @POST("api/auth/updateFieldUser")
-    suspend fun updateFieldUser(@Body request: UpdateFieldRequest): UdateFieldResponse
+    suspend fun updateFieldUser(@Body request: UpdateFieldRequest): UpdateFieldResponse
 }
