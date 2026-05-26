@@ -85,6 +85,11 @@ dependencies {
     // TarsosDSP library (local)
     implementation(fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar", "*.aar"))))
 
+    //GPS and maps
+    implementation("com.google.maps.android:maps-compose:8.3.0") // Mappe per Compose
+    implementation("com.google.android.gms:play-services-location:21.3.0") // Servizi di localizzazione
+    implementation("com.google.accompanist:accompanist-permissions:0.34.0") // Permessi per Compose
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
