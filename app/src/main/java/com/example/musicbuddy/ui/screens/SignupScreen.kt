@@ -299,7 +299,7 @@ fun SignUpScreen(
 @Composable
 fun SignUpScreen2(
     authViewModel: AuthViewModel,
-    onCreateClick: (name: String, surname: String, phone: String, email: String, password: String, playedInstrument: String, favoriteMusicGenre: String, favoriteMusicSubgenre: String, currentFavoriteBand: String, profilePhoto: ByteArray) -> Unit,
+    onCreateClick: (name: String, surname: String, phone: String, email: String, password: String, playedInstrument: String, favoriteMusicGenre: String, favoriteMusicSubgenre: String, currentFavoriteBand: String, inABand: Boolean, profilePhoto: ByteArray) -> Unit,
     onBackClick: () -> Unit = {}
 ) {
     //STESSA COSA DI SOPRA
@@ -341,8 +341,8 @@ fun SignUpScreen2(
         Validators.isValidName(authViewModel.playedInstrument) && Validators.isValidName(authViewModel.currentFavoriteBand)
 
     //Dropdown menu for music genres
-    val dropdownItems = listOf("Classical", "Pop", "Hip-Pop", "Rock", "Blues", "Folk/Traditional", "Jazz", "Metal", "Punk", "Electronic", "R&B/Soul")
-    var selectedItem by remember { mutableStateOf("") }
+    val dropdownItems1 = listOf("Classical", "Pop", "Hip-Pop", "Rock", "Blues", "Folk/Traditional", "Jazz", "Metal", "Punk", "Electronic", "R&B/Soul")
+    val dropdownItems2 = listOf("Yes", "No")
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -416,11 +416,11 @@ fun SignUpScreen2(
                 Spacer(modifier = Modifier.height(12.dp))
 
                 DropdownMenuField(
-                    options = dropdownItems,
+                    options = dropdownItems1,
                     label = "Favorite music genre",
                     placeholder = "Music genre",
                     onOptionSelected = { choice ->
-                        selectedItem = choice
+                        authViewModel.favoriteMusicGenre = choice
                     }
                 )
 
@@ -454,6 +454,18 @@ fun SignUpScreen2(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                DropdownMenuField(
+                    options = dropdownItems2,
+                    label = "Are you currently in a band?",
+                    placeholder = "Yes/No",
+                    onOptionSelected = { choice ->
+                        if(choice == "Yes") authViewModel.inABand = true
+                        else authViewModel.inABand = false
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
                 //LA FOTO DEL PROFILO LA FACCIAMO CARICARE DOPO DALLA PAGINA DEL PROFILO
 
                 // MESSAGGIO DI ERRORE
@@ -486,7 +498,7 @@ fun SignUpScreen2(
                 // BOTTONE CREATE ACCOUNT
                 Button(
                     onClick = {
-                        onCreateClick(authViewModel.name, authViewModel.surname, authViewModel.phone, authViewModel.email, authViewModel.password, authViewModel.playedInstrument, authViewModel.favoriteMusicGenre, authViewModel.favoriteMusicSubgenre, authViewModel.currentFavoriteBand, authViewModel.profilePhoto)
+                        onCreateClick(authViewModel.name, authViewModel.surname, authViewModel.phone, authViewModel.email, authViewModel.password, authViewModel.playedInstrument, authViewModel.favoriteMusicGenre, authViewModel.favoriteMusicSubgenre, authViewModel.currentFavoriteBand, authViewModel.inABand, authViewModel.profilePhoto)
                     },
                     modifier = Modifier
                         .fillMaxWidth()

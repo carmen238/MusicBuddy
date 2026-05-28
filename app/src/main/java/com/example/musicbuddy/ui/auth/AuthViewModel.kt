@@ -39,6 +39,7 @@ class AuthViewModel : ViewModel() {
     var favoriteMusicGenre by mutableStateOf("")    //QUESTA SI SCEGLIE DA UN DROP DOWN MENU
     var favoriteMusicSubgenre by mutableStateOf("")     //QUESTA INVECE è UNA STRINGA SEMPLICE (TROPPI SOTTO-GENERI POSSIBILI)
     var currentFavoriteBand by mutableStateOf("")
+    var inABand by mutableStateOf(false)    //PER CHIEDERE SE SUONI IN UNA BAND GIà ESISTENTE
     var profilePhoto by mutableStateOf(byteArrayOf())    //QUI è IMMAGINE BITMAP CONVERTITA A JPEG (E A BYTE ARRAY) CARICATA DA UTENTE E DA MANDARE AL NOSTRO DATABASE CON API
     //Ricordarsi di usare "profilePhoto.isEmpty()" per vedere se immagine è vuota
 

@@ -117,7 +117,7 @@ fun NavigationGraph(
         composable(Screen.SignUp2.route) {
             SignUpScreen2(
                 authViewModel = authViewModel,
-                onCreateClick = { name, surname, phone, email, password, playedInstrument, favoriteMusicGenre, favoriteMusicSubgenre, currentFavoriteBand, profilePhoto ->
+                onCreateClick = { name, surname, phone, email, password, playedInstrument, favoriteMusicGenre, favoriteMusicSubgenre, currentFavoriteBand, inABand, profilePhoto ->
                     // Chiama la registrazione di Firebase tramite AuthViewModel
                     authViewModel.signUp(email, password)
                     //QUI FARE ROBA CON ALTRI PARAMETRI (MANDARLI AL NOSTRO DATABASE ATTRAVERSO L'API)
