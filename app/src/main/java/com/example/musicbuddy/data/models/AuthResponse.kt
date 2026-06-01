@@ -27,11 +27,12 @@ data class User(
     val surname: String,
     val phone: String? = null,
     val bio: String? = null,
-    val instrument: List<String>,
-    val genres: List<String>,
-    val experienceLevel: String,
-    val isInBand: Boolean
+    val instrument: String? = null,           // ✅ String singolo
+    val experienceLevel: String? = null,
+    val genre: String? = null,        // ✅ String singolo
+    val isInBand: Boolean? = false
 )
+
 /**
  * ErrorResponse - Error response from backend
  */

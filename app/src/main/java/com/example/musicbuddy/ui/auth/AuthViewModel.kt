@@ -12,7 +12,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.json.JSONArray
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -34,20 +33,6 @@ class AuthViewModel : ViewModel() {
     }
 
     // -------------------------
-    // HELPERS
-    // -------------------------
-
-    private fun parseJsonArray(value: List<String>): List<String> {
-        if (value.isNullOrEmpty()) return emptyList()
-        val array = JSONArray(value)
-        val list = mutableListOf<String>()
-        for (i in 0 until array.length()) {
-            list.add(array.getString(i))
-        }
-        return list
-    }
-
-    // -------------------------
     // REGISTER
     // -------------------------
 
@@ -57,10 +42,10 @@ class AuthViewModel : ViewModel() {
         name: String,
         surname: String,
         phone: String,
-        instrument: String,
-        experienceLevel: String,
-        favoriteGenre: String,
-        isInBand: Boolean
+        instrument: String = "",
+        experienceLevel: String = "",
+        genre: String = "",
+        isInBand: Boolean = false
     ) {
         viewModelScope.launch {
             try {
@@ -71,13 +56,7 @@ class AuthViewModel : ViewModel() {
                     password = password,
                     name = name,
                     surname = surname,
-                    phone = phone,
-
-                    instrument = listOf(instrument),
-                    genres = listOf(favoriteGenre),
-
-                    experienceLevel = experienceLevel,
-                    isInBand = isInBand
+                    phone = phone
                 )
 
                 val response = authApiService.register(request)
@@ -91,9 +70,9 @@ class AuthViewModel : ViewModel() {
                     phone = phone,
                     userId = response.userId,
                     bio = "",
-                    instrument = listOf(instrument),
+                    instrument = instrument,
                     experienceLevel = experienceLevel,
-                    favoriteGenre = listOf(favoriteGenre),
+                    genre = genre,
                     isInBand = isInBand
                 )
 
@@ -131,9 +110,6 @@ class AuthViewModel : ViewModel() {
 
                 val user = response.user
 
-                val instrumentList = parseJsonArray(user.instrument)
-                val genreList = parseJsonArray(user.genres)
-
                 userPreferences?.saveAuthToken(response.token)
 
                 userPreferences?.saveUserData(
@@ -143,9 +119,9 @@ class AuthViewModel : ViewModel() {
                     phone = user.phone ?: "",
                     userId = user.id,
                     bio = user.bio ?: "",
-                    instrument = instrumentList,
+                    instrument = user.instrument ?: "",
                     experienceLevel = user.experienceLevel ?: "",
-                    favoriteGenre = genreList,
+                    genre = user.genre ?: "",
                     isInBand = user.isInBand ?: false
                 )
 
@@ -156,8 +132,8 @@ class AuthViewModel : ViewModel() {
                     "email" to user.email,
                     "phone" to (user.phone ?: ""),
                     "bio" to (user.bio ?: ""),
-                    "instrument" to instrumentList,
-                    "favoriteGenre" to genreList,
+                    "instrument" to (user.instrument ?: ""),
+                    "genre" to (user.genre ?: ""),
                     "experienceLevel" to (user.experienceLevel ?: ""),
                     "isInBand" to (user.isInBand ?: false)
                 )
@@ -199,9 +175,14 @@ class AuthViewModel : ViewModel() {
     // UPDATE FIELD
     // -------------------------
 
-    fun updateUserField(id: Int?, field: String, value: Any) {
+    fun updateUserField(id: String?, field: String, value: String) {
         viewModelScope.launch {
             try {
+                if (id == null) {
+                    _authState.value = AuthState.Error("User ID not found")
+                    return@launch
+                }
+
                 val request = UpdateFieldRequest(
                     idUser = id,
                     keyField = field,
@@ -214,8 +195,22 @@ class AuthViewModel : ViewModel() {
 
                 fetchUserData()
 
+                _authState.value = AuthState.Authenticated
+
+            } catch (e: HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                val msg = try {
+                    Gson().fromJson(errorBody, Map::class.java)["error"]?.toString()
+                } catch (ex: Exception) {
+                    "Update failed"
+                }
+                _authState.value = AuthState.Error(msg ?: "Error")
+
+            } catch (e: IOException) {
+                _authState.value = AuthState.Error("Network error")
+
             } catch (e: Exception) {
-                _authState.value = AuthState.Error("Update failed")
+                _authState.value = AuthState.Error("Update failed: ${e.message}")
             }
         }
     }

@@ -37,7 +37,7 @@ fun SignUpScreenMusicalProfile(
     var selectedInstrument by remember { mutableStateOf("") }
     var selectedExperienceLevel by remember { mutableStateOf("") }
     var selectedGenre by remember { mutableStateOf("") }
-    var isInBand by remember { mutableStateOf(false) } // 👈 NEW
+    var isInBand by remember { mutableStateOf(false) }
 
     var showError by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
@@ -75,7 +75,7 @@ fun SignUpScreenMusicalProfile(
     val instruments = listOf(
         "🎸 Chitarra",
         "🎸 Basso",
-        "🎺 Ukulele",
+        "🎺 Tromba",
         "🎻 Violino",
         "🪈 Flauto",
         "🎹 Pianoforte",
@@ -142,8 +142,9 @@ fun SignUpScreenMusicalProfile(
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // ===== STRUMENTO =====
+                // ===== STRUMENTO (UN SOLO) =====
                 Text("🎸 Strumento Principale", fontWeight = FontWeight.Bold)
+                Text("Seleziona uno strumento", fontSize = 12.sp, color = Color.Gray)
 
                 instruments.chunked(2).forEach { row ->
                     Row(
@@ -171,6 +172,7 @@ fun SignUpScreenMusicalProfile(
 
                 // ===== EXPERIENCE =====
                 Text("📊 Livello Esperienza", fontWeight = FontWeight.Bold)
+                Text("Seleziona il tuo livello", fontSize = 12.sp, color = Color.Gray)
 
                 experienceLevels.forEach { level ->
                     Button(
@@ -189,8 +191,9 @@ fun SignUpScreenMusicalProfile(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // ===== GENRE =====
+                // ===== GENRE (UN SOLO) =====
                 Text("🎵 Genere Preferito", fontWeight = FontWeight.Bold)
+                Text("Seleziona un genere", fontSize = 12.sp, color = Color.Gray)
 
                 genres.chunked(2).forEach { row ->
                     Row(
@@ -216,7 +219,7 @@ fun SignUpScreenMusicalProfile(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // ===== BAND TOGGLE (NEW) =====
+                // ===== BAND TOGGLE =====
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp)
@@ -248,12 +251,27 @@ fun SignUpScreenMusicalProfile(
 
                 // ERROR
                 if (showError) {
-                    Text(errorMessage, color = Color.Red)
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFFFFEBEE)
+                        )
+                    ) {
+                        Text(
+                            text = errorMessage,
+                            fontSize = 12.sp,
+                            color = Color(0xFFC62828),
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
                 }
 
                 // LOADING
                 if (authState is AuthState.Loading) {
-                    CircularProgressIndicator()
+                    CircularProgressIndicator(
+                        modifier = Modifier.padding(16.dp),
+                        color = AppColors.PrimaryGreen
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -269,14 +287,25 @@ fun SignUpScreenMusicalProfile(
                             phone = phone,
                             instrument = selectedInstrument,
                             experienceLevel = selectedExperienceLevel,
-                            favoriteGenre = selectedGenre,
-                            isInBand = isInBand // 👈 NEW
+                            genre = selectedGenre,
+                            isInBand = isInBand
                         )
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = isFormValid
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp),
+                    enabled = isFormValid && authState !is AuthState.Loading,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AppColors.PrimaryGreen,
+                        disabledContainerColor = AppColors.DisabledButton
+                    ),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Create Account")
+                    Text(
+                        "Create Account",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))

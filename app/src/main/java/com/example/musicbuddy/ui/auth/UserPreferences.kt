@@ -2,7 +2,6 @@ package com.example.musicbuddy.ui.auth
 
 import android.content.Context
 import android.content.SharedPreferences
-import org.json.JSONArray
 
 class UserPreferences(context: Context) {
 
@@ -21,8 +20,7 @@ class UserPreferences(context: Context) {
 
         private const val KEY_INSTRUMENT = "instrument"
         private const val KEY_EXPERIENCE_LEVEL = "experienceLevel"
-        private const val KEY_FAVORITE_GENRE = "favoriteGenre"
-
+        private const val KEY_GENRE = "genre"
         private const val KEY_IS_IN_BAND = "isInBand"
     }
 
@@ -45,24 +43,6 @@ class UserPreferences(context: Context) {
         !getAuthToken().isNullOrEmpty()
 
     // -------------------------
-    // ARRAY HELPERS
-    // -------------------------
-
-    private fun listToJson(list: List<String>?): String {
-        return JSONArray(list ?: emptyList<String>()).toString()
-    }
-
-    private fun jsonToList(json: String?): List<String> {
-        if (json.isNullOrEmpty()) return emptyList()
-        val array = JSONArray(json)
-        val list = mutableListOf<String>()
-        for (i in 0 until array.length()) {
-            list.add(array.getString(i))
-        }
-        return list
-    }
-
-    // -------------------------
     // SAVE USER
     // -------------------------
 
@@ -72,26 +52,25 @@ class UserPreferences(context: Context) {
         email: String,
         phone: String,
         userId: Int,
-        bio: String?,
-        instrument: List<String>?,
-        experienceLevel: String?,
-        favoriteGenre: List<String>?,
-        isInBand: Boolean?
+        bio: String = "",
+        instrument: String = "",              // ✅ String singolo
+        experienceLevel: String = "",
+        genre: String = "",           // ✅ String singolo
+        isInBand: Boolean = false
     ) {
         sharedPreferences.edit().apply {
             putString(KEY_NAME, name)
             putString(KEY_SURNAME, surname)
             putString(KEY_EMAIL, email)
             putString(KEY_PHONE, phone)
-            putString(KEY_BIO, bio ?: "")
+            putString(KEY_BIO, bio)
             putInt(KEY_RATING, 0)
             putInt(KEY_USER_ID, userId)
 
-            putString(KEY_INSTRUMENT, listToJson(instrument))
-            putString(KEY_EXPERIENCE_LEVEL, experienceLevel ?: "")
-            putString(KEY_FAVORITE_GENRE, listToJson(favoriteGenre))
-
-            putBoolean(KEY_IS_IN_BAND, isInBand ?: false)
+            putString(KEY_INSTRUMENT, instrument)
+            putString(KEY_EXPERIENCE_LEVEL, experienceLevel)
+            putString(KEY_GENRE, genre)
+            putBoolean(KEY_IS_IN_BAND, isInBand)
 
             apply()
         }
@@ -110,9 +89,9 @@ class UserPreferences(context: Context) {
             "phone" to (sharedPreferences.getString(KEY_PHONE, "") ?: ""),
             "bio" to (sharedPreferences.getString(KEY_BIO, "") ?: ""),
 
-            "instrument" to jsonToList(sharedPreferences.getString(KEY_INSTRUMENT, null)),
+            "instrument" to (sharedPreferences.getString(KEY_INSTRUMENT, "") ?: ""),
             "experienceLevel" to (sharedPreferences.getString(KEY_EXPERIENCE_LEVEL, "") ?: ""),
-            "favoriteGenre" to jsonToList(sharedPreferences.getString(KEY_FAVORITE_GENRE, null)),
+            "genre" to (sharedPreferences.getString(KEY_GENRE, "") ?: ""),
 
             "isInBand" to sharedPreferences.getBoolean(KEY_IS_IN_BAND, false)
         )
@@ -122,31 +101,19 @@ class UserPreferences(context: Context) {
     // SINGLE FIELD UPDATE
     // -------------------------
 
-    fun saveUserField(field: String, value: Any) {
+    fun saveUserField(field: String, value: String) {
         sharedPreferences.edit().apply {
-
             when (field) {
-                "instrument", "favoriteGenre" -> {
-                    if (value is List<*>) {
-                        putString(field, listToJson(value.filterIsInstance<String>()))
-                    }
+                KEY_IS_IN_BAND -> {
+                    putBoolean(KEY_IS_IN_BAND, value.toBoolean())
                 }
-
-                "isInBand" -> {
-                    if (value is Boolean) {
-                        putBoolean(KEY_IS_IN_BAND, value)
-                    }
+                KEY_USER_ID -> {
+                    putInt(KEY_USER_ID, value.toIntOrNull() ?: 0)
                 }
-
-                "userId" -> {
-                    if (value is Int) putInt(KEY_USER_ID, value)
-                }
-
                 else -> {
-                    putString(field, value.toString())
+                    putString(field, value)
                 }
             }
-
             apply()
         }
     }
@@ -166,7 +133,7 @@ class UserPreferences(context: Context) {
 
             remove(KEY_INSTRUMENT)
             remove(KEY_EXPERIENCE_LEVEL)
-            remove(KEY_FAVORITE_GENRE)
+            remove(KEY_GENRE)
             remove(KEY_IS_IN_BAND)
 
             remove(KEY_USER_ID)

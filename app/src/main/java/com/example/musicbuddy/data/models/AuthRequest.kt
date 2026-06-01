@@ -9,10 +9,10 @@ data class RegisterRequest(
     val name: String,
     val surname: String,
     val phone: String,
-    val instrument: List<String>,
-    val genres: List<String>,
-    val experienceLevel: String,
-    val isInBand: Boolean
+    val instrument: String = "",           // ✅ String singolo
+    val experienceLevel: String = "",
+    val genre: String = "",        // ✅ String singolo
+    val isInBand: Boolean = false
 )
 
 /**
@@ -24,7 +24,7 @@ data class LoginRequest(
 )
 
 data class UpdateFieldRequest(
-    val idUser: Int?,
+    val idUser: String,
     val keyField: String,
-    val valueField: Any,
+    val valueField: String  // ✅ Cambia da Any a String
 )
