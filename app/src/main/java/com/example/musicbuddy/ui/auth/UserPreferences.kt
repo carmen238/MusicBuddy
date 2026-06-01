@@ -2,14 +2,11 @@ package com.example.musicbuddy.ui.auth
 
 import android.content.Context
 import android.content.SharedPreferences
+import org.json.JSONArray
 
-/**
- * UserPreferences - Manages user data and JWT token storage
- * Uses SharedPreferences for local persistence
- */
 class UserPreferences(context: Context) {
 
-    private val sharedPreferences: SharedPreferences =
+    private val sharedPreferences =
         context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
 
     companion object {
@@ -21,96 +18,143 @@ class UserPreferences(context: Context) {
         private const val KEY_PHONE = "phone"
         private const val KEY_BIO = "bio"
         private const val KEY_RATING = "rating"
+
+        private const val KEY_INSTRUMENT = "instrument"
+        private const val KEY_EXPERIENCE_LEVEL = "experienceLevel"
+        private const val KEY_FAVORITE_GENRE = "favoriteGenre"
+
+        private const val KEY_IS_IN_BAND = "isInBand"
     }
 
-    /**
-     * Save JWT authentication token
-     */
+    // -------------------------
+    // TOKEN
+    // -------------------------
+
     fun saveAuthToken(token: String) {
-        sharedPreferences.edit().apply {
-            putString(KEY_AUTH_TOKEN, token)
-            apply()
-        }
-        println("✅ Auth token saved")
+        sharedPreferences.edit().putString(KEY_AUTH_TOKEN, token).apply()
     }
 
-    /**
-     * Get JWT authentication token
-     */
-    fun getAuthToken(): String? {
-        return sharedPreferences.getString(KEY_AUTH_TOKEN, null)
-    }
+    fun getAuthToken(): String? =
+        sharedPreferences.getString(KEY_AUTH_TOKEN, null)
 
-    /**
-     * Clear JWT authentication token
-     */
     fun clearAuthToken() {
-        sharedPreferences.edit().apply {
-            remove(KEY_AUTH_TOKEN)
-            apply()
+        sharedPreferences.edit().remove(KEY_AUTH_TOKEN).apply()
+    }
+
+    fun isUserLoggedIn(): Boolean =
+        !getAuthToken().isNullOrEmpty()
+
+    // -------------------------
+    // ARRAY HELPERS
+    // -------------------------
+
+    private fun listToJson(list: List<String>?): String {
+        return JSONArray(list ?: emptyList<String>()).toString()
+    }
+
+    private fun jsonToList(json: String?): List<String> {
+        if (json.isNullOrEmpty()) return emptyList()
+        val array = JSONArray(json)
+        val list = mutableListOf<String>()
+        for (i in 0 until array.length()) {
+            list.add(array.getString(i))
         }
-        println("✅ Auth token cleared")
+        return list
     }
 
-    /**
-     * Check if user is logged in (has valid token)
-     */
-    fun isUserLoggedIn(): Boolean {
-        return !getAuthToken().isNullOrEmpty()
-    }
+    // -------------------------
+    // SAVE USER
+    // -------------------------
 
-    /**
-     * Save user data
-     */
     fun saveUserData(
         name: String,
         surname: String,
         email: String,
         phone: String,
         userId: Int,
-        bio: String?
+        bio: String?,
+        instrument: List<String>?,
+        experienceLevel: String?,
+        favoriteGenre: List<String>?,
+        isInBand: Boolean?
     ) {
         sharedPreferences.edit().apply {
             putString(KEY_NAME, name)
             putString(KEY_SURNAME, surname)
             putString(KEY_EMAIL, email)
             putString(KEY_PHONE, phone)
-            putString(KEY_BIO, bio)
+            putString(KEY_BIO, bio ?: "")
             putInt(KEY_RATING, 0)
-            putString(KEY_USER_ID, userId.toString())
+            putInt(KEY_USER_ID, userId)
+
+            putString(KEY_INSTRUMENT, listToJson(instrument))
+            putString(KEY_EXPERIENCE_LEVEL, experienceLevel ?: "")
+            putString(KEY_FAVORITE_GENRE, listToJson(favoriteGenre))
+
+            putBoolean(KEY_IS_IN_BAND, isInBand ?: false)
+
             apply()
         }
-        println("✅ User data saved: $name $surname")
     }
 
-    /**
-     * Get user data
-     */
-    fun getUserData(): Map<String, String> {
+    // -------------------------
+    // GET USER
+    // -------------------------
+
+    fun getUserData(): Map<String, Any> {
         return mapOf(
-            "name" to (sharedPreferences.getString(KEY_NAME, "Nome") ?: "Nome"),
-            "surname" to (sharedPreferences.getString(KEY_SURNAME, "Cognome") ?: "Cognome"),
-            "email" to (sharedPreferences.getString(KEY_EMAIL, "Email") ?: "Email"),
-            "phone" to (sharedPreferences.getString(KEY_PHONE, "Telefono") ?: "Telefono"),
+            "userId" to sharedPreferences.getInt(KEY_USER_ID, 0),
+            "name" to (sharedPreferences.getString(KEY_NAME, "") ?: ""),
+            "surname" to (sharedPreferences.getString(KEY_SURNAME, "") ?: ""),
+            "email" to (sharedPreferences.getString(KEY_EMAIL, "") ?: ""),
+            "phone" to (sharedPreferences.getString(KEY_PHONE, "") ?: ""),
             "bio" to (sharedPreferences.getString(KEY_BIO, "") ?: ""),
-            "userId" to (sharedPreferences.getString(KEY_USER_ID, "0") ?: "0")
+
+            "instrument" to jsonToList(sharedPreferences.getString(KEY_INSTRUMENT, null)),
+            "experienceLevel" to (sharedPreferences.getString(KEY_EXPERIENCE_LEVEL, "") ?: ""),
+            "favoriteGenre" to jsonToList(sharedPreferences.getString(KEY_FAVORITE_GENRE, null)),
+
+            "isInBand" to sharedPreferences.getBoolean(KEY_IS_IN_BAND, false)
         )
     }
 
-    /**
-     * Update a single user field
-     */
-    fun saveUserField(field: String, value: String) {
+    // -------------------------
+    // SINGLE FIELD UPDATE
+    // -------------------------
+
+    fun saveUserField(field: String, value: Any) {
         sharedPreferences.edit().apply {
-            putString(field, value)
+
+            when (field) {
+                "instrument", "favoriteGenre" -> {
+                    if (value is List<*>) {
+                        putString(field, listToJson(value.filterIsInstance<String>()))
+                    }
+                }
+
+                "isInBand" -> {
+                    if (value is Boolean) {
+                        putBoolean(KEY_IS_IN_BAND, value)
+                    }
+                }
+
+                "userId" -> {
+                    if (value is Int) putInt(KEY_USER_ID, value)
+                }
+
+                else -> {
+                    putString(field, value.toString())
+                }
+            }
+
             apply()
         }
-        println("✅ User field updated: $field = $value")
     }
 
-    /**
-     * Clear all user data
-     */
+    // -------------------------
+    // CLEAR
+    // -------------------------
+
     fun clearUserData() {
         sharedPreferences.edit().apply {
             remove(KEY_NAME)
@@ -119,16 +163,18 @@ class UserPreferences(context: Context) {
             remove(KEY_PHONE)
             remove(KEY_BIO)
             remove(KEY_RATING)
+
+            remove(KEY_INSTRUMENT)
+            remove(KEY_EXPERIENCE_LEVEL)
+            remove(KEY_FAVORITE_GENRE)
+            remove(KEY_IS_IN_BAND)
+
+            remove(KEY_USER_ID)
             apply()
         }
-        println("✅ User data cleared")
     }
 
-    /**
-     * Clear all data (logout)
-     */
     fun clearAll() {
         sharedPreferences.edit().clear().apply()
-        println("✅ All preferences cleared")
     }
 }

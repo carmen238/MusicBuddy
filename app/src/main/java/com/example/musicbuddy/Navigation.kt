@@ -7,14 +7,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.musicbuddy.ui.auth.AuthState
 import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.screens.LoginScreen
 import com.example.musicbuddy.ui.screens.ProfileScreen
 import com.example.musicbuddy.ui.screens.SearchScreen
 import com.example.musicbuddy.ui.screens.SignUpScreen
+import com.example.musicbuddy.ui.screens.SignUpScreenMusicalProfile
 import com.example.musicbuddy.ui.screens.StartScreen
 
 /**
@@ -25,6 +28,7 @@ sealed class Screen(val route: String) {
     object Start : Screen("start_screen")
     object Login : Screen("login")
     object SignUp : Screen("signup")
+    object SignUpMusical : Screen("signup_musical/{name}/{surname}/{phone}/{email}/{password}")
     object Home : Screen("home")
     object Search : Screen("search")
     object Profile : Screen("profile")
@@ -33,6 +37,8 @@ sealed class Screen(val route: String) {
 /**
  * NavigationGraph - Gestisce tutte le schermate e i loro collegamenti
  * Integra Firebase Authentication per gestire il flusso di login/registrazione
+ *
+ * AGGIORNATO: Supporta SignUp in due schermate
  */
 @Composable
 fun NavigationGraph(
@@ -54,7 +60,7 @@ fun NavigationGraph(
         startDestination = startDestination,
         modifier = modifier
     ) {
-        // SCHERMATA 1: StartScreen
+        // ===== SCHERMATA 1: StartScreen =====
         composable(Screen.Start.route) {
             StartScreen(
                 onSignUpClick = {
@@ -74,19 +80,27 @@ fun NavigationGraph(
             )
         }
 
+        // ===== SCHERMATA 2: SignUpScreen (Dati Personali) =====
         composable(Screen.SignUp.route) {
             val authState by authViewModel.authState.collectAsState()
 
             SignUpScreen(
                 authViewModel = authViewModel,
                 onContinueClick = { name, surname, phone, email, password ->
-                    authViewModel.signUp(email, password, name, surname, phone)
+                    // Naviga alla schermata musicale passando i dati
+                    navController.navigate(
+                        "signup_musical/$name/$surname/$phone/$email/$password"
+                    ) {
+                        popUpTo(Screen.SignUp.route) { saveState = true }
+                        launchSingleTop = true
+                    }
                 },
                 onBackClick = {
                     navController.popBackStack()
                 }
             )
 
+            // Se per qualche motivo la registrazione va a buon fine da questa schermata
             LaunchedEffect(authState) {
                 if (authState is AuthState.Authenticated) {
                     navController.navigate(Screen.Home.route) {
@@ -96,6 +110,43 @@ fun NavigationGraph(
             }
         }
 
+        // ===== SCHERMATA 3: SignUpScreenMusicalProfile (Profilo Musicale) =====
+        composable(
+            route = "signup_musical/{name}/{surname}/{phone}/{email}/{password}",
+            arguments = listOf(
+                navArgument("name") { type = NavType.StringType },
+                navArgument("surname") { type = NavType.StringType },
+                navArgument("phone") { type = NavType.StringType },
+                navArgument("email") { type = NavType.StringType },
+                navArgument("password") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val name = backStackEntry.arguments?.getString("name") ?: ""
+            val surname = backStackEntry.arguments?.getString("surname") ?: ""
+            val phone = backStackEntry.arguments?.getString("phone") ?: ""
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            val password = backStackEntry.arguments?.getString("password") ?: ""
+
+            SignUpScreenMusicalProfile(
+                authViewModel = authViewModel,
+                name = name,
+                surname = surname,
+                phone = phone,
+                email = email,
+                password = password,
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onSignUpSuccess = {
+                    // Naviga a Home quando la registrazione è completata
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Start.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        // ===== SCHERMATA 4: LoginScreen =====
         composable(Screen.Login.route) {
             val authState by authViewModel.authState.collectAsState()
 
@@ -118,18 +169,18 @@ fun NavigationGraph(
             }
         }
 
-        // SCHERMATA 4: HomeScreen (schermata principale con navbar)
+        // ===== SCHERMATA 5: HomeScreen (schermata principale con navbar) =====
         composable(Screen.Home.route) {
             // TODO: Implementare HomeScreen
             // Per ora mostra un placeholder
         }
 
-        // SCHERMATA 5: SearchScreen (collegata alla navbar)
+        // ===== SCHERMATA 6: SearchScreen (collegata alla navbar) =====
         composable(Screen.Search.route) {
             SearchScreen()
         }
 
-        // SCHERMATA 6: ProfileScreen (collegata alla navbar)
+        // ===== SCHERMATA 7: ProfileScreen (collegata alla navbar) =====
         composable(Screen.Profile.route) {
             ProfileScreen(
                 authViewModel = authViewModel,

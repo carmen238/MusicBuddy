@@ -8,7 +8,11 @@ data class RegisterRequest(
     val password: String,
     val name: String,
     val surname: String,
-    val phone: String
+    val phone: String,
+    val instrument: List<String>,
+    val genres: List<String>,
+    val experienceLevel: String,
+    val isInBand: Boolean
 )
 
 /**
@@ -22,5 +26,5 @@ data class LoginRequest(
 data class UpdateFieldRequest(
     val idUser: Int?,
     val keyField: String,
-    val valueField: String,
+    val valueField: Any,
 )

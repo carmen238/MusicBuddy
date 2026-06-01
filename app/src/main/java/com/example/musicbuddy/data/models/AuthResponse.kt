@@ -26,9 +26,12 @@ data class User(
     val name: String,
     val surname: String,
     val phone: String? = null,
-    val bio: String? = null
+    val bio: String? = null,
+    val instrument: List<String>,
+    val genres: List<String>,
+    val experienceLevel: String,
+    val isInBand: Boolean
 )
-
 /**
  * ErrorResponse - Error response from backend
  */
