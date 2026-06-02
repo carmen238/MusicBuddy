@@ -30,7 +30,8 @@ data class User(
     val instrument: String? = null,           // ✅ String singolo
     val experienceLevel: String? = null,
     val genre: String? = null,        // ✅ String singolo
-    val isInBand: Boolean? = false
+    val isInBand: Boolean? = false,
+    val photo_url: String? = null
 )
 
 /**

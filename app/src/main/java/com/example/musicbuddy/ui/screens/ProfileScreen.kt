@@ -21,7 +21,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.musicbuddy.ui.auth.AuthViewModel
+import com.example.musicbuddy.ui.auth.PhotoViewModel
+import com.example.musicbuddy.ui.components.PhotoPickerButton
 
 @Composable
 fun ProfileScreen(
@@ -49,6 +52,10 @@ fun ProfileScreen(
     val instruments = listOf("Chitarra", "Basso", "Piano", "Batteria", "Voce", "Altro")
     val experienceLevels = listOf("Principiante", "Intermedio", "Avanzato")
     val genres = listOf("Rock", "Pop", "Jazz", "Blues", "Metal", "Classico")
+    val photoViewModel: PhotoViewModel = viewModel()
+    val currentPhotoUrl = userData?.get("photo_url") as? String
+
+
 
     LaunchedEffect(Unit) {
         authViewModel.fetchUserData()
@@ -71,19 +78,24 @@ fun ProfileScreen(
             Spacer(Modifier.height(24.dp))
 
             // ================= FOTO PROFILO =================
-            Box(
-                modifier = Modifier
-                    .size(120.dp)
-                    .clip(CircleShape)
-                    .background(Color.Gray),
-                contentAlignment = Alignment.Center
-            ) {
+
+            // Add this in your profile UI
+            PhotoPickerButton(
+                photoViewModel = photoViewModel,
+                userId = userId,
+                currentPhotoUrl = currentPhotoUrl,
+                onPhotoSelected = { newPhotoUrl ->
+                    // Update local state if needed
+                    authViewModel.updateUserField(userId, "photo_url", newPhotoUrl)
+                }
+            )
+
                 Text(
                     text = userName.firstOrNull()?.toString() ?: "U",
                     fontSize = 40.sp,
                     color = Color.White
                 )
-            }
+
 
             Spacer(Modifier.height(24.dp))
 

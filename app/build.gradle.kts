@@ -61,8 +61,6 @@ dependencies {
     // Material Icons
     implementation("androidx.compose.material:material-icons-extended:1.6.0")
 
-    // Image Loading
-    implementation("io.coil-kt:coil-compose:2.4.0")
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
@@ -71,6 +69,7 @@ dependencies {
     // OkHttp
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.11.0")
+    implementation("io.coil-kt:coil-compose:2.6.0")
 
     // Gson
     implementation("com.google.code.gson:gson:2.10.1")

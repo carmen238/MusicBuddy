@@ -22,6 +22,8 @@ class UserPreferences(context: Context) {
         private const val KEY_EXPERIENCE_LEVEL = "experienceLevel"
         private const val KEY_GENRE = "genre"
         private const val KEY_IS_IN_BAND = "isInBand"
+
+        private const val KEY_PHOTO_URL = "photo_url"
     }
 
     // -------------------------
@@ -56,7 +58,8 @@ class UserPreferences(context: Context) {
         instrument: String = "",              // ✅ String singolo
         experienceLevel: String = "",
         genre: String = "",           // ✅ String singolo
-        isInBand: Boolean = false
+        isInBand: Boolean = false,
+        photoUrl: String = ""
     ) {
         sharedPreferences.edit().apply {
             putString(KEY_NAME, name)
@@ -71,6 +74,7 @@ class UserPreferences(context: Context) {
             putString(KEY_EXPERIENCE_LEVEL, experienceLevel)
             putString(KEY_GENRE, genre)
             putBoolean(KEY_IS_IN_BAND, isInBand)
+            putString("photo_url", photoUrl)
 
             apply()
         }
@@ -93,7 +97,8 @@ class UserPreferences(context: Context) {
             "experienceLevel" to (sharedPreferences.getString(KEY_EXPERIENCE_LEVEL, "") ?: ""),
             "genre" to (sharedPreferences.getString(KEY_GENRE, "") ?: ""),
 
-            "isInBand" to sharedPreferences.getBoolean(KEY_IS_IN_BAND, false)
+            "isInBand" to sharedPreferences.getBoolean(KEY_IS_IN_BAND, false),
+            "photo_url" to (sharedPreferences.getString(KEY_PHOTO_URL, "") ?: "")
         )
     }
 

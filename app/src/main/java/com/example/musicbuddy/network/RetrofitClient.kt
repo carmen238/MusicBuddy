@@ -71,4 +71,8 @@ object RetrofitClient {
     fun getAuthApiService(): AuthApiService {
         return getRetrofitInstance().create(AuthApiService::class.java)
     }
+
+    fun getPhotoApiService(): PhotoApiService {
+        return getRetrofitInstance().create(PhotoApiService::class.java)
+    }
 }

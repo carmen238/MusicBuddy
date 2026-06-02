@@ -122,7 +122,8 @@ class AuthViewModel : ViewModel() {
                     instrument = user.instrument ?: "",
                     experienceLevel = user.experienceLevel ?: "",
                     genre = user.genre ?: "",
-                    isInBand = user.isInBand ?: false
+                    isInBand = user.isInBand ?: false,
+                    photoUrl = user.photo_url ?: ""
                 )
 
                 _userData.value = mapOf(
@@ -135,7 +136,8 @@ class AuthViewModel : ViewModel() {
                     "instrument" to (user.instrument ?: ""),
                     "genre" to (user.genre ?: ""),
                     "experienceLevel" to (user.experienceLevel ?: ""),
-                    "isInBand" to (user.isInBand ?: false)
+                    "isInBand" to (user.isInBand ?: false),
+                    "photo_url" to (user.photo_url ?: "")
                 )
 
                 _authState.value = AuthState.Authenticated
