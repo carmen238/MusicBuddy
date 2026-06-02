@@ -1,22 +1,20 @@
 package com.example.musicbuddy.ui.screens
 
-import DropdownField
+import com.example.musicbuddy.ui.components.DropdownField
 import ProfileInfoRow
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -25,6 +23,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.auth.PhotoViewModel
 import com.example.musicbuddy.ui.components.PhotoPickerButton
+import com.example.musicbuddy.ui.theme.AppColors
 
 @Composable
 fun ProfileScreen(
@@ -43,7 +42,7 @@ fun ProfileScreen(
 
     val userInstrument = userData?.get("instrument") as? String ?: ""
     val userExperience = userData?.get("experienceLevel") as? String ?: ""
-    val userGenre = userData?.get("genre").toString()?: ""
+    val userGenre = userData?.get("genre").toString() ?: ""
     val userIsInBand = (userData?.get("isInBand") ?: "false") as Boolean
 
     var bioEdit by remember { mutableStateOf(false) }
@@ -55,160 +54,285 @@ fun ProfileScreen(
     val photoViewModel: PhotoViewModel = viewModel()
     val currentPhotoUrl = userData?.get("photo_url") as? String
 
-
-
     LaunchedEffect(Unit) {
         authViewModel.fetchUserData()
     }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color(0xFFF5F5F5)
+        color = AppColors.LightBackground
     ) {
-
         Column(
             Modifier
-                .padding(24.dp)
+                .padding(16.dp)
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
+            // ================= HEADER =================
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    "Profilo",
+                    fontSize = 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = AppColors.PrimaryGreen
+                )
+            }
 
-            Text("Profile", fontSize = 32.sp, fontWeight = FontWeight.Bold)
-
-            Spacer(Modifier.height(24.dp))
-
-            // ================= FOTO PROFILO =================
-
-            // Add this in your profile UI
+            // ================= FOTO PROFILO CARD =================
             PhotoPickerButton(
                 photoViewModel = photoViewModel,
                 userId = userId,
                 currentPhotoUrl = currentPhotoUrl,
                 onPhotoSelected = { newPhotoUrl ->
-                    // Update local state if needed
                     authViewModel.updateUserField(userId, "photo_url", newPhotoUrl)
                 }
             )
+            Spacer(Modifier.height(12.dp))
 
-                Text(
-                    text = userName.firstOrNull()?.toString() ?: "U",
-                    fontSize = 40.sp,
-                    color = Color.White
-                )
-
-
-            Spacer(Modifier.height(24.dp))
-
-            // ================= BIO (RESTORED) =================
-            Text("Bio", fontWeight = FontWeight.Bold)
-
-            if (bioEdit) {
-                println("userId:" + userData + userInstrument)
-                OutlinedTextField(
-                    value = bioText,
-                    onValueChange = { bioText = it },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Row {
-                    Button(onClick = {
-                        bioEdit = false
-                        authViewModel.updateUserField(
-                            userId,
-                            "bio",
-                            bioText
+            // ================= BIO SECTION =================
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = AppColors.LightBackground
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Bio",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 16.sp,
+                            color = AppColors.PrimaryGreen
                         )
-                    }) {
-                        Text("Save")
+                        if (!bioEdit) {
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Modifica bio",
+                                modifier = Modifier
+                                    .size(20.dp)
+                                    .clickable { bioEdit = true },
+                                tint = AppColors.PrimaryGreen
+                            )
+                        }
                     }
 
-                    Spacer(Modifier.width(8.dp))
+                    Spacer(Modifier.height(12.dp))
 
-                    Button(onClick = {
-                        bioEdit = false
-                        bioText = userBio
-                    }) {
-                        Text("Cancel")
+                    if (bioEdit) {
+                        OutlinedTextField(
+                            value = bioText,
+                            onValueChange = { bioText = it },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(100.dp),
+                            placeholder = { Text("Scrivi la tua bio...") },
+                            shape = RoundedCornerShape(8.dp),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = AppColors.PrimaryGreen,
+                                unfocusedBorderColor = AppColors.InputBackground
+                            )
+                        )
+
+                        Spacer(Modifier.height(12.dp))
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                onClick = {
+                                    bioEdit = false
+                                    authViewModel.updateUserField(userId, "bio", bioText)
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = AppColors.PrimaryGreen
+                                ),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text("Salva", color = Color.White)
+                            }
+
+                            OutlinedButton(
+                                onClick = {
+                                    bioEdit = false
+                                    bioText = userBio
+                                },
+                                modifier = Modifier.weight(1f),
+                                shape = RoundedCornerShape(8.dp),
+                                border = BorderStroke(1.dp, AppColors.InputBackground)
+                            ) {
+                                Text("Annulla", color = AppColors.DarkText)
+                            }
+                        }
+                    } else {
+                        Text(
+                            userBio.ifEmpty { "Nessuna bio" },
+                            fontSize = 14.sp,
+                            color = if (userBio.isEmpty()) AppColors.LightText else AppColors.DarkText
+                        )
                     }
                 }
-
-            } else {
-                Text(userBio.ifEmpty { "No bio" })
-
-                Icon(
-                    imageVector = Icons.Default.Edit,
-                    contentDescription = null,
-                    modifier = Modifier.clickable { bioEdit = true }
-                )
             }
 
-            Spacer(Modifier.height(24.dp))
-
-            // ================= BASIC INFO =================
-            ProfileInfoRow("Nome", userName, "name", userId, authViewModel)
-            ProfileInfoRow("Cognome", userSurname, "surname", userId, authViewModel)
-            ProfileInfoRow("Email", userEmail, "email", userId, authViewModel)
-            ProfileInfoRow("Telefono", userPhone, "phone", userId, authViewModel)
-
-            Spacer(Modifier.height(24.dp))
-
-            // ================= MUSIC INFO (DROPDOWN STYLE) =================
-
-            DropdownField("Strumento", userInstrument, instruments) {
-                authViewModel.updateUserField(userId, "instrument", it)
-            }
-
-            DropdownField("Esperienza", userExperience, experienceLevels) {
-                authViewModel.updateUserField(userId, "experienceLevel", it)
-            }
-
-            DropdownField("Genere", userGenre, genres) {
-                authViewModel.updateUserField(userId, "genre", it)
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            // ================= BAND SWITCH =================
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+            // ================= INFORMAZIONI PERSONALI =================
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = AppColors.LightBackground
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
-                Text("Sei in una band?", fontSize = 14.sp)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        "Informazioni Personali",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = AppColors.PrimaryGreen,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
 
-                Switch(
-                    checked = userIsInBand,
-                    onCheckedChange = {
-                        authViewModel.updateUserField(
-                            userId,
-                            "isInBand",
-                            it.toString()
+                    ProfileInfoRow("Nome", userName, "name", userId, authViewModel)
+                    Divider(color = AppColors.InputBackground, thickness = 1.dp)
+                    ProfileInfoRow("Cognome", userSurname, "surname", userId, authViewModel)
+                    Divider(color = AppColors.InputBackground, thickness = 1.dp)
+                    ProfileInfoRow("Email", userEmail, "email", userId, authViewModel)
+                    Divider(color = AppColors.InputBackground, thickness = 1.dp)
+                    ProfileInfoRow("Telefono", userPhone, "phone", userId, authViewModel)
+                }
+            }
+
+            // ================= INFORMAZIONI MUSICALI =================
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = AppColors.LightBackground
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text(
+                        "Profilo Musicale",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp,
+                        color = AppColors.PrimaryGreen,
+                        modifier = Modifier.padding(bottom = 12.dp)
+                    )
+
+                    DropdownField("Strumento", userInstrument, instruments) {
+                        authViewModel.updateUserField(userId, "instrument", it)
+                    }
+
+                    Spacer(Modifier.height(12.dp))
+
+                    DropdownField("Esperienza", userExperience, experienceLevels) {
+                        authViewModel.updateUserField(userId, "experienceLevel", it)
+                    }
+
+                    Spacer(Modifier.height(12.dp))
+
+                    DropdownField("Genere", userGenre, genres) {
+                        authViewModel.updateUserField(userId, "genre", it)
+                    }
+
+                    Spacer(Modifier.height(16.dp))
+
+                    // Band Switch
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            "Sei in una band?",
+                            fontSize = 14.sp,
+                            color = AppColors.DarkText
+                        )
+
+                        Switch(
+                            checked = userIsInBand,
+                            onCheckedChange = {
+                                authViewModel.updateUserField(
+                                    userId,
+                                    "isInBand",
+                                    it.toString()
+                                )
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = AppColors.LightBackground,
+                                checkedTrackColor = AppColors.PrimaryGreen
+                            )
                         )
                     }
-                )
+                }
             }
 
-            Spacer(Modifier.height(32.dp))
-
+            // ================= LOGOUT BUTTON =================
             Button(
                 onClick = {
+                    authViewModel.logout()
                     onLogoutClick()
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(52.dp),
+                    .height(48.dp)
+                    .padding(bottom = 16.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFE53935) // rosso logout
+                    containerColor = AppColors.AccentYellow
                 ),
                 shape = RoundedCornerShape(12.dp)
             ) {
+                Icon(
+                    imageVector = Icons.Default.Logout,
+                    contentDescription = "Logout",
+                    modifier = Modifier
+                        .size(20.dp)
+                        .padding(end = 8.dp),
+                    tint = AppColors.DarkText
+                )
                 Text(
-                    text = "Logout",
+                    "Logout",
+                    color = AppColors.DarkText,
                     fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White
+                    fontWeight = FontWeight.Bold
                 )
             }
+
+            Spacer(Modifier.height(16.dp))
         }
     }
 }
-

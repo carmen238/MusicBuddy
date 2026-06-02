@@ -221,11 +221,6 @@ class AuthViewModel : ViewModel() {
     // LOGOUT
     // -------------------------
 
-    fun logout() {
-        userPreferences?.clearAll()
-        _userData.value = null
-        _authState.value = AuthState.Unauthenticated
-    }
 
     // -------------------------
     // AUTH CHECK
@@ -245,6 +240,21 @@ class AuthViewModel : ViewModel() {
     fun clearError() {
         if (_authState.value is AuthState.Error) {
             _authState.value = AuthState.Idle
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            try {
+                // 1. Cancella il token dalle SharedPreferences¬
+                userPreferences?.clearAll()
+                _userData.value = null
+                _authState.value = AuthState.Unauthenticated
+                // 3. Log per debug
+                Log.d("AuthViewModel", "Logout completato")
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Errore durante logout: ${e.message}")
+            }
         }
     }
 }

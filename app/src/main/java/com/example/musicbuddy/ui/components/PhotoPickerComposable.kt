@@ -8,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CameraAlt
 import androidx.compose.material.icons.filled.PhotoLibrary
@@ -19,14 +20,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import com.example.musicbuddy.ui.auth.PhotoUploadState
 import com.example.musicbuddy.ui.auth.PhotoViewModel
+import com.example.musicbuddy.ui.theme.AppColors
 
 /**
  * PhotoPickerButton - Button to pick or take a photo
+ * Enhanced version with AppColors palette
  */
 @Composable
 fun PhotoPickerButton(
@@ -94,7 +99,7 @@ fun PhotoPickerButton(
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
-                .background(Color.Gray)
+                .background(AppColors.InputBackground)
                 .clickable { showDialog = true },
             contentAlignment = Alignment.Center
         ) {
@@ -111,15 +116,14 @@ fun PhotoPickerButton(
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(CircleShape),
-                    contentScale = ContentScale.Fit,
-//                    contentAlignment = Alignment.Center
+                    contentScale = ContentScale.Crop
                 )
 
             } else {
                 Icon(
                     imageVector = Icons.Default.CameraAlt,
                     contentDescription = "Add Photo",
-                    tint = Color.White,
+                    tint = AppColors.PrimaryGreen,
                     modifier = Modifier.size(40.dp)
                 )
             }
@@ -130,30 +134,58 @@ fun PhotoPickerButton(
                     modifier = Modifier
                         .size(120.dp)
                         .align(Alignment.Center),
-                    color = Color.White
+                    color = AppColors.PrimaryGreen,
+                    trackColor = AppColors.InputBackground
                 )
             }
         }
 
-
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Upload status
         when (photoUploadState) {
             is PhotoUploadState.Success -> {
-                Text(
-                    "✅ Photo uploaded",
-                    color = Color.Green,
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .background(
+                            color = AppColors.SuccessGreen.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(12.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "✅ Foto caricata con successo",
+                        color = AppColors.SuccessGreen,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
 
             is PhotoUploadState.Error -> {
-                Text(
-                    "❌ ${(photoUploadState as PhotoUploadState.Error).message}",
-                    color = Color.Red,
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .background(
+                            color = AppColors.ErrorRed.copy(alpha = 0.1f),
+                            shape = RoundedCornerShape(8.dp)
+                        )
+                        .padding(12.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        "❌ ${(photoUploadState as PhotoUploadState.Error).message}",
+                        color = AppColors.ErrorRed,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
 
             else -> {}
@@ -164,9 +196,30 @@ fun PhotoPickerButton(
         // Action button
         Button(
             onClick = { showDialog = true },
-            enabled = photoUploadState !is PhotoUploadState.Loading
+            enabled = photoUploadState !is PhotoUploadState.Loading,
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .height(44.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = AppColors.PrimaryGreen,
+                disabledContainerColor = AppColors.DisabledButton
+            ),
+            shape = RoundedCornerShape(10.dp)
         ) {
-            Text(if (photoUrl != null || currentPhotoUrl != null) "Change Photo" else "Add Photo")
+            Icon(
+                imageVector = Icons.Default.PhotoLibrary,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(18.dp)
+                    .padding(end = 8.dp),
+                tint = Color.White
+            )
+            Text(
+                if (photoUrl != null || currentPhotoUrl != null) "Cambia Foto" else "Aggiungi Foto",
+                color = Color.White,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            )
         }
     }
 
@@ -174,18 +227,39 @@ fun PhotoPickerButton(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = { Text("Choose Photo Source") },
-            text = { Text("Select where to get your photo from") },
+            title = {
+                Text(
+                    "Scegli la fonte",
+                    color = AppColors.DarkText,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Text(
+                    "Da dove vuoi prendere la foto?",
+                    color = AppColors.LightText
+                )
+            },
             confirmButton = {
                 Button(
                     onClick = {
                         galleryLauncher.launch("image/*")
                         showDialog = false
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AppColors.PrimaryGreen
+                    ),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
-                    Icon(Icons.Default.PhotoLibrary, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Gallery")
+                    Icon(
+                        Icons.Default.PhotoLibrary,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(18.dp)
+                            .padding(end = 6.dp),
+                        tint = Color.White
+                    )
+                    Text("Galleria", color = Color.White)
                 }
             },
             dismissButton = {
@@ -203,13 +277,27 @@ fun PhotoPickerButton(
                             permissionLauncher.launch(Manifest.permission.CAMERA)
                         }
                         showDialog = false
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AppColors.AccentYellow
+                    ),
+                    shape = RoundedCornerShape(8.dp)
                 ) {
-                    Icon(Icons.Default.CameraAlt, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Camera")
+                    Icon(
+                        Icons.Default.CameraAlt,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(18.dp)
+                            .padding(end = 6.dp),
+                        tint = AppColors.DarkText
+                    )
+                    Text("Fotocamera", color = AppColors.DarkText)
                 }
-            }
+            },
+            containerColor = AppColors.LightBackground,
+            titleContentColor = AppColors.DarkText,
+            textContentColor = AppColors.LightText,
+            shape = RoundedCornerShape(12.dp)
         )
     }
 }
