@@ -61,6 +61,9 @@ dependencies {
     // Material Icons
     implementation("androidx.compose.material:material-icons-extended:1.6.0")
 
+    // Google Maps
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.gms:play-services-location:21.0.1")
 
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")

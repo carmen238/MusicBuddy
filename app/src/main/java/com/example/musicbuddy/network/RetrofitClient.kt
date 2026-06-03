@@ -27,7 +27,7 @@ object RetrofitClient {
 
     // ⚠️ CHANGE THIS BASED ON YOUR SETUP
     // For emulator: http://10.0.2.2:3000/
-    // For physical device: http://YOUR_IP:3000/
+    // For physical device: http://172.20.10.4:3000/
     private const val BASE_URL = "http://10.0.2.2:3000/"
 
     private var retrofit: Retrofit? = null

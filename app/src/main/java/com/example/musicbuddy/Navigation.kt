@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.musicbuddy.ui.auth.AuthState
 import com.example.musicbuddy.ui.auth.AuthViewModel
+import com.example.musicbuddy.ui.screens.HomeScreen
 import com.example.musicbuddy.ui.screens.LoginScreen
 import com.example.musicbuddy.ui.screens.ProfileScreen
 import com.example.musicbuddy.ui.screens.SearchScreen
@@ -171,8 +172,19 @@ fun NavigationGraph(
 
         // ===== SCHERMATA 5: HomeScreen (schermata principale con navbar) =====
         composable(Screen.Home.route) {
-            // TODO: Implementare HomeScreen
-            // Per ora mostra un placeholder
+
+            HomeScreen(
+                authViewModel = authViewModel,
+                onNavigateToProfile = {
+                    navController.navigate("home")
+                },
+                onNavigateToTuner = {
+                    navController.navigate("tuner") // Implementerai dopo
+                },
+                onNavigateToDiscover = {
+                    navController.navigate("discover") // Implementerai dopo
+                }
+            )
         }
 
         // ===== SCHERMATA 6: SearchScreen (collegata alla navbar) =====

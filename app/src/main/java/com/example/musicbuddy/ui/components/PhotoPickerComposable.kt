@@ -105,9 +105,9 @@ fun PhotoPickerButton(
         ) {
             if (photoUrl != null || currentPhotoUrl != null) {
                 val fullPhotoUrl = if (photoUrl != null) {
-                    "http://192.168.1.100:3000${photoUrl}"  // ✅ Sostituisci con il tuo IP!
+                    "http://172.20.10.4:3000${photoUrl}"  // ✅ Sostituisci con il tuo IP!
                 } else {
-                    "http://192.168.1.100:3000${currentPhotoUrl}"
+                    "http://172.20.10.4:3000${currentPhotoUrl}"
                 }
 
                 AsyncImage(

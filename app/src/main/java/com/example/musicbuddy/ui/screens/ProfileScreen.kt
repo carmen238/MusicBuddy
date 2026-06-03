@@ -52,11 +52,12 @@ fun ProfileScreen(
     val experienceLevels = listOf("Principiante", "Intermedio", "Avanzato")
     val genres = listOf("Rock", "Pop", "Jazz", "Blues", "Metal", "Classico")
     val photoViewModel: PhotoViewModel = viewModel()
-    val currentPhotoUrl = userData?.get("photo_url") as? String
+    val currentPhotoUrl = userData?.get("photo_url") as String
 
     LaunchedEffect(Unit) {
         authViewModel.fetchUserData()
     }
+    println("bibib"+ currentPhotoUrl)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -309,7 +310,7 @@ fun ProfileScreen(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(48.dp)
+                    .height(68.dp)
                     .padding(bottom = 16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppColors.AccentYellow
