@@ -14,9 +14,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.example.musicbuddy.ui.auth.AuthState
 import com.example.musicbuddy.ui.auth.AuthViewModel
+import com.example.musicbuddy.ui.navigation.Screen
 import com.example.musicbuddy.ui.theme.AppColors
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -30,7 +32,8 @@ fun SignUpScreenMusicalProfile(
     email: String,
     password: String,
     onBackClick: () -> Unit = {},
-    onSignUpSuccess: () -> Unit = {}
+    onSignUpSuccess: () -> Unit = {},
+    navController: NavController
 ) {
 
     // ===== STATES =====
@@ -288,8 +291,17 @@ fun SignUpScreenMusicalProfile(
                             instrument = selectedInstrument,
                             experienceLevel = selectedExperienceLevel,
                             genre = selectedGenre,
-                            isInBand = isInBand
+                            isInBand = isInBand,
+                            onNavigateToStart = {
+                                scope.launch {
+                                    delay(3000L)
+                                    navController.navigate(Screen.Start.route) {
+                                        popUpTo(Screen.SignUp.route) { inclusive = true }
+                                    }
+                                }
+                            }
                         )
+
                     },
                     modifier = Modifier
                         .fillMaxWidth()

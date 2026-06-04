@@ -39,7 +39,7 @@ import kotlinx.coroutines.launch
 fun SignUpScreen(
     authViewModel: AuthViewModel,
     onContinueClick: (name: String, surname: String, phone: String, email: String, password: String) -> Unit,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
 ) {
     var name by remember { mutableStateOf("") }
     var surname by remember { mutableStateOf("") }

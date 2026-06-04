@@ -5,7 +5,8 @@ package com.example.musicbuddy.data.models
  */
 data class RegisterResponse(
     val message: String,
-    val userId: Int
+    val userId: Int,
+    val token: String
 )
 
 /**

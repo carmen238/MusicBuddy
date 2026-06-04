@@ -138,6 +138,7 @@ fun NavigationGraph(
                 onBackClick = {
                     navController.popBackStack()
                 },
+                navController = navController,
                 onSignUpSuccess = {
                     // Naviga a Home quando la registrazione è completata
                     navController.navigate(Screen.Home.route) {

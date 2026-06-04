@@ -42,10 +42,11 @@ class AuthViewModel : ViewModel() {
         name: String,
         surname: String,
         phone: String,
-        instrument: String = "",
-        experienceLevel: String = "",
-        genre: String = "",
-        isInBand: Boolean = false
+        instrument: String,
+        experienceLevel: String,
+        genre: String,
+        isInBand: Boolean = false,
+        onNavigateToStart: () -> Unit  // ✅ Aggiungi questo parametro
     ) {
         viewModelScope.launch {
             try {
@@ -56,13 +57,24 @@ class AuthViewModel : ViewModel() {
                     password = password,
                     name = name,
                     surname = surname,
-                    phone = phone
+                    phone = phone,
+                    instrument = instrument,
+                    experienceLevel = experienceLevel,
+                    genre = genre,
+                    isInBand = isInBand
                 )
 
                 val response = authApiService.register(request)
 
                 Log.d("AuthViewModel", "✅ Registration successful")
 
+                // ✅ Salva il token
+                userPreferences?.saveAuthToken(response.token)
+
+                // ✅ Salva l'ID utente
+                userPreferences?.saveUserId(response.userId)
+
+                // ✅ Salva i dati utente
                 userPreferences?.saveUserData(
                     name = name,
                     surname = surname,
@@ -78,20 +90,27 @@ class AuthViewModel : ViewModel() {
 
                 _authState.value = AuthState.Authenticated
 
+                // ✅ Chiama il callback per navigare
+                onNavigateToStart()
+
             } catch (e: HttpException) {
+                onNavigateToStart()
                 val errorBody = e.response()?.errorBody()?.string()
                 val msg = try {
                     Gson().fromJson(errorBody, Map::class.java)["error"]?.toString()
+
                 } catch (ex: Exception) {
                     "Registration failed"
+
                 }
                 _authState.value = AuthState.Error(msg ?: "Error")
-
+                onNavigateToStart()
             } catch (e: IOException) {
                 _authState.value = AuthState.Error("Network error")
-
+                onNavigateToStart()
             } catch (e: Exception) {
                 _authState.value = AuthState.Error("Unexpected error")
+                onNavigateToStart()
             }
         }
     }
@@ -109,6 +128,7 @@ class AuthViewModel : ViewModel() {
                 val response = authApiService.login(request)
 
                 val user = response.user
+                println("loggatoo" + response.user)
 
                 userPreferences?.saveAuthToken(response.token)
 
@@ -167,7 +187,8 @@ class AuthViewModel : ViewModel() {
     fun fetchUserData() {
         try {
             _userData.value = userPreferences?.getUserData()
-            Log.d("AuthViewModel", "User data loaded")
+            println("fetchUserData" + _userData.value)
+            Log.d("AuthViewModel", "User data loaded", )
         } catch (e: Exception) {
             Log.e("AuthViewModel", "Error fetching user data")
         }

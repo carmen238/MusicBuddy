@@ -55,9 +55,9 @@ class UserPreferences(context: Context) {
         phone: String,
         userId: Int,
         bio: String = "",
-        instrument: String = "",              // ✅ String singolo
+        instrument: String = "",
         experienceLevel: String = "",
-        genre: String = "",           // ✅ String singolo
+        genre: String = "",
         isInBand: Boolean = false,
         photoUrl: String = ""
     ) {
@@ -112,9 +112,11 @@ class UserPreferences(context: Context) {
                 KEY_IS_IN_BAND -> {
                     putBoolean(KEY_IS_IN_BAND, value.toBoolean())
                 }
+
                 KEY_USER_ID -> {
                     putInt(KEY_USER_ID, value.toIntOrNull() ?: 0)
                 }
+
                 else -> {
                     putString(field, value)
                 }
@@ -149,4 +151,23 @@ class UserPreferences(context: Context) {
     fun clearAll() {
         sharedPreferences.edit().clear().apply()
     }
+
+    fun saveUserId(userId: Int) {
+        sharedPreferences.edit().putInt(KEY_USER_ID, userId).apply()
+    }
+
+    // ✅ Recupera l'ID utente
+    fun getUserId(): Int? {
+        val userId = sharedPreferences.getInt(KEY_USER_ID, 0)
+        return if (userId != 0) userId else null
+    }
+
+    // ✅ Salva l'URL della foto
+    fun savePhotoUrl(photoUrl: String) {
+        sharedPreferences.edit().putString(KEY_PHOTO_URL, photoUrl).apply()
+    }
+
+    // ✅ Recupera l'URL della foto
+    fun getPhotoUrl(): String? =
+        sharedPreferences.getString(KEY_PHOTO_URL, null)
 }
