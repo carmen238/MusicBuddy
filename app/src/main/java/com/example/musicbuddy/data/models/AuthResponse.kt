@@ -46,15 +46,6 @@ data class UpdateFieldResponse(
     val message: String
 )
 
-data class UserInfos(
-    val id: Int,
-    val instrument: String? = null,           // ✅ String singolo
-    val experienceLevel: String? = null,
-    val genre: String? = null,        // ✅ String singolo
-    val isInBand: Boolean? = false,
-    val rating: Int
-)
-
 data class GetAllUsersResponse<T>(
     val success: Boolean,
     val data: T

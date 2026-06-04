@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.musicbuddy.data.models.LoginRequest
 import com.example.musicbuddy.data.models.RegisterRequest
 import com.example.musicbuddy.data.models.UpdateFieldRequest
-import com.example.musicbuddy.data.models.UserInfos
+import com.example.musicbuddy.data.models.User
 import com.example.musicbuddy.network.RetrofitClient
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,8 +27,8 @@ class AuthViewModel : ViewModel() {
     private val _userData = MutableStateFlow<Map<String, Any>?>(null)
     val userData: StateFlow<Map<String, Any>?> = _userData
 
-    private val _allUsersInfos = MutableStateFlow<List<UserInfos>>(emptyList())
-    val allUsersInfos: StateFlow<List<UserInfos>> = _allUsersInfos
+    private val _allUsersInfos = MutableStateFlow<List<User>>(emptyList())
+    val allUsersInfos: StateFlow<List<User>> = _allUsersInfos
 
     private var userPreferences: UserPreferences? = null
 
