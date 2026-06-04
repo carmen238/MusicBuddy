@@ -1,12 +1,8 @@
 package com.example.musicbuddy.network
 
-import com.example.musicbuddy.data.models.LoginRequest
-import com.example.musicbuddy.data.models.LoginResponse
-import com.example.musicbuddy.data.models.RegisterRequest
-import com.example.musicbuddy.data.models.RegisterResponse
-import com.example.musicbuddy.data.models.UpdateFieldResponse
-import com.example.musicbuddy.data.models.UpdateFieldRequest
+import com.example.musicbuddy.data.models.*
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.POST
 
 /**
@@ -35,4 +31,11 @@ interface AuthApiService {
      */
     @POST("api/auth/updateFieldUser")
     suspend fun updateFieldUser(@Body request: UpdateFieldRequest): UpdateFieldResponse
+
+    /**
+     * Retrieve all users infos
+     * GET /api/auth/getAllUsersInfos
+     */
+    @GET("api/auth/getAllUsersInfos")
+    suspend fun getAllUsersInfos(): GetAllUsersResponse<List<UserInfos>>
 }

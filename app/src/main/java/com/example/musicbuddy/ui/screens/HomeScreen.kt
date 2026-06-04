@@ -41,6 +41,10 @@ fun HomeScreen(
     val context = LocalContext.current
     val userData by authViewModel.userData.collectAsState()
 
+    val allUsersData by authViewModel.allUsersInfos.collectAsState()
+    //^^^USARE QUESTA VARIABILE PER AGGIORNARE L'UI CON LE STATISTICHE
+    //print(allUsersData[0].genre)
+
     // ViewModels
     val locationViewModel: LocationViewModel = viewModel()
 

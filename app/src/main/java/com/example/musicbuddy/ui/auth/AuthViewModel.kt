@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.musicbuddy.data.models.LoginRequest
 import com.example.musicbuddy.data.models.RegisterRequest
 import com.example.musicbuddy.data.models.UpdateFieldRequest
+import com.example.musicbuddy.data.models.UserInfos
 import com.example.musicbuddy.network.RetrofitClient
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import kotlin.collections.List
 
 class AuthViewModel : ViewModel() {
 
@@ -24,6 +26,9 @@ class AuthViewModel : ViewModel() {
 
     private val _userData = MutableStateFlow<Map<String, Any>?>(null)
     val userData: StateFlow<Map<String, Any>?> = _userData
+
+    private val _allUsersInfos = MutableStateFlow<List<UserInfos>>(emptyList())
+    val allUsersInfos: StateFlow<List<UserInfos>> = _allUsersInfos
 
     private var userPreferences: UserPreferences? = null
 
@@ -234,6 +239,35 @@ class AuthViewModel : ViewModel() {
 
             } catch (e: Exception) {
                 _authState.value = AuthState.Error("Update failed: ${e.message}")
+            }
+        }
+    }
+
+    fun getAllUsersInfos() {
+        viewModelScope.launch {
+            try {
+                val response = authApiService.getAllUsersInfos()
+
+                if (response.success) {
+                    _allUsersInfos.value = response.data
+                } else {
+                    println("API returned success = false")
+                }
+
+            } catch (e: HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                val msg = try {
+                    Gson().fromJson(errorBody, Map::class.java)["error"]?.toString()
+                } catch (ex: Exception) {
+                    "Info retrieval failed"
+                }
+                _authState.value = AuthState.Error(msg ?: "Error")
+
+            } catch (e: IOException) {
+                _authState.value = AuthState.Error("Network error")
+
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error("Info retrieval failed: ${e.message}")
             }
         }
     }
