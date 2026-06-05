@@ -8,12 +8,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.musicbuddy.ui.theme.AppColors
 
 /**
  * Schermata iniziale con opzioni di Sign Up e Log In
@@ -74,13 +77,25 @@ fun LogoSection(primaryColor: Color) {
         Spacer(modifier = Modifier.height(16.dp))
 
         // Nome app
-        Text(
-            text = "MusicBuddy",
-            fontSize = 42.sp,
-            fontWeight = FontWeight.Bold,
-            color = green,
-            textAlign = TextAlign.Center
-        )
+        Row(verticalAlignment = Alignment.Top) {
+            AsyncImage(
+                model = "file:///android_asset/eighth_note_sketch.jpg",
+                contentDescription = "Stylized eighth note",
+                modifier = Modifier
+                    .height(70.dp)
+                    .width(52.dp),
+                //contentScale = ContentScale.Fit
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Text(
+                text = "Croma",
+                fontSize = 68.sp,
+                fontStyle = FontStyle.Italic,
+                fontWeight = FontWeight.Bold,
+                fontFamily = FontFamily.Cursive,
+                color = AppColors.PrimaryGreen
+            )
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -105,7 +120,7 @@ fun WelcomeSection(textColor: Color) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Welcome to MusicBuddy",
+            text = "Welcome to Croma",
             fontSize = 24.sp,
             fontWeight = FontWeight.SemiBold,
             color = textColor,

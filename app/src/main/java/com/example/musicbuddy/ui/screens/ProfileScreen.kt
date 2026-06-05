@@ -311,7 +311,7 @@ fun ProfileScreen(
             // ================= LOGOUT BUTTON =================
             Button(
                 onClick = {
-                    authViewModel.logout()
+                    //authViewModel.logout()
                     onLogoutClick()
                 },
                 modifier = Modifier

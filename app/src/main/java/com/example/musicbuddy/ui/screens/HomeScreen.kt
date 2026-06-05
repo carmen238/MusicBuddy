@@ -12,6 +12,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,7 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -30,6 +34,7 @@ import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.components.*
 import com.example.musicbuddy.ui.theme.AppColors
 import com.example.musicbuddy.ui.viewmodels.*
+import com.example.musicbuddy.R
 
 @Composable
 fun HomeScreen(
@@ -58,7 +63,7 @@ fun HomeScreen(
     val userGenre = userData?.get("genre").toString() ?: "Non specificato"
     val userInstrument = userData?.get("instrument") as? String ?: "Non specificato"
     val userExperience = userData?.get("experienceLevel") as? String ?: "Non specificato"
-    val userIsInBand = (userData?.get("isInBand") ?: "false") as Boolean
+    val userIsInBand = false//(userData?.get("isInBand") ?: "false") as Boolean
     val currentPhotoUrl = userData?.get("photo_url") as? String
 
     // Permission launcher
@@ -360,12 +365,9 @@ fun HomeScreen(
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Tune,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(18.dp)
-                            .padding(end = 6.dp),
-                        tint = Color.White
+                        painter = painterResource(id = R.drawable.diapason),
+                        contentDescription = "Diapason icon",
+                        modifier = Modifier.size(16.dp)
                     )
                     Text("Tuner", color = Color.White, fontWeight = FontWeight.SemiBold)
                 }
@@ -381,6 +383,13 @@ fun HomeScreen(
                     ),
                     shape = RoundedCornerShape(10.dp)
                 ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null,
+                        tint = AppColors.LightText,
+                        modifier = Modifier.size(18.dp)
+                    )
+
                     Text("Scopri", color = AppColors.DarkText, fontWeight = FontWeight.SemiBold)
                 }
 
@@ -396,6 +405,13 @@ fun HomeScreen(
                     shape = RoundedCornerShape(10.dp),
                     border = androidx.compose.material3.ButtonDefaults.outlinedButtonBorder
                 ) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = null,
+                        tint = AppColors.LightText,
+                        modifier = Modifier.size(18.dp)
+                    )
+
                     Text("Profilo", color = AppColors.DarkText, fontWeight = FontWeight.SemiBold)
                 }
             }
@@ -443,4 +459,10 @@ private fun RefinedProfileCard(
             )
         }
     }
+}
+
+@Preview
+@Composable
+fun HomeScreenTest() {
+    HomeScreen(authViewModel = AuthViewModel(), {}, {}, {})
 }
