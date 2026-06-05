@@ -53,11 +53,13 @@ fun ProfileScreen(
     val genres = listOf("Rock", "Pop", "Jazz", "Blues", "Metal", "Classico")
     val photoViewModel: PhotoViewModel = viewModel()
     val currentPhotoUrl = userData?.get("photo_url") as String
+    var photoState by remember { mutableStateOf(currentPhotoUrl) }
 
     LaunchedEffect(Unit) {
         authViewModel.fetchUserData()
     }
-    println("bibib"+ currentPhotoUrl)
+
+    println("pollooo"+ currentPhotoUrl)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -88,10 +90,14 @@ fun ProfileScreen(
             // ================= FOTO PROFILO CARD =================
             PhotoPickerButton(
                 photoViewModel = photoViewModel,
-                userId = userId,
-                currentPhotoUrl = currentPhotoUrl,
+                currentPhotoUrl = photoState,
                 onPhotoSelected = { newPhotoUrl ->
-                    authViewModel.updateUserField(userId, "photo_url", newPhotoUrl)
+                    photoState = newPhotoUrl   // 🔥 UPDATE IMMEDIATO UI
+                    authViewModel.updateUserField(
+                        userId,
+                        "photo_url",
+                        newPhotoUrl
+                    )
                 }
             )
             Spacer(Modifier.height(12.dp))

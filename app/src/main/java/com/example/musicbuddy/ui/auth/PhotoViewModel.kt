@@ -14,7 +14,6 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileOutputStream
 
@@ -25,7 +24,8 @@ class PhotoViewModel : ViewModel() {
 
     private val photoApiService = RetrofitClient.getPhotoApiService()
 
-    private val _photoUploadState = MutableStateFlow<PhotoUploadState>(PhotoUploadState.Idle)
+    private val _photoUploadState =
+        MutableStateFlow<PhotoUploadState>(PhotoUploadState.Idle)
     val photoUploadState: StateFlow<PhotoUploadState> = _photoUploadState
 
     private val _photoUrl = MutableStateFlow<String?>(null)
@@ -34,7 +34,7 @@ class PhotoViewModel : ViewModel() {
     /**
      * Upload photo from URI
      */
-    fun uploadPhoto(context: Context, imageUri: Uri, userId: String) {
+    fun uploadPhoto(context: Context, imageUri: Uri) {
         viewModelScope.launch {
             try {
                 _photoUploadState.value = PhotoUploadState.Loading
@@ -42,7 +42,8 @@ class PhotoViewModel : ViewModel() {
                 // Convert URI to File
                 val imageFile = uriToFile(context, imageUri)
                 if (imageFile == null) {
-                    _photoUploadState.value = PhotoUploadState.Error("Failed to process image")
+                    _photoUploadState.value =
+                        PhotoUploadState.Error("Failed to process image")
                     return@launch
                 }
 
@@ -50,28 +51,42 @@ class PhotoViewModel : ViewModel() {
                 val compressedFile = compressImage(imageFile)
 
                 // Create multipart request
-                val requestBody = compressedFile.asRequestBody("image/jpeg".toMediaType())
-                val photoPart = MultipartBody.Part.createFormData("photo", compressedFile.name, requestBody)
-                val userIdBody = userId.toString().toRequestBody("text/plain".toMediaType())
+                val requestBody = compressedFile
+                    .asRequestBody("image/jpeg".toMediaType())
 
-                // Upload to backend
-                val response = photoApiService.uploadProfilePhoto(userIdBody, photoPart)
+                val photoPart = MultipartBody.Part.createFormData(
+                    "photo",
+                    compressedFile.name,
+                    requestBody
+                )
 
-                if (response.success && response.photoUrl != null) {
-                    _photoUrl.value = response.photoUrl
-                    _photoUploadState.value = PhotoUploadState.Success(response.photoUrl)
-                    Log.d("PhotoViewModel", "✅ Photo uploaded: ${response.photoUrl}")
+                // 🚀 CALL BACKEND (Cloudinary)
+                val response = photoApiService.uploadProfilePhoto(photoPart)
+
+                if (response.isSuccessful) {
+                    val body = response.body()
+
+                    val url = body?.photoUrl
+
+                    if (url != null) {
+                        _photoUrl.value = url
+                        _photoUploadState.value = PhotoUploadState.Success(url)
+                    } else {
+                        _photoUploadState.value = PhotoUploadState.Error("photoUrl null")
+                    }
+
                 } else {
-                    _photoUploadState.value = PhotoUploadState.Error(response.error ?: "Upload failed")
+                    _photoUploadState.value =
+                        PhotoUploadState.Error("HTTP ${response.code()}")
                 }
-
-                // Clean up temporary files
+                // Cleanup
                 imageFile.delete()
                 compressedFile.delete()
 
             } catch (e: Exception) {
                 Log.e("PhotoViewModel", "❌ Upload error: ${e.message}")
-                _photoUploadState.value = PhotoUploadState.Error(e.message ?: "Unknown error")
+                _photoUploadState.value =
+                    PhotoUploadState.Error(e.message ?: "Unknown error")
             }
         }
     }
@@ -82,7 +97,10 @@ class PhotoViewModel : ViewModel() {
     private fun uriToFile(context: Context, uri: Uri): File? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri) ?: return null
-            val tempFile = File(context.cacheDir, "temp_image_${System.currentTimeMillis()}.jpg")
+            val tempFile = File(
+                context.cacheDir,
+                "temp_image_${System.currentTimeMillis()}.jpg"
+            )
 
             inputStream.use { input ->
                 tempFile.outputStream().use { output ->
@@ -92,22 +110,21 @@ class PhotoViewModel : ViewModel() {
 
             tempFile
         } catch (e: Exception) {
-            Log.e("PhotoViewModel", "Error converting URI to File: ${e.message}")
+            Log.e("PhotoViewModel", "URI error: ${e.message}")
             null
         }
     }
 
     /**
-     * Compress image to reduce file size
-     * Max dimensions: 1024x1024, Quality: 80%
+     * Compress image
      */
     private fun compressImage(imageFile: File): File {
         return try {
-            // Decode original bitmap
-            val originalBitmap = BitmapFactory.decodeFile(imageFile.absolutePath)
+            val originalBitmap =
+                BitmapFactory.decodeFile(imageFile.absolutePath)
 
-            // Calculate new dimensions (max 1024x1024)
             val maxDimension = 1024
+
             val scale = if (originalBitmap.width > originalBitmap.height) {
                 maxDimension.toFloat() / originalBitmap.width
             } else {
@@ -117,26 +134,37 @@ class PhotoViewModel : ViewModel() {
             val newWidth = (originalBitmap.width * scale).toInt()
             val newHeight = (originalBitmap.height * scale).toInt()
 
-            // Create scaled bitmap
-            val scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, newWidth, newHeight, true)
+            val scaledBitmap = Bitmap.createScaledBitmap(
+                originalBitmap,
+                newWidth,
+                newHeight,
+                true
+            )
 
-            // Save compressed bitmap
-            val compressedFile = File(imageFile.parent, "compressed_${System.currentTimeMillis()}.jpg")
+            val compressedFile = File(
+                imageFile.parent,
+                "compressed_${System.currentTimeMillis()}.jpg"
+            )
+
             FileOutputStream(compressedFile).use { output ->
                 scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, output)
             }
 
-            Log.d("PhotoViewModel", "✅ Image compressed: ${imageFile.length()} → ${compressedFile.length()} bytes")
+            Log.d(
+                "PhotoViewModel",
+                "✅ Compressed: ${imageFile.length()} → ${compressedFile.length()}"
+            )
 
             compressedFile
+
         } catch (e: Exception) {
-            Log.e("PhotoViewModel", "Error compressing image: ${e.message}")
-            imageFile // Return original if compression fails
+            Log.e("PhotoViewModel", "Compression error: ${e.message}")
+            imageFile
         }
     }
 
     /**
-     * Clear upload state
+     * Clear state
      */
     fun clearState() {
         _photoUploadState.value = PhotoUploadState.Idle
@@ -144,7 +172,7 @@ class PhotoViewModel : ViewModel() {
 }
 
 /**
- * PhotoUploadState - Represents photo upload state
+ * Upload states
  */
 sealed class PhotoUploadState {
     object Idle : PhotoUploadState()

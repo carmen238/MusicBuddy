@@ -17,54 +17,53 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import coil.compose.AsyncImage
 import com.example.musicbuddy.ui.auth.PhotoUploadState
 import com.example.musicbuddy.ui.auth.PhotoViewModel
 import com.example.musicbuddy.ui.theme.AppColors
 
-/**
- * PhotoPickerButton - Button to pick or take a photo
- * Enhanced version with AppColors palette
- */
 @Composable
 fun PhotoPickerButton(
     photoViewModel: PhotoViewModel,
-    userId: String,
     currentPhotoUrl: String? = null,
     onPhotoSelected: (String) -> Unit = {}
 ) {
     val context = LocalContext.current
-    val photoUploadState by photoViewModel.photoUploadState.collectAsState()
-    val photoUrl by photoViewModel.photoUrl.collectAsState()
+
+    val uploadState by photoViewModel.photoUploadState.collectAsState()
+    val uploadedUrl by photoViewModel.photoUrl.collectAsState()
 
     var showDialog by remember { mutableStateOf(false) }
 
-    // Gallery launcher
+    // 👉 URL finale UNIFICATO (questo è il trucco importante)
+    val finalPhotoUrl = uploadedUrl ?: currentPhotoUrl
+
+    // 👉 comunica al parent quando cambia
+    LaunchedEffect(finalPhotoUrl) {
+        finalPhotoUrl?.let { onPhotoSelected(it) }
+    }
+
     val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        ActivityResultContracts.GetContent()
     ) { uri ->
-        if (uri != null) {
-            photoViewModel.uploadPhoto(context, uri, userId)
+        uri?.let {
+            photoViewModel.uploadPhoto(context, it)
         }
     }
 
-    // Camera launcher
     val cameraLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.TakePicturePreview()
+        ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
         if (bitmap != null) {
-            // Save bitmap to temporary file and upload
             val tempFile =
                 java.io.File(context.cacheDir, "camera_${System.currentTimeMillis()}.jpg")
-            java.io.FileOutputStream(tempFile).use { output ->
-                bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, output)
+
+            java.io.FileOutputStream(tempFile).use { out ->
+                bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 90, out)
             }
 
             val uri = androidx.core.content.FileProvider.getUriForFile(
@@ -72,29 +71,23 @@ fun PhotoPickerButton(
                 "${context.packageName}.fileprovider",
                 tempFile
             )
-            photoViewModel.uploadPhoto(context, uri, userId)
+
+            photoViewModel.uploadPhoto(context, uri)
         }
     }
 
-    // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            cameraLauncher.launch(null)
-        }
-    }
-
-    // Update parent when photo is uploaded
-    LaunchedEffect(photoUrl) {
-        photoUrl?.let { onPhotoSelected(it) }
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) cameraLauncher.launch(null)
     }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.fillMaxWidth()
     ) {
-        // Photo Display
+
+        // ================= PHOTO =================
         Box(
             modifier = Modifier
                 .size(120.dp)
@@ -103,16 +96,12 @@ fun PhotoPickerButton(
                 .clickable { showDialog = true },
             contentAlignment = Alignment.Center
         ) {
-            if (photoUrl != null || currentPhotoUrl != null) {
-                val fullPhotoUrl = if (photoUrl != null) {
-                    "http://172.20.10.4:3000${photoUrl}"  // ✅ Sostituisci con il tuo IP!
-                } else {
-                    "http://172.20.10.4:3000${currentPhotoUrl}"
-                }
+
+            if (!finalPhotoUrl.isNullOrBlank()) {
 
                 AsyncImage(
-                    model = fullPhotoUrl,
-                    contentDescription = "Profile Photo",
+                    model = finalPhotoUrl,
+                    contentDescription = "Profile photo",
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(CircleShape),
@@ -122,182 +111,92 @@ fun PhotoPickerButton(
             } else {
                 Icon(
                     imageVector = Icons.Default.CameraAlt,
-                    contentDescription = "Add Photo",
+                    contentDescription = null,
                     tint = AppColors.PrimaryGreen,
                     modifier = Modifier.size(40.dp)
                 )
             }
 
-            // Loading indicator
-            if (photoUploadState is PhotoUploadState.Loading) {
+            if (uploadState is PhotoUploadState.Loading) {
                 CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(120.dp)
-                        .align(Alignment.Center),
-                    color = AppColors.PrimaryGreen,
-                    trackColor = AppColors.InputBackground
+                    modifier = Modifier.size(120.dp),
+                    color = AppColors.PrimaryGreen
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(Modifier.height(12.dp))
 
-        // Upload status
-        when (photoUploadState) {
+        // ================= STATUS =================
+        when (uploadState) {
+
             is PhotoUploadState.Success -> {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .background(
-                            color = AppColors.SuccessGreen.copy(alpha = 0.1f),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        "✅ Foto caricata con successo",
-                        color = AppColors.SuccessGreen,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+                Text(
+                    "✅ Foto aggiornata",
+                    color = AppColors.SuccessGreen
+                )
             }
 
             is PhotoUploadState.Error -> {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .background(
-                            color = AppColors.ErrorRed.copy(alpha = 0.1f),
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .padding(12.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        "❌ ${(photoUploadState as PhotoUploadState.Error).message}",
-                        color = AppColors.ErrorRed,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+                Text(
+                    "❌ ${(uploadState as PhotoUploadState.Error).message}",
+                    color = AppColors.ErrorRed
+                )
             }
 
             else -> {}
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(Modifier.height(16.dp))
 
-        // Action button
+        // ================= BUTTON =================
         Button(
             onClick = { showDialog = true },
-            enabled = photoUploadState !is PhotoUploadState.Loading,
+            enabled = uploadState !is PhotoUploadState.Loading,
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .height(44.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = AppColors.PrimaryGreen,
-                disabledContainerColor = AppColors.DisabledButton
-            ),
-            shape = RoundedCornerShape(10.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.PhotoLibrary,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(18.dp)
-                    .padding(end = 8.dp),
-                tint = Color.White
+                containerColor = AppColors.PrimaryGreen
             )
+        ) {
+            Icon(Icons.Default.PhotoLibrary, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
             Text(
-                if (photoUrl != null || currentPhotoUrl != null) "Cambia Foto" else "Aggiungi Foto",
-                color = Color.White,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
+                if (finalPhotoUrl != null) "Cambia foto" else "Aggiungi foto"
             )
         }
     }
 
-    // Photo selection dialog
+    // ================= DIALOG =================
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
-            title = {
-                Text(
-                    "Scegli la fonte",
-                    color = AppColors.DarkText,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            text = {
-                Text(
-                    "Da dove vuoi prendere la foto?",
-                    color = AppColors.LightText
-                )
-            },
+            title = { Text("Scegli foto") },
+            text = { Text("Da dove vuoi prenderla?") },
             confirmButton = {
-                Button(
-                    onClick = {
-                        galleryLauncher.launch("image/*")
-                        showDialog = false
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = AppColors.PrimaryGreen
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Icon(
-                        Icons.Default.PhotoLibrary,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(18.dp)
-                            .padding(end = 6.dp),
-                        tint = Color.White
-                    )
-                    Text("Galleria", color = Color.White)
+                Button(onClick = {
+                    galleryLauncher.launch("image/*")
+                    showDialog = false
+                }) {
+                    Text("Galleria")
                 }
             },
             dismissButton = {
-                Button(
-                    onClick = {
-                        // Check camera permission
-                        val hasCameraPermission = ContextCompat.checkSelfPermission(
-                            context,
-                            Manifest.permission.CAMERA
-                        ) == PackageManager.PERMISSION_GRANTED
+                Button(onClick = {
+                    val granted = ContextCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.CAMERA
+                    ) == PackageManager.PERMISSION_GRANTED
 
-                        if (hasCameraPermission) {
-                            cameraLauncher.launch(null)
-                        } else {
-                            permissionLauncher.launch(Manifest.permission.CAMERA)
-                        }
-                        showDialog = false
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = AppColors.AccentYellow
-                    ),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Icon(
-                        Icons.Default.CameraAlt,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(18.dp)
-                            .padding(end = 6.dp),
-                        tint = AppColors.DarkText
-                    )
-                    Text("Fotocamera", color = AppColors.DarkText)
+                    if (granted) cameraLauncher.launch(null)
+                    else permissionLauncher.launch(Manifest.permission.CAMERA)
+
+                    showDialog = false
+                }) {
+                    Text("Camera")
                 }
-            },
-            containerColor = AppColors.LightBackground,
-            titleContentColor = AppColors.DarkText,
-            textContentColor = AppColors.LightText,
-            shape = RoundedCornerShape(12.dp)
+            }
         )
     }
 }
