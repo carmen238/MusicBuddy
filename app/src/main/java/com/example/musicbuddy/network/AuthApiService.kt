@@ -37,5 +37,5 @@ interface AuthApiService {
      * GET /api/auth/getAllUsersInfos
      */
     @GET("api/auth/getAllUsersInfos")
-    suspend fun getAllUsersInfos(): GetAllUsersResponse<List<User>>
+    suspend fun getAllUsersInfos(): GetAllUsersResponse<List<UserInfos>>
 }
