@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.musicbuddy.data.models.DeleteUserRequest
 import com.example.musicbuddy.data.models.LoginRequest
 import com.example.musicbuddy.data.models.RegisterRequest
 import com.example.musicbuddy.data.models.UpdateFieldRequest
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
+import kotlin.String
 import kotlin.collections.List
 
 class AuthViewModel : ViewModel() {
@@ -303,12 +305,36 @@ class AuthViewModel : ViewModel() {
             try {
                 // 1. Cancella il token dalle SharedPreferences¬
                 userPreferences?.clearAll()
+                userPreferences?.clearAuthToken()
+                userPreferences?.clearUserData()
                 _userData.value = null
                 _authState.value = AuthState.Unauthenticated
                 // 3. Log per debug
                 Log.d("AuthViewModel", "Logout completato")
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Errore durante logout: ${e.message}")
+            }
+        }
+    }
+
+    fun deleteAccount() {
+        viewModelScope.launch {
+            try {
+                val deleteReq = DeleteUserRequest(userPreferences?.getUserData()["userId"] as String)
+                val response = authApiService.deleteUser(deleteReq)
+
+                if(!response.success) Log.e("AuthViewModel", "Error during account deletion on server side: ${response.message}")
+
+                userPreferences?.clearAll()
+                userPreferences?.clearAuthToken()
+                userPreferences?.clearUserData()
+                _userData.value = null
+                _authState.value = AuthState.Unauthenticated
+
+                // 3. Log per debug
+                Log.d("AuthViewModel", "Account deleted")
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Error during account deletion: ${e.message}")
             }
         }
     }

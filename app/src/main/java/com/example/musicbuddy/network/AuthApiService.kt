@@ -2,8 +2,10 @@ package com.example.musicbuddy.network
 
 import com.example.musicbuddy.data.models.*
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 
 /**
  * AuthApiService - Retrofit interface for authentication endpoints
@@ -29,7 +31,7 @@ interface AuthApiService {
      * Update the field of user
      * POST /api/auth/updateFieldUser
      */
-    @POST("api/auth/updateFieldUser")
+    @PUT("api/auth/updateFieldUser")    //per l'aggiornamento dei campi si usa PUT in HTTP
     suspend fun updateFieldUser(@Body request: UpdateFieldRequest): UpdateFieldResponse
 
     /**
@@ -38,4 +40,11 @@ interface AuthApiService {
      */
     @GET("api/auth/getAllUsersInfos")
     suspend fun getAllUsersInfos(): GetAllUsersResponse<List<UserInfos>>
+
+    /**
+     * Delete a user
+     * DELETE /api/auth/deleteUser
+     */
+    @DELETE("api/auth/deleteUser")
+    suspend fun deleteUser(@Body request: DeleteUserRequest): DeleteUserResponse
 }

@@ -59,3 +59,8 @@ data class GetAllUsersResponse<T>(
     val success: Boolean,
     val data: T
 )
+
+data class DeleteUserResponse(
+    val success: Boolean,
+    val message: String
+)

@@ -28,3 +28,7 @@ data class UpdateFieldRequest(
     val keyField: String,
     val valueField: String  // ✅ Cambia da Any a String
 )
+
+data class DeleteUserRequest(
+    val userId: String
+)

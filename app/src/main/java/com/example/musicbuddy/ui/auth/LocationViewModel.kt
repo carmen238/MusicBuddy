@@ -27,6 +27,7 @@ data class NearbyMusician(
     val userId: String,
     val name: String,
     val instrument: String,
+    val genre: String,
     val latitude: Double,
     val longitude: Double,
     val distance: Double, // in km
@@ -156,6 +157,7 @@ class LocationViewModel : ViewModel() {
                         userId = "user_1",
                         name = "Marco Rossi",
                         instrument = "Chitarra",
+                        genre = "Rock",
                         latitude = userLatitude + 0.01,
                         longitude = userLongitude + 0.01,
                         distance = calculateDistance(
@@ -169,6 +171,7 @@ class LocationViewModel : ViewModel() {
                         userId = "user_2",
                         name = "Giulia Bianchi",
                         instrument = "Voce",
+                        genre = "Rock",
                         latitude = userLatitude - 0.02,
                         longitude = userLongitude + 0.015,
                         distance = calculateDistance(
@@ -182,6 +185,7 @@ class LocationViewModel : ViewModel() {
                         userId = "user_3",
                         name = "Luca Verdi",
                         instrument = "Batteria",
+                        genre = "Rock",
                         latitude = userLatitude + 0.015,
                         longitude = userLongitude - 0.02,
                         distance = calculateDistance(

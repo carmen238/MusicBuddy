@@ -187,6 +187,11 @@ private fun MusicianListItem(musician: NearbyMusician) {
                 fontSize = 12.sp,
                 color = AppColors.LightText
             )
+            Text(
+                musician.genre,
+                fontSize = 12.sp,
+                color = AppColors.LightText
+            )
         }
 
         Row(

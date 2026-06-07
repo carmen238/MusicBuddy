@@ -202,6 +202,12 @@ fun NavigationGraph(
                     navController.navigate(Screen.Start.route) {
                         popUpTo(Screen.Profile.route) { inclusive = true }
                     }
+                },
+                onDeleteAccountClick = {
+                    authViewModel.deleteAccount()
+                    navController.navigate(Screen.Start.route) {
+                        popUpTo(Screen.Profile.route) { inclusive = true }
+                    }
                 }
             )
         }

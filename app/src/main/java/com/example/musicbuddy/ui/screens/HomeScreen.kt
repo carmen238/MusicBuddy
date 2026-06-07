@@ -46,6 +46,7 @@ fun HomeScreen(
     val context = LocalContext.current
     val userData by authViewModel.userData.collectAsState()
 
+    authViewModel.getAllUsersInfos()
     val allUsersData by authViewModel.allUsersInfos.collectAsState()
     //^^^USARE QUESTA VARIABILE PER AGGIORNARE L'UI CON LE STATISTICHE
     //print(allUsersData[0].genre)
@@ -63,7 +64,8 @@ fun HomeScreen(
     val userGenre = userData?.get("genre").toString() ?: "Non specificato"
     val userInstrument = userData?.get("instrument") as? String ?: "Non specificato"
     val userExperience = userData?.get("experienceLevel") as? String ?: "Non specificato"
-    val userIsInBand = false//(userData?.get("isInBand") ?: "false") as Boolean
+    //val userIsInBand = (userData?.get("isInBand") ?: "false") as Boolean
+    val userIsInBand = userData?.get("isInBand") as? Boolean ?: false
     val currentPhotoUrl = userData?.get("photo_url") as? String
 
     // Permission launcher

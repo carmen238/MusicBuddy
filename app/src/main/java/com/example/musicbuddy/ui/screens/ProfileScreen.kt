@@ -2,6 +2,7 @@ package com.example.musicbuddy.ui.screens
 
 import com.example.musicbuddy.ui.components.DropdownField
 import ProfileInfoRow
+import android.R
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -9,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.*
@@ -17,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,7 +31,8 @@ import com.example.musicbuddy.ui.theme.AppColors
 @Composable
 fun ProfileScreen(
     authViewModel: AuthViewModel,
-    onLogoutClick: () -> Unit = {}
+    onLogoutClick: () -> Unit = {},
+    onDeleteAccountClick: () -> Unit = {}
 ) {
 
     val userData by authViewModel.userData.collectAsState()
@@ -43,7 +47,8 @@ fun ProfileScreen(
     val userInstrument = userData?.get("instrument") as? String ?: ""
     val userExperience = userData?.get("experienceLevel") as? String ?: ""
     val userGenre = userData?.get("genre").toString() ?: ""
-    val userIsInBand = (userData?.get("isInBand") ?: "false") as Boolean
+    //val userIsInBand = (userData?.get("isInBand") ?: "false") as Boolean
+    val userIsInBand = userData?.get("isInBand") as? Boolean ?: false
 
     var bioEdit by remember { mutableStateOf(false) }
     var bioText by remember(userBio) { mutableStateOf(userBio) }
@@ -52,8 +57,10 @@ fun ProfileScreen(
     val experienceLevels = listOf("Principiante", "Intermedio", "Avanzato")
     val genres = listOf("Rock", "Pop", "Jazz", "Blues", "Metal", "Classico")
     val photoViewModel: PhotoViewModel = viewModel()
-    val currentPhotoUrl = userData?.get("photo_url") as String
+    val currentPhotoUrl = userData?.get("photo_url") as? String
     var photoState by remember { mutableStateOf(currentPhotoUrl) }
+
+    var showDialog by remember { mutableStateOf(false) }    //for the delete account popup
 
     LaunchedEffect(Unit) {
         authViewModel.fetchUserData()
@@ -327,7 +334,7 @@ fun ProfileScreen(
                     imageVector = Icons.Default.Logout,
                     contentDescription = "Logout",
                     modifier = Modifier
-                        .size(20.dp)
+                        .size(24.dp)
                         .padding(end = 8.dp),
                     tint = AppColors.DarkText
                 )
@@ -339,7 +346,77 @@ fun ProfileScreen(
                 )
             }
 
+            Spacer(Modifier.height(4.dp))
+
+            // ================= DELETE ACCOUNT BUTTON =================
+            Button(
+                onClick = { showDialog = true }, // Mostra il popup
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(68.dp)
+                    .padding(bottom = 16.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.DeleteForever,
+                    contentDescription = "Delete account",
+                    modifier = Modifier
+                        .size(28.dp)
+                        .padding(end = 8.dp),
+                    tint = AppColors.DarkText
+                )
+                Text("Delete account", color = lightBackground, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+
+            // 2. Il popup viene mostrato solo se lo stato è true
+            if (showDialog) {
+                AlertDialog(
+                    onDismissRequest = {
+                        // Si attiva quando l'utente tocca fuori dal popup o preme "Indietro"
+                        showDialog = false
+                    },
+                    title = {
+                        Text(text = "Confirm account elimination?")
+                    },
+                    text = {
+                        Text(text = "Are you sure you want to delete your account? This action is irreversible.")
+                    },
+                    confirmButton = {
+                        TextButton(
+                            onClick = {
+                                showDialog = false
+                                onDeleteAccountClick()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Red,  // Background color
+                                contentColor = Color.White    // Text color
+                            )
+                        ) {
+                            Text("Delete")
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { showDialog = false }, // Chiude il popup
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.DarkGray,  // Background color
+                                contentColor = Color.White    // Text color
+                            )
+                        ) {
+                            Text("Back")
+                        }
+                    }
+                )
+            }
+
             Spacer(Modifier.height(16.dp))
         }
     }
+}
+
+@Preview
+@Composable
+fun ProfileScreenPreview() {
+    ProfileScreen(authViewModel = AuthViewModel(), {})
 }
