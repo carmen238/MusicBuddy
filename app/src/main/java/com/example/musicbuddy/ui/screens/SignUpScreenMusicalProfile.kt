@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -76,32 +77,32 @@ fun SignUpScreenMusicalProfile(
             selectedGenre.isNotEmpty()
 
     val instruments = listOf(
-        "🎸 Chitarra",
-        "🎸 Basso",
-        "🎺 Tromba",
-        "🎻 Violino",
-        "🪈 Flauto",
-        "🎹 Pianoforte",
-        "🥁 Batteria",
-        "🎤 Voce",
-        "🎵 Altro"
+        "Guitar",
+        "Bass",
+        "Trumpet",
+        "Violin",
+        "Flute",
+        "Piano",
+        "Drums",
+        "Voice",
+        "Other"
     )
 
     val experienceLevels = listOf(
-        "🌱 Principiante",
-        "📈 Intermedio",
-        "⭐ Avanzato"
+        "Beginner",
+        "Intermediate",
+        "Advanced"
     )
 
     val genres = listOf(
-        "🎸 Rock",
-        "🎵 Pop",
-        "🎷 Jazz",
-        "🎼 Classico",
-        "🎶 Blues",
-        "🤘 Metal",
-        "🌾 Folk",
-        "🎵 Altro"
+        "Rock",
+        "Pop",
+        "Jazz",
+        "Classical",
+        "Blues",
+        "Metal",
+        "Folk",
+        "Other"
     )
 
     Surface(
@@ -165,7 +166,16 @@ fun SignUpScreenMusicalProfile(
                                         else AppColors.InputBackground
                                 )
                             ) {
-                                Text(instrument, fontSize = 11.sp)
+                                when (instrument) {
+                                    "Guitar", "Bass" -> Text("🎸 $instrument", fontSize = 11.sp, color = darkText)
+                                    "Trumpet" -> Text("🎺 $instrument", fontSize = 11.sp, color = darkText)
+                                    "Violin" -> Text("🎻 $instrument", fontSize = 11.sp, color = darkText)
+                                    "Flute" -> Text("🪈 $instrument", fontSize = 11.sp, color = darkText)
+                                    "Piano" -> Text("🎹 $instrument", fontSize = 11.sp, color = darkText)
+                                    "Drums" -> Text("🥁 $instrument", fontSize = 11.sp, color = darkText)
+                                    "Voice" -> Text("🎤 $instrument", fontSize = 11.sp, color = darkText)
+                                    "Other" -> Text("🎵 $instrument", fontSize = 11.sp, color = darkText)
+                                }
                             }
                         }
                     }
@@ -188,7 +198,11 @@ fun SignUpScreenMusicalProfile(
                                 else AppColors.InputBackground
                         )
                     ) {
-                        Text(level)
+                        when(level) {
+                            "Beginner" -> Text("🌱 $level", fontSize = 11.sp, color = darkText)
+                            "Intermediate" -> Text("📈 $level", fontSize = 11.sp, color = darkText)
+                            "Advanced" -> Text("⭐ $level", fontSize = 11.sp, color = darkText)
+                        }
                     }
                 }
 
@@ -214,7 +228,15 @@ fun SignUpScreenMusicalProfile(
                                         else AppColors.InputBackground
                                 )
                             ) {
-                                Text(genre, fontSize = 11.sp)
+                                when(genre) {
+                                    "Rock" -> Text("🎸 $genre", fontSize = 11.sp, color = darkText)
+                                    "Pop", "Other" -> Text("🎵 $genre", fontSize = 11.sp, color = darkText)
+                                    "Jazz" -> Text("🎷 $genre", fontSize = 11.sp, color = darkText)
+                                    "Classical" -> Text("🎼 $genre", fontSize = 11.sp, color = darkText)
+                                    "Blues" -> Text("🎶 $genre", fontSize = 11.sp, color = darkText)
+                                    "Metal" -> Text("🤘 $genre", fontSize = 11.sp, color = darkText)
+                                    "Folk" -> Text("🌾 $genre", fontSize = 11.sp, color = darkText)
+                                }
                             }
                         }
                     }
@@ -235,7 +257,7 @@ fun SignUpScreenMusicalProfile(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Column {
-                            Text("🎸 Sei in una band?", fontWeight = FontWeight.Bold)
+                            Text("Are you in a band?", fontWeight = FontWeight.Bold)
                             Text(
                                 if (isInBand) "Sì" else "No",
                                 fontSize = 12.sp,

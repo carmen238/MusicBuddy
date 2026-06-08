@@ -52,7 +52,6 @@ data class UserInfos(
     val experienceLevel: String? = null,
     val genre: String? = null,        // ✅ String singolo
     val isInBand: Boolean? = false,
-    val rating: Int
 )
 
 data class GetAllUsersResponse<T>(

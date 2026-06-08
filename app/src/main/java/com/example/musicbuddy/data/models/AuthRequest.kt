@@ -13,6 +13,7 @@ data class RegisterRequest(
     val experienceLevel: String ,
     val genre: String,
     val isInBand: Boolean = false,
+    val photoUrl: String
 )
 
 /**

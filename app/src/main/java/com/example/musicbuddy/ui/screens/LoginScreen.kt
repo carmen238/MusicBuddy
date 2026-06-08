@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.musicbuddy.ui.auth.AuthState
 import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.components.SignUpTextField
@@ -221,9 +222,4 @@ fun LoginScreen(
             }
         }
     }
-}
-
-@Composable
-fun AsyncImage(model: String, contentDescription: String, modifier: Modifier) {
-    TODO("Not yet implemented")
 }

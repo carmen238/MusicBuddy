@@ -53,9 +53,9 @@ fun ProfileScreen(
     var bioEdit by remember { mutableStateOf(false) }
     var bioText by remember(userBio) { mutableStateOf(userBio) }
 
-    val instruments = listOf("Chitarra", "Basso", "Piano", "Batteria", "Voce", "Altro")
-    val experienceLevels = listOf("Principiante", "Intermedio", "Avanzato")
-    val genres = listOf("Rock", "Pop", "Jazz", "Blues", "Metal", "Classico")
+    val instruments = listOf("Guitar", "Bass", "Trumpet", "Violin", "Flute", "Piano", "Drums", "Voice", "Other")
+    val experienceLevels = listOf("Beginner", "Intermediate", "Advanced")
+    val genres = listOf("Rock", "Pop", "Jazz", "Classical", "Blues", "Metal", "Folk", "Other")
     val photoViewModel: PhotoViewModel = viewModel()
     val currentPhotoUrl = userData?.get("photo_url") as? String
     var photoState by remember { mutableStateOf(currentPhotoUrl) }

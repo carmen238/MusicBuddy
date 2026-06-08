@@ -68,7 +68,8 @@ class AuthViewModel : ViewModel() {
                     instrument = instrument,
                     experienceLevel = experienceLevel,
                     genre = genre,
-                    isInBand = isInBand
+                    isInBand = isInBand,
+                    photoUrl = ""   //inserito per non far crushare il server
                 )
 
                 val response = authApiService.register(request)

@@ -4,6 +4,7 @@ import com.example.musicbuddy.data.models.*
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 
@@ -31,7 +32,7 @@ interface AuthApiService {
      * Update the field of user
      * POST /api/auth/updateFieldUser
      */
-    @PUT("api/auth/updateFieldUser")    //per l'aggiornamento dei campi si usa PUT in HTTP
+    @PATCH("api/auth/updateFieldUser")    //per l'aggiornamento dei campi si usa PUT o PATCH in HTTP
     suspend fun updateFieldUser(@Body request: UpdateFieldRequest): UpdateFieldResponse
 
     /**
