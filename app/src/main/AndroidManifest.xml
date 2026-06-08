@@ -27,6 +27,12 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.MusicBuddy">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_paths" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyA8H_B61nBs1UIl1-ZRnAnIukRYEgCupLA" />
 
         <!-- ✅ FILE PROVIDER -->
         <provider
@@ -34,13 +40,6 @@
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
-
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
-            <meta-data
-                android:name="com.google.android.geo.API_KEY"
-                android:value="AIzaSyA8H_B61nBs1UIl1-ZRnAnIukRYEgCupLA" />
         </provider>
 
         <!-- MAIN ACTIVITY -->

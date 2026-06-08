@@ -47,7 +47,7 @@ fun HomeScreen(
     val userData by authViewModel.userData.collectAsState()
 
     //authViewModel.getAllUsersInfos()
-    //val allUsersData by authViewModel.allUsersInfos.collectAsState()
+    val allUsersData by authViewModel.allUsersInfos.collectAsState()
     //^^^USARE QUESTA VARIABILE PER AGGIORNARE L'UI CON LE STATISTICHE
     //print(allUsersData[0].genre)
 
@@ -79,6 +79,8 @@ fun HomeScreen(
 
     // Initialize
     LaunchedEffect(Unit) {
+        //authViewModel.getAllUsersInfos()
+        //println("allUsersData:$allUsersData")
         authViewModel.fetchUserData()
         locationViewModel.initializeLocationClient(context)
 
@@ -236,7 +238,6 @@ fun HomeScreen(
                     value = if (userIsInBand) "Sì" else "No",
                     modifier = Modifier.weight(1f)
                 )
-                //LOGIN SFANCULA CAMPI DEL PROFILO, VEDERE LOGIN ANCHE LATO SERVER
             }
 
             // ================= COMMUNITY STATISTICS =================

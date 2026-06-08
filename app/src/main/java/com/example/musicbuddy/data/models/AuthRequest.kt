@@ -9,8 +9,9 @@ data class RegisterRequest(
     val name: String,
     val surname: String,
     val phone: String,
-    val instrument: String ,
-    val experienceLevel: String ,
+    val bio: String,
+    val instrument: String,
+    val experienceLevel: String,
     val genre: String,
     val isInBand: Boolean = false,
     val photoUrl: String

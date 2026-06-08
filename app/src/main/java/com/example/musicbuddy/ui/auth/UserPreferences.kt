@@ -16,7 +16,7 @@ class UserPreferences(context: Context) {
         private const val KEY_EMAIL = "email"
         private const val KEY_PHONE = "phone"
         private const val KEY_BIO = "bio"
-        private const val KEY_RATING = "rating"
+        //private const val KEY_RATING = "rating"
 
         private const val KEY_INSTRUMENT = "instrument"
         private const val KEY_EXPERIENCE_LEVEL = "experienceLevel"
@@ -67,7 +67,7 @@ class UserPreferences(context: Context) {
             putString(KEY_EMAIL, email)
             putString(KEY_PHONE, phone)
             putString(KEY_BIO, bio)
-            putInt(KEY_RATING, 0)
+            //putInt(KEY_RATING, 0)
             putInt(KEY_USER_ID, userId)
 
             putString(KEY_INSTRUMENT, instrument)
@@ -136,7 +136,7 @@ class UserPreferences(context: Context) {
             remove(KEY_EMAIL)
             remove(KEY_PHONE)
             remove(KEY_BIO)
-            remove(KEY_RATING)
+            //remove(KEY_RATING)
 
             remove(KEY_INSTRUMENT)
             remove(KEY_EXPERIENCE_LEVEL)
