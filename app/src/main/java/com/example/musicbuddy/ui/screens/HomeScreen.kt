@@ -79,8 +79,8 @@ fun HomeScreen(
 
     // Initialize
     LaunchedEffect(Unit) {
-        //authViewModel.getAllUsersInfos()
-        //println("allUsersData:$allUsersData")
+        //authViewModel.getAllUsersInfos()  //DA ERRORE PER FORMATO DI isInBand è SBAGLIATO (NUMERO INVECE DI BOOLEAN)
+        //println("allUsersData: $allUsersData")
         authViewModel.fetchUserData()
         locationViewModel.initializeLocationClient(context)
 

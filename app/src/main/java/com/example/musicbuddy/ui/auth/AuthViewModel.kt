@@ -265,21 +265,16 @@ class AuthViewModel : ViewModel() {
                 } catch (ex: Exception) {
                     "Info retrieval failed"
                 }
-                _authState.value = AuthState.Error(msg ?: "Error")
+                Log.e("AuthViewModel", "Error retrieving users infos: " + e.message.toString())
 
             } catch (e: IOException) {
-                _authState.value = AuthState.Error("Network error")
+                Log.e("AuthViewModel", "Error retrieving users infos: " + e.message.toString())
 
             } catch (e: Exception) {
-                _authState.value = AuthState.Error("Info retrieval failed: ${e.message}")
+                Log.e("AuthViewModel", "Error retrieving users infos: " + e.message.toString())
             }
         }
     }
-
-    // -------------------------
-    // LOGOUT
-    // -------------------------
-
 
     // -------------------------
     // AUTH CHECK
@@ -302,6 +297,9 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    // -------------------------
+    // LOGOUT
+    // -------------------------
     fun logout() {
         viewModelScope.launch {
             try {
@@ -319,6 +317,9 @@ class AuthViewModel : ViewModel() {
         }
     }
 
+    // -------------------------
+    // DELETE ACCOUNT
+    // -------------------------
     fun deleteAccount() {
         viewModelScope.launch {
             try {

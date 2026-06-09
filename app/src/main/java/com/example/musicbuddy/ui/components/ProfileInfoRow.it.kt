@@ -1,3 +1,5 @@
+package com.example.musicbuddy.ui.components
+
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

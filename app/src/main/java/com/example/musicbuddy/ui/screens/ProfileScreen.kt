@@ -1,8 +1,7 @@
 package com.example.musicbuddy.ui.screens
 
 import com.example.musicbuddy.ui.components.DropdownField
-import ProfileInfoRow
-import android.R
+import com.example.musicbuddy.ui.components.ProfileInfoRow
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
