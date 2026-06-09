@@ -7,7 +7,6 @@
         android:name="android.hardware.camera"
         android:required="false" />
 
-    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <!-- Permessi di localizzazione -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -27,19 +26,20 @@
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
         android:theme="@style/Theme.MusicBuddy">
-        <meta-data
-            android:name="android.support.FILE_PROVIDER_PATHS"
-            android:resource="@xml/file_paths" />
+        
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyA8H_B61nBs1UIl1-ZRnAnIukRYEgCupLA" />
 
-        <!-- ✅ FILE PROVIDER -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
+            
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
         </provider>
 
         <!-- MAIN ACTIVITY -->
