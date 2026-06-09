@@ -32,5 +32,5 @@ data class UpdateFieldRequest(
 )
 
 data class DeleteUserRequest(
-    val userId: String
+    val userId: Int
 )

@@ -46,6 +46,6 @@ interface AuthApiService {
      * Delete a user
      * DELETE /api/auth/deleteUser
      */
-    @DELETE("api/auth/deleteUser")
+    @POST("api/auth/deleteUser")
     suspend fun deleteUser(@Body request: DeleteUserRequest): DeleteUserResponse
 }

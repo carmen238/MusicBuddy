@@ -27,7 +27,7 @@ data class User(
     val name: String,
     val surname: String,
     val phone: String? = null,
-    val bio: String,
+    val bio: String? = null,
     val instrument: String? = null,           // ✅ String singolo
     val experienceLevel: String? = null,
     val genre: String? = null,        // ✅ String singolo

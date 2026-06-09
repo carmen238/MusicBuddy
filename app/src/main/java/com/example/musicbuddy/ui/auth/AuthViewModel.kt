@@ -147,7 +147,7 @@ class AuthViewModel : ViewModel() {
                     email = user.email,
                     phone = user.phone ?: "",
                     userId = user.id,
-                    bio = user.bio,
+                    bio = user.bio ?: "",
                     instrument = user.instrument ?: "",
                     experienceLevel = user.experienceLevel ?: "",
                     genre = user.genre ?: "",
@@ -182,9 +182,11 @@ class AuthViewModel : ViewModel() {
 
             } catch (e: IOException) {
                 _authState.value = AuthState.Error("Network error")
+                Log.e("AuthViewModel", "Error: "+e.message)
 
             } catch (e: Exception) {
                 _authState.value = AuthState.Error("Unexpected error")
+                Log.e("AuthViewModel", "Error: "+e.message)
             }
         }
     }
@@ -323,7 +325,8 @@ class AuthViewModel : ViewModel() {
     fun deleteAccount() {
         viewModelScope.launch {
             try {
-                val deleteReq = DeleteUserRequest(userPreferences?.getUserData()["userId"] as String)
+                val deleteReq = DeleteUserRequest(userPreferences?.getUserData()["userId"] as Int)
+                println("QUI "+deleteReq.userId)
                 val response = authApiService.deleteUser(deleteReq)
 
                 if(!response.success) Log.e("AuthViewModel", "Error during account deletion on server side: ${response.message}")
