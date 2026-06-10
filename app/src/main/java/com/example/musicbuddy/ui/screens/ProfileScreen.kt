@@ -26,6 +26,7 @@ import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.auth.PhotoViewModel
 import com.example.musicbuddy.ui.components.PhotoPickerButton
 import com.example.musicbuddy.ui.theme.AppColors
+import com.example.musicbuddy.ui.components.Validators
 
 @Composable
 fun ProfileScreen(
@@ -230,13 +231,13 @@ fun ProfileScreen(
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
-                    ProfileInfoRow("Nome", userName, "name", userId, authViewModel)
+                    ProfileInfoRow("Nome", userName, "name", userId, authViewModel, {Validators.isValidName(it)})
                     Divider(color = AppColors.InputBackground, thickness = 1.dp)
-                    ProfileInfoRow("Cognome", userSurname, "surname", userId, authViewModel)
+                    ProfileInfoRow("Cognome", userSurname, "surname", userId, authViewModel, {Validators.isValidName(it)})
                     Divider(color = AppColors.InputBackground, thickness = 1.dp)
-                    ProfileInfoRow("Email", userEmail, "email", userId, authViewModel)
+                    ProfileInfoRow("Email", userEmail, "email", userId, authViewModel, {Validators.isValidEmail(it)})
                     Divider(color = AppColors.InputBackground, thickness = 1.dp)
-                    ProfileInfoRow("Telefono", userPhone, "phone", userId, authViewModel)
+                    ProfileInfoRow("Telefono", userPhone, "phone", userId, authViewModel, {Validators.isValidPhone(it)})
                 }
             }
 
