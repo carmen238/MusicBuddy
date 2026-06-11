@@ -1,5 +1,7 @@
 package com.example.musicbuddy.data.models
 
+import com.google.gson.annotations.SerializedName
+
 /**
  * RegisterResponse - Response from registration endpoint
  */
@@ -48,18 +50,38 @@ data class UpdateFieldResponse(
 
 data class UserInfos(
     val id: Int,
-    val instrument: String? = null,           // ✅ String singolo
-    val experienceLevel: String? = null,
-    val genre: String? = null,        // ✅ String singolo
-    val isInBand: Boolean? = false,
+    val instrument: String,           // ✅ String singolo
+    val experienceLevel: String,
+    val genre: String,        // ✅ String singolo
+    val isInBand: Int       //devo usare un Int perché SQLite3 non ha il tipo Boolean nativo
 )
 
-data class GetAllUsersResponse<T>(
+data class GetAllUsersResponse(
     val success: Boolean,
-    val data: T
+    val data: List<UserInfos>
 )
 
 data class DeleteUserResponse(
     val success: Boolean,
+    val message: String
+)
+
+data class GenreInfoField(
+    val genre: String,
+    val total: Int
+)
+data class InstrumentInfoField(
+    val instrument: String,
+    val total: Int
+)
+
+data class GetGenresResponse(
+    val success: Boolean,
+    val data: List<GenreInfoField>,
+    val message: String
+)
+data class GetInstrumentsResponse(
+    val success: Boolean,
+    val data: List<InstrumentInfoField>,
     val message: String
 )

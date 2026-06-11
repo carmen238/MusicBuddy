@@ -5,6 +5,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.musicbuddy.data.models.DeleteUserRequest
+import com.example.musicbuddy.data.models.GenreInfoField
+import com.example.musicbuddy.data.models.InstrumentInfoField
 import com.example.musicbuddy.data.models.LoginRequest
 import com.example.musicbuddy.data.models.RegisterRequest
 import com.example.musicbuddy.data.models.UpdateFieldRequest
@@ -31,6 +33,12 @@ class AuthViewModel : ViewModel() {
 
     private val _allUsersInfos = MutableStateFlow<List<UserInfos>>(emptyList())
     val allUsersInfos: StateFlow<List<UserInfos>> = _allUsersInfos
+
+    private val _genreStatsState = MutableStateFlow<List<GenreInfoField>>(emptyList())
+    val genreStatsState: StateFlow<List<GenreInfoField>> = _genreStatsState
+
+    private val _instrumentsStatsState = MutableStateFlow<List<InstrumentInfoField>>(emptyList())
+    val instrumentsStatsState: StateFlow<List<InstrumentInfoField>> = _instrumentsStatsState
 
     private var userPreferences: UserPreferences? = null
 
@@ -341,6 +349,70 @@ class AuthViewModel : ViewModel() {
                 Log.d("AuthViewModel", "Account deleted")
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Error during account deletion: ${e.message}")
+            }
+        }
+    }
+
+    // -------------------------
+    // GET GENRES STATS
+    // -------------------------
+    fun getGenresStats() {
+        viewModelScope.launch {
+            try {
+                val response = authApiService.getGenresStats()
+
+                if (response.success) {
+                    _genreStatsState.value = response.data
+                } else {
+                    Log.e("AuthViewModel", "Error retrieving genres stats: success = false")
+                }
+
+            } catch (e: HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                val msg = try {
+                    Gson().fromJson(errorBody, Map::class.java)["error"]?.toString()
+                } catch (ex: Exception) {
+                    "Info retrieval failed"
+                }
+                Log.e("AuthViewModel", "Error retrieving genres stats: " + e.message.toString())
+
+            } catch (e: IOException) {
+                Log.e("AuthViewModel", "Error retrieving genres stats: " + e.message.toString())
+
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Error retrieving genres stats: " + e.message.toString())
+            }
+        }
+    }
+
+    // -------------------------
+    // GET INSTRUMENTS STATS
+    // -------------------------
+    fun getInstrumentsStats() {
+        viewModelScope.launch {
+            try {
+                val response = authApiService.getInstrumentsStats()
+
+                if (response.success) {
+                    _instrumentsStatsState.value = response.data
+                } else {
+                    Log.e("AuthViewModel", "Error retrieving instruments stats: success = false")
+                }
+
+            } catch (e: HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                val msg = try {
+                    Gson().fromJson(errorBody, Map::class.java)["error"]?.toString()
+                } catch (ex: Exception) {
+                    "Info retrieval failed"
+                }
+                Log.e("AuthViewModel", "Error retrieving instruments stats: " + e.message.toString())
+
+            } catch (e: IOException) {
+                Log.e("AuthViewModel", "Error retrieving instruments stats: " + e.message.toString())
+
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Error retrieving instruments stats: " + e.message.toString())
             }
         }
     }

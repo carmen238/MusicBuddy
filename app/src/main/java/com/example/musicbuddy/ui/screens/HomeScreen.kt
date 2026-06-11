@@ -46,10 +46,9 @@ fun HomeScreen(
     val context = LocalContext.current
     val userData by authViewModel.userData.collectAsState()
 
-    //authViewModel.getAllUsersInfos()
     val allUsersData by authViewModel.allUsersInfos.collectAsState()
-    //^^^USARE QUESTA VARIABILE PER AGGIORNARE L'UI CON LE STATISTICHE
-    //print(allUsersData[0].genre)
+    val genresStats by authViewModel.genreStatsState.collectAsState()
+    val instrumentsStats by authViewModel.instrumentsStatsState.collectAsState()
 
     // ViewModels
     val locationViewModel: LocationViewModel = viewModel()
@@ -79,9 +78,12 @@ fun HomeScreen(
 
     // Initialize
     LaunchedEffect(Unit) {
-        //authViewModel.getAllUsersInfos()  //DA ERRORE PER FORMATO DI isInBand è SBAGLIATO (NUMERO INVECE DI BOOLEAN)
-        //println("allUsersData: $allUsersData")
         authViewModel.fetchUserData()
+
+        authViewModel.getAllUsersInfos()
+        authViewModel.getGenresStats()
+        authViewModel.getInstrumentsStats()
+
         locationViewModel.initializeLocationClient(context)
 
         // Request location permission
@@ -102,6 +104,9 @@ fun HomeScreen(
             locationViewModel.fetchNearbyMusicians(it.latitude, it.longitude)
         }
     }
+
+    if(allUsersData.isNotEmpty()) println("allUsersData: ${allUsersData.size}")
+    //METTERE SEMPRE isNotEmpty() PERCHé LA LISTA PARTE VUOTA E SI RIEMPE ASINCRONAMENTE
 
     // Community statistics data - Refined colors
     val communityGenreData = listOf(

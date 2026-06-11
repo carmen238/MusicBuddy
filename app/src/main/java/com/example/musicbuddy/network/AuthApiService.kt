@@ -40,7 +40,7 @@ interface AuthApiService {
      * GET /api/auth/getAllUsersInfos
      */
     @GET("api/auth/getAllUsersInfos")
-    suspend fun getAllUsersInfos(): GetAllUsersResponse<List<UserInfos>>
+    suspend fun getAllUsersInfos(): GetAllUsersResponse
 
     /**
      * Delete a user
@@ -48,4 +48,18 @@ interface AuthApiService {
      */
     @POST("api/auth/deleteUser")
     suspend fun deleteUser(@Body request: DeleteUserRequest): DeleteUserResponse
+
+    /**
+     * Retrieve genres stats
+     * GET /api/auth/getGenresStats
+     */
+    @GET("api/auth/getGenresStats")
+    suspend fun getGenresStats(): GetGenresResponse
+
+    /**
+     * Retrieve genres stats
+     * GET /api/auth/getGenresStats
+     */
+    @GET("api/auth/getInstrumentsStats")
+    suspend fun getInstrumentsStats(): GetInstrumentsResponse
 }
