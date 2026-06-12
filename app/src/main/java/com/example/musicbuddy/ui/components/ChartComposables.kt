@@ -36,10 +36,11 @@ data class BarChartData(
 @Composable
 fun HorizontalBarChart(
     data: List<BarChartData>,
+    maxValue: Float,
     modifier: Modifier = Modifier,
     title: String = "Distribuzione"
 ) {
-    val maxValue = data.maxOfOrNull { it.value } ?: 1f
+    //val maxValue = data.maxOfOrNull { it.value } ?: 1f
 
     Column(
         modifier = modifier

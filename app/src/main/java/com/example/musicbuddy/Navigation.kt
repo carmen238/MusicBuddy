@@ -177,7 +177,7 @@ fun NavigationGraph(
             HomeScreen(
                 authViewModel = authViewModel,
                 onNavigateToProfile = {
-                    navController.navigate("home")
+                    navController.navigate("profile")
                 },
                 onNavigateToTuner = {
                     navController.navigate("tuner") // Implementerai dopo

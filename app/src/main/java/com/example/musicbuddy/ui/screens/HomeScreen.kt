@@ -66,6 +66,7 @@ fun HomeScreen(
     //val userIsInBand = (userData?.get("isInBand") ?: "false") as Boolean
     val userIsInBand = userData?.get("isInBand") as? Boolean ?: false
     val currentPhotoUrl = userData?.get("photo_url") as? String
+    var totalUsers = 0
 
     // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -105,25 +106,23 @@ fun HomeScreen(
         }
     }
 
-    if(allUsersData.isNotEmpty()) println("allUsersData: ${allUsersData.size}")
+    // Community statistics data - Refined colors
+    val communityGenreData = mutableListOf<BarChartData>()
+    val communityInstrumentData = mutableListOf<BarChartData>()
+
+    if(allUsersData.isNotEmpty()) totalUsers = allUsersData.size
     //METTERE SEMPRE isNotEmpty() PERCHé LA LISTA PARTE VUOTA E SI RIEMPE ASINCRONAMENTE
 
-    // Community statistics data - Refined colors
-    val communityGenreData = listOf(
-        BarChartData("Rock", 45f, AppColors.PrimaryGreen),
-        BarChartData("Jazz", 30f, Color(0xFF9CA3AF)),
-        BarChartData("Blues", 20f, Color(0xFFD1D5DB)),
-        BarChartData("Pop", 15f, Color(0xFF9CA3AF)),
-        BarChartData("Metal", 10f, Color(0xFFD1D5DB))
-    )
+    genresStats.forEachIndexed { i, genreObj ->
+        //visto che lista è già ordinata dal server, l'elemento in prima posizione è il più popolare
+        val genreChartRow = BarChartData(genreObj.genre, genreObj.total.toFloat(), if(i==0) AppColors.PrimaryGreen else Color(0xFF9CA3AF))
+        communityGenreData.add(genreChartRow)
+    }
 
-    val communityInstrumentData = listOf(
-        BarChartData("Chitarra", 40f, AppColors.PrimaryGreen),
-        BarChartData("Voce", 30f, Color(0xFF9CA3AF)),
-        BarChartData("Piano", 20f, Color(0xFFD1D5DB)),
-        BarChartData("Batteria", 25f, Color(0xFF9CA3AF)),
-        BarChartData("Basso", 15f, Color(0xFFD1D5DB))
-    )
+    instrumentsStats.forEachIndexed { i, instrumentObj ->
+        val instrumentChartRow = BarChartData(instrumentObj.instrument, instrumentObj.total.toFloat(), if(i==0) AppColors.PrimaryGreen else Color(0xFF9CA3AF))
+        communityInstrumentData.add(instrumentChartRow)
+    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -258,6 +257,7 @@ fun HomeScreen(
             HorizontalBarChart(
                 data = communityGenreData,
                 title = "Generi Più Popolari",
+                maxValue = totalUsers.toFloat(),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
 
@@ -265,11 +265,12 @@ fun HomeScreen(
             HorizontalBarChart(
                 data = communityInstrumentData,
                 title = "Strumenti Più Suonati",
+                maxValue = totalUsers.toFloat(),
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
             // ================= LOCATION SECTION =================
-            Text(
+            /*Text(
                 "Musicisti Vicini",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -353,7 +354,7 @@ fun HomeScreen(
                 }
 
                 else -> {}
-            }
+            }*/
 
             // ================= ACTION BUTTONS =================
             Row(
