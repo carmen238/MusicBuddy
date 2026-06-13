@@ -87,7 +87,7 @@ fun ProfileScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Profilo",
+                    "Profile",
                     fontSize = 32.sp,
                     fontWeight = FontWeight.Bold,
                     color = AppColors.PrimaryGreen
@@ -139,7 +139,7 @@ fun ProfileScreen(
                         if (!bioEdit) {
                             Icon(
                                 imageVector = Icons.Default.Edit,
-                                contentDescription = "Modifica bio",
+                                contentDescription = "Edit bio",
                                 modifier = Modifier
                                     .size(20.dp)
                                     .clickable { bioEdit = true },
@@ -157,7 +157,7 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(100.dp),
-                            placeholder = { Text("Scrivi la tua bio...") },
+                            placeholder = { Text("Write your bio...") },
                             shape = RoundedCornerShape(8.dp),
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = AppColors.PrimaryGreen,
@@ -182,7 +182,7 @@ fun ProfileScreen(
                                 ),
                                 shape = RoundedCornerShape(8.dp)
                             ) {
-                                Text("Salva", color = Color.White)
+                                Text("Save", color = Color.White)
                             }
 
                             OutlinedButton(
@@ -194,12 +194,12 @@ fun ProfileScreen(
                                 shape = RoundedCornerShape(8.dp),
                                 border = BorderStroke(1.dp, AppColors.InputBackground)
                             ) {
-                                Text("Annulla", color = AppColors.DarkText)
+                                Text("Cancel", color = AppColors.DarkText)
                             }
                         }
                     } else {
                         Text(
-                            userBio.ifEmpty { "Nessuna bio" },
+                            userBio.ifEmpty { "No bio found" },
                             fontSize = 14.sp,
                             color = if (userBio.isEmpty()) AppColors.LightText else AppColors.DarkText
                         )
@@ -224,20 +224,20 @@ fun ProfileScreen(
                         .padding(16.dp)
                 ) {
                     Text(
-                        "Informazioni Personali",
+                        "Personal information",
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         color = AppColors.PrimaryGreen,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
-                    ProfileInfoRow("Nome", userName, "name", userId, authViewModel, {Validators.isValidName(it)})
+                    ProfileInfoRow("Name", userName, "name", userId, authViewModel, {Validators.isValidName(it)})
                     Divider(color = AppColors.InputBackground, thickness = 1.dp)
-                    ProfileInfoRow("Cognome", userSurname, "surname", userId, authViewModel, {Validators.isValidName(it)})
+                    ProfileInfoRow("Surname", userSurname, "surname", userId, authViewModel, {Validators.isValidName(it)})
                     Divider(color = AppColors.InputBackground, thickness = 1.dp)
                     ProfileInfoRow("Email", userEmail, "email", userId, authViewModel, {Validators.isValidEmail(it)})
                     Divider(color = AppColors.InputBackground, thickness = 1.dp)
-                    ProfileInfoRow("Telefono", userPhone, "phone", userId, authViewModel, {Validators.isValidPhone(it)})
+                    ProfileInfoRow("Telephone", userPhone, "phone", userId, authViewModel, {Validators.isValidPhone(it)})
                 }
             }
 
@@ -258,26 +258,26 @@ fun ProfileScreen(
                         .padding(16.dp)
                 ) {
                     Text(
-                        "Profilo Musicale",
+                        "Musical profile",
                         fontWeight = FontWeight.Bold,
                         fontSize = 16.sp,
                         color = AppColors.PrimaryGreen,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
 
-                    DropdownField("Strumento", userInstrument, instruments) {
+                    DropdownField("Instrument", userInstrument, instruments) {
                         authViewModel.updateUserField(userId, "instrument", it)
                     }
 
                     Spacer(Modifier.height(12.dp))
 
-                    DropdownField("Esperienza", userExperience, experienceLevels) {
+                    DropdownField("Experience", userExperience, experienceLevels) {
                         authViewModel.updateUserField(userId, "experienceLevel", it)
                     }
 
                     Spacer(Modifier.height(12.dp))
 
-                    DropdownField("Genere", userGenre, genres) {
+                    DropdownField("Genre", userGenre, genres) {
                         authViewModel.updateUserField(userId, "genre", it)
                     }
 
@@ -292,7 +292,7 @@ fun ProfileScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            "Sei in una band?",
+                            "Are you in a band?",
                             fontSize = 14.sp,
                             color = AppColors.DarkText
                         )

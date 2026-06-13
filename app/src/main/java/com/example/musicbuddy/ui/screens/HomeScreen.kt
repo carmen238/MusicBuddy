@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Tune
@@ -151,7 +152,7 @@ fun HomeScreen(
                         color = AppColors.PrimaryGreen
                     )
                     Text(
-                        "Benvenuto, $userName",
+                        "Welcome, $userName",
                         fontSize = 14.sp,
                         color = AppColors.LightText,
                         fontWeight = FontWeight.Normal
@@ -194,7 +195,7 @@ fun HomeScreen(
 
             // ================= YOUR PROFILE SECTION =================
             Text(
-                "Profilo Musicale",
+                "Your musical profile",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = AppColors.DarkText,
@@ -210,14 +211,14 @@ fun HomeScreen(
             ) {
                 // Instrument card
                 RefinedProfileCard(
-                    label = "Strumento",
+                    label = "Instrument",
                     value = userInstrument,
                     modifier = Modifier.weight(1f)
                 )
 
                 // Genre card
                 RefinedProfileCard(
-                    label = "Genere",
+                    label = "Genre",
                     value = userGenre,
                     modifier = Modifier.weight(1f)
                 )
@@ -231,7 +232,7 @@ fun HomeScreen(
             ) {
                 // Experience card
                 RefinedProfileCard(
-                    label = "Esperienza",
+                    label = "Experience",
                     value = userExperience,
                     modifier = Modifier.weight(1f)
                 )
@@ -246,7 +247,7 @@ fun HomeScreen(
 
             // ================= COMMUNITY STATISTICS =================
             Text(
-                "Statistiche Community",
+                "Community statistics",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = AppColors.DarkText,
@@ -256,7 +257,7 @@ fun HomeScreen(
             // Genre chart
             HorizontalBarChart(
                 data = communityGenreData,
-                title = "Generi Più Popolari",
+                title = "Most popular genres",
                 maxValue = totalUsers.toFloat(),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -264,14 +265,14 @@ fun HomeScreen(
             // Instrument chart
             HorizontalBarChart(
                 data = communityInstrumentData,
-                title = "Strumenti Più Suonati",
+                title = "Most played instruments",
                 maxValue = totalUsers.toFloat(),
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
             // ================= LOCATION SECTION =================
             /*Text(
-                "Musicisti Vicini",
+                "Nearby musicians",
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
                 color = AppColors.DarkText,
@@ -345,7 +346,7 @@ fun HomeScreen(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                "Abilita i permessi di localizzazione",
+                                "Enable the localization permissions",
                                 color = AppColors.LightText,
                                 fontSize = 13.sp
                             )
@@ -357,6 +358,7 @@ fun HomeScreen(
             }*/
 
             // ================= ACTION BUTTONS =================
+            //AGGIUNGERE QUI TASTO LARGO PER ANDARA ALLA MAPPA/DISCOVER
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -394,13 +396,13 @@ fun HomeScreen(
                     shape = RoundedCornerShape(10.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Search,
+                        imageVector = Icons.Default.People,
                         contentDescription = null,
                         tint = AppColors.LightText,
                         modifier = Modifier.size(18.dp)
                     )
 
-                    Text("Scopri", color = AppColors.DarkText, fontWeight = FontWeight.SemiBold)
+                    Text("Friends", color = AppColors.DarkText, fontWeight = FontWeight.SemiBold)
                 }
 
                 // Profile button
@@ -422,7 +424,7 @@ fun HomeScreen(
                         modifier = Modifier.size(18.dp)
                     )
 
-                    Text("Profilo", color = AppColors.DarkText, fontWeight = FontWeight.SemiBold)
+                    Text("Profile", color = AppColors.DarkText, fontWeight = FontWeight.SemiBold)
                 }
             }
 
