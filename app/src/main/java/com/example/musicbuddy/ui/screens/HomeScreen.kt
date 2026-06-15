@@ -47,9 +47,10 @@ fun HomeScreen(
     val context = LocalContext.current
     val userData by authViewModel.userData.collectAsState()
 
-    val allUsersData by authViewModel.allUsersInfos.collectAsState()
+    //val allUsersData by authViewModel.allUsersInfos.collectAsState()    //non serve
     val genresStats by authViewModel.genreStatsState.collectAsState()
     val instrumentsStats by authViewModel.instrumentsStatsState.collectAsState()
+    val totalUsers by authViewModel.totNumUsersState.collectAsState()
 
     // ViewModels
     val locationViewModel: LocationViewModel = viewModel()
@@ -67,7 +68,6 @@ fun HomeScreen(
     //val userIsInBand = (userData?.get("isInBand") ?: "false") as Boolean
     val userIsInBand = userData?.get("isInBand") as? Boolean ?: false
     val currentPhotoUrl = userData?.get("photo_url") as? String
-    var totalUsers = 0
 
     // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -82,7 +82,8 @@ fun HomeScreen(
     LaunchedEffect(Unit) {
         authViewModel.fetchUserData()
 
-        authViewModel.getAllUsersInfos()
+        //authViewModel.getAllUsersInfos()      //non serve
+        authViewModel.getTotNumUsers()
         authViewModel.getGenresStats()
         authViewModel.getInstrumentsStats()
 
@@ -111,7 +112,7 @@ fun HomeScreen(
     val communityGenreData = mutableListOf<BarChartData>()
     val communityInstrumentData = mutableListOf<BarChartData>()
 
-    if(allUsersData.isNotEmpty()) totalUsers = allUsersData.size
+    //if(allUsersData.isNotEmpty()) totalUsers = allUsersData.size
     //METTERE SEMPRE isNotEmpty() PERCHé LA LISTA PARTE VUOTA E SI RIEMPE ASINCRONAMENTE
 
     genresStats.forEachIndexed { i, genreObj ->

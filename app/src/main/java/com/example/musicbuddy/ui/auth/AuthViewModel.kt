@@ -33,12 +33,16 @@ class AuthViewModel : ViewModel() {
 
     private val _allUsersInfos = MutableStateFlow<List<UserInfos>>(emptyList())
     val allUsersInfos: StateFlow<List<UserInfos>> = _allUsersInfos
+    //^^^ non servono
 
     private val _genreStatsState = MutableStateFlow<List<GenreInfoField>>(emptyList())
     val genreStatsState: StateFlow<List<GenreInfoField>> = _genreStatsState
 
     private val _instrumentsStatsState = MutableStateFlow<List<InstrumentInfoField>>(emptyList())
     val instrumentsStatsState: StateFlow<List<InstrumentInfoField>> = _instrumentsStatsState
+
+    private val _totNumUsersState = MutableStateFlow<Int>(0)
+    val totNumUsersState: StateFlow<Int> = _totNumUsersState
 
     private var userPreferences: UserPreferences? = null
 
@@ -413,6 +417,38 @@ class AuthViewModel : ViewModel() {
 
             } catch (e: Exception) {
                 Log.e("AuthViewModel", "Error retrieving instruments stats: " + e.message.toString())
+            }
+        }
+    }
+
+    // -------------------------
+    // GET TOTAL NUMBER OF USERS
+    // -------------------------
+    fun getTotNumUsers() {
+        viewModelScope.launch {
+            try {
+                val response = authApiService.getTotNumUsers()
+
+                if (response.success) {
+                    _totNumUsersState.value = response.totNumUsers
+                } else {
+                    Log.e("AuthViewModel", "Error retrieving total number of users: success = false")
+                }
+
+            } catch (e: HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                val msg = try {
+                    Gson().fromJson(errorBody, Map::class.java)["error"]?.toString()
+                } catch (ex: Exception) {
+                    "Info retrieval failed"
+                }
+                Log.e("AuthViewModel", "Error retrieving total number of users: " + e.message.toString())
+
+            } catch (e: IOException) {
+                Log.e("AuthViewModel", "Error retrieving total number of users: " + e.message.toString())
+
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Error retrieving total number of users: " + e.message.toString())
             }
         }
     }

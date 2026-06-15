@@ -85,3 +85,9 @@ data class GetInstrumentsResponse(
     val data: List<InstrumentInfoField>,
     val message: String
 )
+
+data class GetTotNumUsersResponse(
+    val success: Boolean,
+    val totNumUsers: Int,
+    val message: String
+)

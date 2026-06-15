@@ -39,7 +39,7 @@ interface AuthApiService {
      * Retrieve all users infos
      * GET /api/auth/getAllUsersInfos
      */
-    @GET("api/auth/getAllUsersInfos")
+    @GET("api/auth/getAllUsersInfos")   //non serve
     suspend fun getAllUsersInfos(): GetAllUsersResponse
 
     /**
@@ -62,4 +62,11 @@ interface AuthApiService {
      */
     @GET("api/auth/getInstrumentsStats")
     suspend fun getInstrumentsStats(): GetInstrumentsResponse
+
+    /**
+     * Retrieve total number of users
+     * GET /api/auth/getTotNumUsers
+     */
+    @GET("api/auth/getTotNumUsers")
+    suspend fun getTotNumUsers(): GetTotNumUsersResponse
 }
