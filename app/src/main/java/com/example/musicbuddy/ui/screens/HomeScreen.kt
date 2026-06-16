@@ -42,7 +42,8 @@ fun HomeScreen(
     authViewModel: AuthViewModel,
     onNavigateToProfile: () -> Unit = {},
     onNavigateToTuner: () -> Unit = {},
-    onNavigateToDiscover: () -> Unit = {}
+    onNavigateToFriends: () -> Unit = {},
+    onNavigateToSearch: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val userData by authViewModel.userData.collectAsState()
@@ -358,8 +359,37 @@ fun HomeScreen(
                 else -> {}
             }*/
 
+            Spacer(modifier = Modifier.height(16.dp))
+
             // ================= ACTION BUTTONS =================
-            //AGGIUNGERE QUI TASTO LARGO PER ANDARA ALLA MAPPA/DISCOVER
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Discover button
+                Button(
+                    onClick = onNavigateToSearch,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(58.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFFF9F1F)
+                    ),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = null,
+                        tint = AppColors.LightText,
+                        modifier = Modifier.size(20.dp)
+                    )
+
+                    Text("Discover", color = AppColors.DarkText, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
+                }
+            }
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -385,9 +415,9 @@ fun HomeScreen(
                     Text("Tuner", color = Color.White, fontWeight = FontWeight.SemiBold)
                 }
 
-                // Discover button
+                // Friends button
                 Button(
-                    onClick = onNavigateToDiscover,
+                    onClick = onNavigateToFriends,
                     modifier = Modifier
                         .weight(1f)
                         .height(48.dp),
@@ -403,7 +433,7 @@ fun HomeScreen(
                         modifier = Modifier.size(18.dp)
                     )
 
-                    Text("Friends", color = AppColors.DarkText, fontWeight = FontWeight.SemiBold)
+                    Text("Friends", color = AppColors.DarkText, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
                 }
 
                 // Profile button

@@ -22,6 +22,7 @@ import com.example.musicbuddy.ui.screens.SignUpScreen
 import com.example.musicbuddy.ui.screens.SignUpScreenMusicalProfile
 import com.example.musicbuddy.ui.screens.StartScreen
 import com.example.musicbuddy.ui.screens.TunerScreen
+import com.example.musicbuddy.ui.screens.FriendsScreen
 
 /**
  * Definizione delle route dell'app
@@ -186,13 +187,16 @@ fun NavigationGraph(
                 onNavigateToTuner = {
                     navController.navigate(Screen.Tuner.route) { popUpTo(Screen.Home.route) { inclusive = true } }
                 },
-                onNavigateToDiscover = {
+                onNavigateToFriends = {
+                    navController.navigate(Screen.Friends.route) { popUpTo(Screen.Home.route) { inclusive = true } }
+                },
+                onNavigateToSearch = {
                     navController.navigate(Screen.Search.route) { popUpTo(Screen.Home.route) { inclusive = true } }
                 }
             )
         }
 
-        // SCHERMATA 7: TunerScreen
+        // SCHERMATA 8: TunerScreen
         composable(Screen.Tuner.route) {
             TunerScreen(tunerLogic = TunerLogic(), onBackClick = {
                 navController.navigate(Screen.Home.route)
@@ -221,6 +225,13 @@ fun NavigationGraph(
                     }
                 }
             )
+        }
+
+        // SCHERMATA 9: FriendsScreen
+        composable(Screen.Friends.route) {
+            FriendsScreen(authViewModel, onBackClick = {
+                navController.navigate(Screen.Home.route)
+            })
         }
     }
 }

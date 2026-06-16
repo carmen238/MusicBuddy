@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import com.example.musicbuddy.ui.auth.AuthViewModel
 
 @Composable
-fun SearchScreen(
+fun FriendsScreen(
     authViewModel: AuthViewModel,
     onBackClick: () -> Unit = {}
 ) {
-    //QUI VA LA MAPPA
+    //DA IMPLEMENTARE (QUI VA LA LISTA AMICI)
 }
