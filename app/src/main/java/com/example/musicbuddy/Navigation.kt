@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.example.musicbuddy.ui.auth.AuthState
 import com.example.musicbuddy.ui.auth.AuthViewModel
+import com.example.musicbuddy.ui.components.TunerLogic
 import com.example.musicbuddy.ui.screens.HomeScreen
 import com.example.musicbuddy.ui.screens.LoginScreen
 import com.example.musicbuddy.ui.screens.ProfileScreen
@@ -20,6 +21,7 @@ import com.example.musicbuddy.ui.screens.SearchScreen
 import com.example.musicbuddy.ui.screens.SignUpScreen
 import com.example.musicbuddy.ui.screens.SignUpScreenMusicalProfile
 import com.example.musicbuddy.ui.screens.StartScreen
+import com.example.musicbuddy.ui.screens.TunerScreen
 
 /**
  * Definizione delle route dell'app
@@ -33,6 +35,8 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Search : Screen("search")
     object Profile : Screen("profile")
+    object Tuner : Screen("tuner")
+    object Friends : Screen("friends")
 }
 
 /**
@@ -177,15 +181,22 @@ fun NavigationGraph(
             HomeScreen(
                 authViewModel = authViewModel,
                 onNavigateToProfile = {
-                    navController.navigate("profile")
+                    navController.navigate(Screen.Profile.route) { popUpTo(Screen.Home.route) { inclusive = true } }
                 },
                 onNavigateToTuner = {
-                    navController.navigate("tuner") // Implementerai dopo
+                    navController.navigate(Screen.Tuner.route) { popUpTo(Screen.Home.route) { inclusive = true } }
                 },
                 onNavigateToDiscover = {
-                    navController.navigate("discover") // Implementerai dopo
+                    navController.navigate(Screen.Search.route) { popUpTo(Screen.Home.route) { inclusive = true } }
                 }
             )
+        }
+
+        // SCHERMATA 7: TunerScreen
+        composable(Screen.Tuner.route) {
+            TunerScreen(tunerLogic = TunerLogic(), onBackClick = {
+                navController.navigate(Screen.Home.route)
+            })
         }
 
         // ===== SCHERMATA 6: SearchScreen (collegata alla navbar) =====
