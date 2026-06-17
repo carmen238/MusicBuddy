@@ -205,7 +205,9 @@ fun NavigationGraph(
 
         // ===== SCHERMATA 6: SearchScreen (collegata alla navbar) =====
         composable(Screen.Search.route) {
-            SearchScreen()
+            SearchScreen(authViewModel = authViewModel, onBackClick = {
+                navController.navigate(Screen.Home.route)
+            })
         }
 
         // ===== SCHERMATA 7: ProfileScreen (collegata alla navbar) =====

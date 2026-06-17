@@ -54,12 +54,12 @@ fun HomeScreen(
     val totalUsers by authViewModel.totNumUsersState.collectAsState()
 
     // ViewModels
-    val locationViewModel: LocationViewModel = viewModel()
+    /*val locationViewModel: LocationViewModel = viewModel()
 
     // States
     val locationState by locationViewModel.locationState.collectAsState()
     val userLocation by locationViewModel.userLocation.collectAsState()
-    val nearbyMusicians by locationViewModel.nearbyMusicians.collectAsState()
+    val nearbyMusicians by locationViewModel.nearbyMusicians.collectAsState()*/
 
     // User data
     val userName = userData?.get("name") as? String ?: "Utente"
@@ -71,13 +71,13 @@ fun HomeScreen(
     val currentPhotoUrl = userData?.get("photo_url") as? String
 
     // Permission launcher
-    val permissionLauncher = rememberLauncherForActivityResult(
+    /*val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
             locationViewModel.requestCurrentLocation(context)
         }
-    }
+    }*/
 
     // Initialize
     LaunchedEffect(Unit) {
@@ -88,7 +88,7 @@ fun HomeScreen(
         authViewModel.getGenresStats()
         authViewModel.getInstrumentsStats()
 
-        locationViewModel.initializeLocationClient(context)
+        /*locationViewModel.initializeLocationClient(context)
 
         // Request location permission
         if (ContextCompat.checkSelfPermission(
@@ -99,15 +99,15 @@ fun HomeScreen(
             locationViewModel.requestCurrentLocation(context)
         } else {
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        }
+        }*/
     }
 
     // Fetch nearby musicians when location is available
-    LaunchedEffect(userLocation) {
+    /*LaunchedEffect(userLocation) {
         userLocation?.let {
             locationViewModel.fetchNearbyMusicians(it.latitude, it.longitude)
         }
-    }
+    }*/
 
     // Community statistics data - Refined colors
     val communityGenreData = mutableListOf<BarChartData>()

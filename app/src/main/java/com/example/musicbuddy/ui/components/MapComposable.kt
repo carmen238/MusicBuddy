@@ -42,13 +42,13 @@ fun MusicianMapView(
             .padding(16.dp)
     ) {
         // Title
-        Text(
+        /*Text(
             "🎵 Musicisti Vicini",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             color = AppColors.PrimaryGreen,
             modifier = Modifier.padding(bottom = 12.dp)
-        )
+        )*/
 
         // Map
         AndroidView(
@@ -97,14 +97,14 @@ fun MusicianMapView(
         // Musicians list
         if (nearbyMusicians.isNotEmpty()) {
             Text(
-                "Trovati ${nearbyMusicians.size} musicisti",
+                "${nearbyMusicians.size} musicians found",
                 fontSize = 12.sp,
                 color = AppColors.LightText,
                 fontWeight = FontWeight.Medium
             )
         } else {
             Text(
-                "Nessun musicista trovato nelle vicinanze",
+                "No nearby musicians found",
                 fontSize = 12.sp,
                 color = AppColors.LightText,
                 fontWeight = FontWeight.Medium
@@ -132,7 +132,7 @@ fun NearbyMusiciansList(
     ) {
         // Title
         Text(
-            "🎸 Musicisti Vicini",
+            "🎸 Nearby musicians",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             color = AppColors.PrimaryGreen,
@@ -141,7 +141,7 @@ fun NearbyMusiciansList(
 
         if (musicians.isEmpty()) {
             Text(
-                "Nessun musicista trovato nelle vicinanze",
+                "No nearby musicians found",
                 fontSize = 13.sp,
                 color = AppColors.LightText,
                 modifier = Modifier.padding(vertical = 16.dp)

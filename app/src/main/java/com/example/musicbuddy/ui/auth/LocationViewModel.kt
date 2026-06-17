@@ -8,12 +8,18 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.musicbuddy.data.models.DeleteUserRequest
+import com.example.musicbuddy.data.models.UpdateLatLongRequest
+import com.example.musicbuddy.network.RetrofitClient
+import com.example.musicbuddy.ui.auth.AuthState
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import retrofit2.http.Body
+import kotlin.Int
 
 // ============= DATA CLASSES =============
 
@@ -55,6 +61,7 @@ sealed class NearbyMusiciansState {
 
 class LocationViewModel : ViewModel() {
 
+    private val authApiService = RetrofitClient.getAuthApiService()
     private val _locationState = MutableStateFlow<LocationState>(LocationState.Idle)
     val locationState: StateFlow<LocationState> = _locationState
 
@@ -135,6 +142,30 @@ class LocationViewModel : ViewModel() {
                 Math.sin(dLon / 2) * Math.sin(dLon / 2)
         val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
         return R * c
+    }
+
+    /**
+     * Post user location in the backend database
+     */
+    fun updateUserLocation(
+        userId: Int,
+        userLatitude: Double,
+        userLongitude: Double
+    ) {
+        viewModelScope.launch {
+            try {
+                val postLocationRequest = UpdateLatLongRequest(userId, userLatitude, userLongitude)
+
+                val response = authApiService.postUserLocation(postLocationRequest)
+
+                if(!response.success) Log.e("AuthViewModel", "Error during account deletion on server side: ${response.message}")
+
+                // 3. Log per debug
+                Log.d("AuthViewModel", "Location updated")
+            } catch (e: Exception) {
+                Log.e("AuthViewModel", "Error during location update: ${e.message}")
+            }
+        }
     }
 
     /**

@@ -69,4 +69,11 @@ interface AuthApiService {
      */
     @GET("api/auth/getTotNumUsers")
     suspend fun getTotNumUsers(): GetTotNumUsersResponse
+
+    /**
+     * Update the user location on the server side
+     * PATCH api/auth/postUserLocation
+     */
+    @PATCH("api/auth/postUserLocation")
+    suspend fun postUserLocation(@Body request: UpdateLatLongRequest): UpdateLatLongResponse
 }

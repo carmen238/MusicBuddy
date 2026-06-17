@@ -34,3 +34,9 @@ data class UpdateFieldRequest(
 data class DeleteUserRequest(
     val userId: Int
 )
+
+data class UpdateLatLongRequest(
+    val userId: Int,
+    val latValue: Double,
+    val longValue: Double
+)

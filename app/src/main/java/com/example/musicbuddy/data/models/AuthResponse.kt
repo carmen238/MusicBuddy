@@ -91,3 +91,8 @@ data class GetTotNumUsersResponse(
     val totNumUsers: Int,
     val message: String
 )
+
+data class UpdateLatLongResponse(
+    val success: Boolean,
+    val message: String
+)
