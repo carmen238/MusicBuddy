@@ -40,3 +40,15 @@ data class UpdateLatLongRequest(
     val latValue: Double,
     val longValue: Double
 )
+
+data class GetNearbyMusiciansRequest(
+    val userId: Int,
+    val userLat: Double,
+    val userLong: Double,
+    val range: Double
+)
+
+data class FriendRequestField(   //unico sia per sendFriendRequest, acceptFriendRequest e rejectFriendRequest
+    val userId: Int,    //nel server è sender_id
+    val friendId: Int    //nel server è receiver_id
+)

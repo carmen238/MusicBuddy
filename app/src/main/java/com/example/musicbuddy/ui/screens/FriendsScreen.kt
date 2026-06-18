@@ -8,5 +8,5 @@ fun FriendsScreen(
     authViewModel: AuthViewModel,
     onBackClick: () -> Unit = {}
 ) {
-    //DA IMPLEMENTARE (QUI VA LA LISTA AMICI)
+    //DA IMPLEMENTARE (QUI VA LA LISTA AMICI E RICHIESTE IN ATTESA)
 }

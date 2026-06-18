@@ -31,6 +31,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -69,6 +72,8 @@ fun SearchScreen(
     val userExperience = userData?.get("experienceLevel") as? String ?: "Non specificato"
     val userIsInBand = userData?.get("isInBand") as? Boolean ?: false
     val currentPhotoUrl = userData?.get("photo_url") as? String
+
+    var musiciansLoaded by remember { mutableStateOf(false) }
 
     // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -109,11 +114,11 @@ fun SearchScreen(
             )
         }
         userLocation?.let {
-            locationViewModel.fetchNearbyMusicians(it.latitude, it.longitude)
+            locationViewModel.fetchNearbyMusicians(userId as Int, it.latitude, it.longitude)
         }
     }
 
-
+    if(nearbyMusicians.isNotEmpty()) musiciansLoaded = true
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -163,17 +168,23 @@ fun SearchScreen(
                     is LocationState.Success -> {
                         userLocation?.let {
                             // Show map
-                            MusicianMapView(
-                                userLatitude = it.latitude,
-                                userLongitude = it.longitude,
-                                nearbyMusicians = nearbyMusicians,
-                                modifier = Modifier.padding(bottom = 16.dp)
-                            )
+                            if(musiciansLoaded) {
+                                MusicianMapView(
+                                    userLatitude = it.latitude,
+                                    userLongitude = it.longitude,
+                                    nearbyMusicians = nearbyMusicians,
+                                    modifier = Modifier.padding(bottom = 16.dp)
+                                )
+                            }
 
                             // Show list
                             NearbyMusiciansList(
+                                userId as Int,
+                                userLatitude = it.latitude,
+                                userLongitude = it.longitude,
                                 musicians = nearbyMusicians,
-                                modifier = Modifier.padding(bottom = 16.dp)
+                                modifier = Modifier.padding(bottom = 16.dp),
+                                locationViewModel
                             )
                         }
                     }

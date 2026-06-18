@@ -96,3 +96,27 @@ data class UpdateLatLongResponse(
     val success: Boolean,
     val message: String
 )
+
+data class NearbyMusicianInfo(
+    val id: Int,
+    val name: String,
+    val surname: String,
+    val instrument: String,
+    val experienceLevel: String,
+    val genre: String,
+    val isInBand: Int,       //devo usare un Int perché SQLite3 non ha il tipo Boolean nativo
+    val photo_url: String,
+    val latitude: Double,
+    val longitude: Double
+)
+
+data class GetNearbyMusiciansResponse(
+    val success: Boolean,
+    val data: List<NearbyMusicianInfo>,
+    val message: String
+)
+
+data class GenericFriendResponse(   //unico sia per sendFriendRequest, acceptFriendRequest e rejectFriendRequest
+    val success: Boolean,
+    val message: String
+)

@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.musicbuddy.data.models.DeleteUserRequest
-import com.example.musicbuddy.data.models.UpdateLatLongRequest
+import com.example.musicbuddy.data.models.*
 import com.example.musicbuddy.network.RetrofitClient
 import com.example.musicbuddy.ui.auth.AuthState
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -29,7 +29,7 @@ data class UserLocation(
     val accuracy: Float
 )
 
-data class NearbyMusician(
+/*data class NearbyMusician(
     val userId: String,
     val name: String,
     val instrument: String,
@@ -38,7 +38,7 @@ data class NearbyMusician(
     val longitude: Double,
     val distance: Double, // in km
     val profilePhotoUrl: String? = null
-)
+)*/
 
 // ============= LOCATION STATE =============
 
@@ -53,7 +53,7 @@ sealed class LocationState {
 sealed class NearbyMusiciansState {
     object Idle : NearbyMusiciansState()
     object Loading : NearbyMusiciansState()
-    data class Success(val musicians: List<NearbyMusician>) : NearbyMusiciansState()
+    data class Success(val musicians: List<NearbyMusicianInfo>) : NearbyMusiciansState()
     data class Error(val message: String) : NearbyMusiciansState()
 }
 
@@ -62,6 +62,7 @@ sealed class NearbyMusiciansState {
 class LocationViewModel : ViewModel() {
 
     private val authApiService = RetrofitClient.getAuthApiService()
+    private val friendApiService = RetrofitClient.getFriendApiService()
     private val _locationState = MutableStateFlow<LocationState>(LocationState.Idle)
     val locationState: StateFlow<LocationState> = _locationState
 
@@ -71,8 +72,8 @@ class LocationViewModel : ViewModel() {
     private val _nearbyMusiciansState = MutableStateFlow<NearbyMusiciansState>(NearbyMusiciansState.Idle)
     val nearbyMusiciansState: StateFlow<NearbyMusiciansState> = _nearbyMusiciansState
 
-    private val _nearbyMusicians = MutableStateFlow<List<NearbyMusician>>(emptyList())
-    val nearbyMusicians: StateFlow<List<NearbyMusician>> = _nearbyMusicians
+    private val _nearbyMusicians = MutableStateFlow<List<NearbyMusicianInfo>>(emptyList())
+    val nearbyMusicians: StateFlow<List<NearbyMusicianInfo>> = _nearbyMusicians
 
     private var fusedLocationClient: FusedLocationProviderClient? = null
 
@@ -126,25 +127,6 @@ class LocationViewModel : ViewModel() {
     }
 
     /**
-     * Calculate distance between two coordinates (Haversine formula)
-     */
-    private fun calculateDistance(
-        lat1: Double,
-        lon1: Double,
-        lat2: Double,
-        lon2: Double
-    ): Double {
-        val R = 6371.0 // Earth radius in km
-        val dLat = Math.toRadians(lat2 - lat1)
-        val dLon = Math.toRadians(lon2 - lon1)
-        val a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                Math.sin(dLon / 2) * Math.sin(dLon / 2)
-        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
-        return R * c
-    }
-
-    /**
      * Post user location in the backend database
      */
     fun updateUserLocation(
@@ -173,69 +155,26 @@ class LocationViewModel : ViewModel() {
      * This should be called after getting the user's location
      */
     fun fetchNearbyMusicians(
+        userId: Int,
         userLatitude: Double,
         userLongitude: Double,
-        radiusKm: Double = 10.0
+        range: Double = 10.0
     ) {
         viewModelScope.launch {
             try {
                 _nearbyMusiciansState.value = NearbyMusiciansState.Loading
 
-                // TODO: Replace with actual API call to your backend
-                // For now, we'll use mock data
-                val mockMusicians = listOf(
-                    NearbyMusician(
-                        userId = "user_1",
-                        name = "Marco Rossi",
-                        instrument = "Chitarra",
-                        genre = "Rock",
-                        latitude = userLatitude + 0.01,
-                        longitude = userLongitude + 0.01,
-                        distance = calculateDistance(
-                            userLatitude,
-                            userLongitude,
-                            userLatitude + 0.01,
-                            userLongitude + 0.01
-                        )
-                    ),
-                    NearbyMusician(
-                        userId = "user_2",
-                        name = "Giulia Bianchi",
-                        instrument = "Voce",
-                        genre = "Rock",
-                        latitude = userLatitude - 0.02,
-                        longitude = userLongitude + 0.015,
-                        distance = calculateDistance(
-                            userLatitude,
-                            userLongitude,
-                            userLatitude - 0.02,
-                            userLongitude + 0.015
-                        )
-                    ),
-                    NearbyMusician(
-                        userId = "user_3",
-                        name = "Luca Verdi",
-                        instrument = "Batteria",
-                        genre = "Rock",
-                        latitude = userLatitude + 0.015,
-                        longitude = userLongitude - 0.02,
-                        distance = calculateDistance(
-                            userLatitude,
-                            userLongitude,
-                            userLatitude + 0.015,
-                            userLongitude - 0.02
-                        )
-                    )
-                )
+                //VISTO CHE NON DIAMO LA POSSIBILITà DI SCEGLIERE IL RANGE, PER ORA LO LASCIAMO A 10 KM DI DEFAULT (POSSIBILE SCELTA IN FUTURO)
+                val getNearbyMusiciansRequest = GetNearbyMusiciansRequest(userId, userLatitude, userLongitude, range)
 
-                // Filter by radius
-                val filtered = mockMusicians.filter { it.distance <= radiusKm }
-                    .sortedBy { it.distance }
+                val response = authApiService.getNearbyMusicians(getNearbyMusiciansRequest)
 
-                _nearbyMusicians.value = filtered
-                _nearbyMusiciansState.value = NearbyMusiciansState.Success(filtered)
+                if(!response.success) Log.e("AuthViewModel", "Error during fetching nearby musicians: ${response.message}")
 
-                Log.d("LocationViewModel", "Found ${filtered.size} nearby musicians")
+                _nearbyMusicians.value = response.data
+                _nearbyMusiciansState.value = NearbyMusiciansState.Success(response.data)
+
+                Log.d("LocationViewModel", "Found ${response.data.size} nearby musicians")
 
             } catch (e: Exception) {
                 _nearbyMusiciansState.value = NearbyMusiciansState.Error(e.message ?: "Unknown error")
@@ -252,5 +191,26 @@ class LocationViewModel : ViewModel() {
             context,
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    /**
+     * Send friend request to a musician
+     */
+    fun sendFriendRequest(userId: Int, friendId: Int) {
+        viewModelScope.launch {
+            try {
+                //VISTO CHE NON DIAMO LA POSSIBILITà DI SCEGLIERE IL RANGE, PER ORA LO LASCIAMO A 10 KM DI DEFAULT (POSSIBILE SCELTA IN FUTURO)
+                val request = FriendRequestField(userId, friendId)
+
+                val response = friendApiService.sendFriendRequest(request)
+
+                if(!response.success) Log.e("AuthViewModel", "Error during sending friend request: ${response.message}")
+
+                Log.d("LocationViewModel", "Friend request sent")
+
+            } catch (e: Exception) {
+                Log.e("LocationViewModel", "Error during sending friend request: ${e.message}")
+            }
+        }
     }
 }
