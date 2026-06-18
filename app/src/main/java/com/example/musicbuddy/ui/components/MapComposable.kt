@@ -104,7 +104,7 @@ fun MusicianMapView(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(300.dp)
+                .height(500.dp)
                 .background(
                     color = AppColors.InputBackground,
                     shape = RoundedCornerShape(8.dp)

@@ -199,7 +199,6 @@ class LocationViewModel : ViewModel() {
     fun sendFriendRequest(userId: Int, friendId: Int) {
         viewModelScope.launch {
             try {
-                //VISTO CHE NON DIAMO LA POSSIBILITà DI SCEGLIERE IL RANGE, PER ORA LO LASCIAMO A 10 KM DI DEFAULT (POSSIBILE SCELTA IN FUTURO)
                 val request = FriendRequestField(userId, friendId)
 
                 val response = friendApiService.sendFriendRequest(request)

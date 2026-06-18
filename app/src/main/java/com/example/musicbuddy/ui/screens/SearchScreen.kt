@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
@@ -74,6 +76,7 @@ fun SearchScreen(
     val currentPhotoUrl = userData?.get("photo_url") as? String
 
     var musiciansLoaded by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
 
     // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -160,7 +163,7 @@ fun SearchScreen(
             }
 
             Column(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -175,17 +178,17 @@ fun SearchScreen(
                                     nearbyMusicians = nearbyMusicians,
                                     modifier = Modifier.padding(bottom = 16.dp)
                                 )
-                            }
 
-                            // Show list
-                            NearbyMusiciansList(
-                                userId as Int,
-                                userLatitude = it.latitude,
-                                userLongitude = it.longitude,
-                                musicians = nearbyMusicians,
-                                modifier = Modifier.padding(bottom = 16.dp),
-                                locationViewModel
-                            )
+                                // Show list
+                                NearbyMusiciansList(
+                                    userId as Int,
+                                    userLatitude = it.latitude,
+                                    userLongitude = it.longitude,
+                                    musicians = nearbyMusicians,
+                                    modifier = Modifier.padding(bottom = 16.dp),
+                                    locationViewModel
+                                )
+                            }
                         }
                     }
 
