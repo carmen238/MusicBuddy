@@ -48,7 +48,11 @@ data class GetNearbyMusiciansRequest(
     val range: Double
 )
 
-data class FriendRequestField(   //unico sia per sendFriendRequest, acceptFriendRequest e rejectFriendRequest
-    val userId: Int,    //nel server è sender_id
-    val friendId: Int    //nel server è receiver_id
+data class FriendRequestField(   //unico sia per sendFriendRequest, acceptFriendRequest e deleteFriendRequest
+    val senderId: Int,
+    val receiverId: Int
+)
+
+data class GetAllFriendsRequest(
+    val userId: Int
 )

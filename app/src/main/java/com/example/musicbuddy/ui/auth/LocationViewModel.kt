@@ -62,7 +62,6 @@ sealed class NearbyMusiciansState {
 class LocationViewModel : ViewModel() {
 
     private val authApiService = RetrofitClient.getAuthApiService()
-    private val friendApiService = RetrofitClient.getFriendApiService()
     private val _locationState = MutableStateFlow<LocationState>(LocationState.Idle)
     val locationState: StateFlow<LocationState> = _locationState
 
@@ -191,25 +190,5 @@ class LocationViewModel : ViewModel() {
             context,
             Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
-    }
-
-    /**
-     * Send friend request to a musician
-     */
-    fun sendFriendRequest(userId: Int, friendId: Int) {
-        viewModelScope.launch {
-            try {
-                val request = FriendRequestField(userId, friendId)
-
-                val response = friendApiService.sendFriendRequest(request)
-
-                if(!response.success) Log.e("AuthViewModel", "Error during sending friend request: ${response.message}")
-
-                Log.d("LocationViewModel", "Friend request sent")
-
-            } catch (e: Exception) {
-                Log.e("LocationViewModel", "Error during sending friend request: ${e.message}")
-            }
-        }
     }
 }

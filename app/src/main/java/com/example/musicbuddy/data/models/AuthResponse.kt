@@ -116,7 +116,29 @@ data class GetNearbyMusiciansResponse(
     val message: String
 )
 
-data class GenericFriendResponse(   //unico sia per sendFriendRequest, acceptFriendRequest e rejectFriendRequest
+data class GenericFriendResponse(   //unico sia per sendFriendRequest, acceptFriendRequest deleteFriendRequest
     val success: Boolean,
+    val message: String
+)
+
+data class FriendInfo(
+    val id: Int,
+    val name: String,
+    val surname: String,
+    val phone: String? = null,
+    val bio: String? = null,
+    val instrument: String? = null,
+    val experienceLevel: String? = null,
+    val genre: String? = null,
+    val isInBand: Int,       //devo usare un Int perché SQLite3 non ha il tipo Boolean nativo
+    val photo_url: String? = null,
+    val sender_id: Int,     //chi ha mandato la richiesta in origine
+    val receiver_id: Int,     //chi ha ricevuto la richiesta in origine
+    val status: String
+)
+
+data class GetAllFriendsResponse(
+    val success: Boolean,
+    val data: List<FriendInfo>,
     val message: String
 )

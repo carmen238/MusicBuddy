@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import coil.compose.AsyncImage
 import com.example.musicbuddy.data.models.NearbyMusicianInfo
+import com.example.musicbuddy.ui.auth.FriendsViewModel
 import com.example.musicbuddy.ui.theme.AppColors
 import com.example.musicbuddy.ui.viewmodels.LocationViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -142,7 +143,7 @@ fun NearbyMusiciansList(
     userLongitude: Double,
     musicians: List<NearbyMusicianInfo>,
     modifier: Modifier = Modifier,
-    locationViewModel: LocationViewModel
+    friendsViewModel: FriendsViewModel
 ) {
     Column(
         modifier = modifier
@@ -172,7 +173,7 @@ fun NearbyMusiciansList(
         } else {
             musicians.forEach { musician ->
                 val distance = calculateDistance(userLatitude, userLongitude, musician.latitude, musician.longitude)
-                MusicianListItem(userId, musician, distance, locationViewModel)
+                MusicianListItem(userId, musician, distance, friendsViewModel)
                 if (musician != musicians.last()) {
                     Spacer(modifier = Modifier.height(8.dp))
                 }
@@ -185,7 +186,7 @@ fun NearbyMusiciansList(
  * Single musician list item
  */
 @Composable
-private fun MusicianListItem(userId: Int, musician: NearbyMusicianInfo, distance: Double, locationViewModel: LocationViewModel) {
+private fun MusicianListItem(userId: Int, musician: NearbyMusicianInfo, distance: Double, friendsViewModel: FriendsViewModel) {
     var showDialog by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
@@ -286,7 +287,7 @@ private fun MusicianListItem(userId: Int, musician: NearbyMusicianInfo, distance
                     TextButton(
                         onClick = {
                             showDialog = false
-                            locationViewModel.sendFriendRequest(userId, musician.id)
+                            friendsViewModel.sendFriendRequest(userId, musician.id)
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = AppColors.PrimaryGreen,  // Background color

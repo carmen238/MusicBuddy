@@ -231,9 +231,13 @@ fun NavigationGraph(
 
         // SCHERMATA 9: FriendsScreen
         composable(Screen.Friends.route) {
-            FriendsScreen(authViewModel, onBackClick = {
-                navController.navigate(Screen.Home.route)
-            })
+            FriendsScreen(authViewModel,
+                onBackClick = {
+                    navController.navigate(Screen.Home.route)
+                },
+                onNavigateToChat = {
+
+                })
         }
     }
 }

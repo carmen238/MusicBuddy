@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.musicbuddy.ui.auth.AuthViewModel
+import com.example.musicbuddy.ui.auth.FriendsViewModel
 import com.example.musicbuddy.ui.theme.AppColors
 import com.example.musicbuddy.ui.viewmodels.*
 import com.example.musicbuddy.ui.components.*
@@ -60,6 +61,7 @@ fun SearchScreen(
 
     // ViewModels
     val locationViewModel: LocationViewModel = viewModel()
+    val friendsViewModel: FriendsViewModel = viewModel()
 
     // States
     val locationState by locationViewModel.locationState.collectAsState()
@@ -186,7 +188,7 @@ fun SearchScreen(
                                     userLongitude = it.longitude,
                                     musicians = nearbyMusicians,
                                     modifier = Modifier.padding(bottom = 16.dp),
-                                    locationViewModel
+                                    friendsViewModel
                                 )
                             }
                         }
