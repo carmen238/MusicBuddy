@@ -142,13 +142,13 @@ fun SignUpScreenMusicalProfile(
             ) {
 
                 Text("🎵 Musical Profile", fontSize = 28.sp, fontWeight = FontWeight.Bold)
-                Text("Raccontaci di te come musicista")
+                Text("Tell us about you as a musician")
 
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // ===== STRUMENTO (UN SOLO) =====
-                Text("🎸 Strumento Principale", fontWeight = FontWeight.Bold)
-                Text("Seleziona uno strumento", fontSize = 12.sp, color = Color.Gray)
+                Text("🎸 Main instrument", fontWeight = FontWeight.Bold)
+                Text("Select an instrument", fontSize = 12.sp, color = Color.Gray)
 
                 instruments.chunked(2).forEach { row ->
                     Row(
@@ -184,8 +184,8 @@ fun SignUpScreenMusicalProfile(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // ===== EXPERIENCE =====
-                Text("📊 Livello Esperienza", fontWeight = FontWeight.Bold)
-                Text("Seleziona il tuo livello", fontSize = 12.sp, color = Color.Gray)
+                Text("📊 Experience level", fontWeight = FontWeight.Bold)
+                Text("Select your experience level", fontSize = 12.sp, color = Color.Gray)
 
                 experienceLevels.forEach { level ->
                     Button(
@@ -209,8 +209,8 @@ fun SignUpScreenMusicalProfile(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 // ===== GENRE (UN SOLO) =====
-                Text("🎵 Genere Preferito", fontWeight = FontWeight.Bold)
-                Text("Seleziona un genere", fontSize = 12.sp, color = Color.Gray)
+                Text("🎵 Favorite genre", fontWeight = FontWeight.Bold)
+                Text("Select your favorite music genre", fontSize = 12.sp, color = Color.Gray)
 
                 genres.chunked(2).forEach { row ->
                     Row(

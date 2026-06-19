@@ -1,21 +1,15 @@
 package com.example.musicbuddy.ui.screens
 
-import ImageCard
-import android.Manifest
-import android.content.pm.PackageManager
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import com.example.musicbuddy.ui.components.ImageCard
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,13 +22,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.components.*
 import com.example.musicbuddy.ui.theme.AppColors
-import com.example.musicbuddy.ui.viewmodels.*
 import com.example.musicbuddy.R
 
 @Composable
@@ -66,6 +57,7 @@ fun HomeScreen(
     val userGenre = userData?.get("genre").toString() ?: "Non specificato"
     val userInstrument = userData?.get("instrument") as? String ?: "Non specificato"
     val userExperience = userData?.get("experienceLevel") as? String ?: "Non specificato"
+    val userBio = userData?.get("bio") as? String ?: "Empty"
     //val userIsInBand = (userData?.get("isInBand") ?: "false") as Boolean
     val userIsInBand = userData?.get("isInBand") as? Boolean ?: false
     val currentPhotoUrl = userData?.get("photo_url") as? String
@@ -87,27 +79,7 @@ fun HomeScreen(
         authViewModel.getTotNumUsers()
         authViewModel.getGenresStats()
         authViewModel.getInstrumentsStats()
-
-        /*locationViewModel.initializeLocationClient(context)
-
-        // Request location permission
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            locationViewModel.requestCurrentLocation(context)
-        } else {
-            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        }*/
     }
-
-    // Fetch nearby musicians when location is available
-    /*LaunchedEffect(userLocation) {
-        userLocation?.let {
-            locationViewModel.fetchNearbyMusicians(it.latitude, it.longitude)
-        }
-    }*/
 
     // Community statistics data - Refined colors
     val communityGenreData = mutableListOf<BarChartData>()
@@ -148,7 +120,7 @@ fun HomeScreen(
             ) {
                 Column {
                     Text(
-                        "MusicBuddy",
+                        "Croma",
                         fontSize = 28.sp,
                         fontWeight = FontWeight.Bold,
                         color = AppColors.PrimaryGreen
@@ -162,10 +134,10 @@ fun HomeScreen(
                 }
 
                 // User avatar
-                if (currentPhotoUrl != null) {
-                    val fullPhotoUrl = "http://192.168.1.100:3000$currentPhotoUrl"
+                if (currentPhotoUrl != null && currentPhotoUrl != "") {
+                    //val fullPhotoUrl = currentPhotoUrl
                     AsyncImage(
-                        model = fullPhotoUrl,
+                        model = currentPhotoUrl,
                         contentDescription = "Profile",
                         modifier = Modifier
                             .size(50.dp)
@@ -185,11 +157,11 @@ fun HomeScreen(
                             ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            userName.firstOrNull()?.toString() ?: "U",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "",
+                            tint = AppColors.LightBackground,
+                            modifier = Modifier.size(18.dp)
                         )
                     }
                 }
@@ -203,7 +175,7 @@ fun HomeScreen(
                 color = AppColors.DarkText,
                 modifier = Modifier.padding(bottom = 12.dp)
             )
-            ImageCard()
+            ImageCard(userBio)       //NON SERVE
             // Profile cards grid
             Row(
                 modifier = Modifier
@@ -271,93 +243,6 @@ fun HomeScreen(
                 maxValue = totalUsers.toFloat(),
                 modifier = Modifier.padding(bottom = 24.dp)
             )
-
-            // ================= LOCATION SECTION =================
-            /*Text(
-                "Nearby musicians",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                color = AppColors.DarkText,
-                modifier = Modifier.padding(bottom = 12.dp)
-            )
-
-            when (locationState) {
-                is LocationState.Success -> {
-                    userLocation?.let {
-                        // Show map
-                        MusicianMapView(
-                            userLatitude = it.latitude,
-                            userLongitude = it.longitude,
-                            nearbyMusicians = nearbyMusicians,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-
-                        // Show list
-                        NearbyMusiciansList(
-                            musicians = nearbyMusicians,
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-                    }
-                }
-
-                is LocationState.Loading -> {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFF5F5F5)
-                        )
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(100.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                color = AppColors.PrimaryGreen
-                            )
-                        }
-                    }
-                }
-
-                is LocationState.PermissionDenied -> {
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = Color(0xFFF5F5F5)
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.LocationOn,
-                                contentDescription = null,
-                                tint = AppColors.LightText,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                "Enable the localization permissions",
-                                color = AppColors.LightText,
-                                fontSize = 13.sp
-                            )
-                        }
-                    }
-                }
-
-                else -> {}
-            }*/
 
             Spacer(modifier = Modifier.height(16.dp))
 

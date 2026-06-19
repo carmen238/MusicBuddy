@@ -1,3 +1,5 @@
+package com.example.musicbuddy.ui.components
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -9,7 +11,7 @@ import coil.compose.AsyncImage
 import androidx.compose.foundation.shape.RoundedCornerShape
 
 @Composable
-fun ImageCard() {
+fun ImageCard(userBio: String) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -18,7 +20,7 @@ fun ImageCard() {
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column {
-            AsyncImage(
+            /*AsyncImage(
                 model = "http://172.20.10.4:3000/uploads/profile-photos/undefined_1780492746157-590666397.jpg",
                 contentDescription = "Immagine",
                 modifier = Modifier
@@ -28,20 +30,28 @@ fun ImageCard() {
                 contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))*/
 
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = "Titolo della Card",
+                    text = "Your bio",
                     style = MaterialTheme.typography.titleMedium
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                Text(
-                    text = "Descrizione breve della card",
-                    style = MaterialTheme.typography.bodyMedium
-                )
+                if(userBio != "") {
+                    Text(
+                        text = userBio,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                else {
+                    Text(
+                        text = "Empty (add one in your profile settings)",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             }
         }
     }
