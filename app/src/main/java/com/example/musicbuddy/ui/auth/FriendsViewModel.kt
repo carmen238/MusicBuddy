@@ -83,13 +83,21 @@ class FriendsViewModel : ViewModel() {
 
                 Log.d("FriendsViewModel", "Friend request sent")
 
+                val request2 = GetAllFriendsRequest(userId)
+
+                val response2 = friendApiService.getAllFriends(request2)
+
+                if(!response2.success) Log.e("FriendsViewModel", "Error during fetching nearby musicians: ${response2.message}")
+
+                _allFriends.value = response2.data
+
             } catch (e: Exception) {
                 Log.e("FriendsViewModel", "Error during sending friend request: ${e.message}")
             }
         }
     }
 
-    fun deleteFriendRequest(senderId: Int, receiverId: Int) {
+    fun deleteFriendRequest(senderId: Int, receiverId: Int, userIsSender: Boolean) {
         viewModelScope.launch {
             try {
                 //Nel caso di cancellazione della richiesta, il senderId è l'utente che cancella la richiesta, altrimenti se una richiesta è rigettata è il contrario (gestito lato client)
@@ -100,6 +108,17 @@ class FriendsViewModel : ViewModel() {
                 if(!response.success) Log.e("FriendsViewModel", "Error during deleting friend request: ${response.message}")
 
                 Log.d("FriendsViewModel", "Friend request deleted")
+
+                val request2: GetAllFriendsRequest
+
+                if(userIsSender) request2 = GetAllFriendsRequest(senderId)
+                else request2 = GetAllFriendsRequest(receiverId)
+
+                val response2 = friendApiService.getAllFriends(request2)
+
+                if(!response2.success) Log.e("FriendsViewModel", "Error during fetching nearby musicians: ${response2.message}")
+
+                _allFriends.value = response2.data
 
             } catch (e: Exception) {
                 Log.e("FriendsViewModel", "Error during deleting friend request: ${e.message}")

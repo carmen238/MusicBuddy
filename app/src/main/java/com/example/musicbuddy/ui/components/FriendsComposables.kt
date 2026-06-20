@@ -38,6 +38,7 @@ import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.auth.FriendsViewModel
 import com.example.musicbuddy.ui.components.*
 import com.example.musicbuddy.ui.theme.AppColors
+import kotlinx.coroutines.delay
 
 @Composable
 fun SectionHeader(title: String) {
@@ -170,7 +171,7 @@ fun FriendRow(
                     TextButton(
                         onClick = {
                             showDialog = false
-                            friendsViewModel.deleteFriendRequest(friend.sender_id, friend.receiver_id)
+                            friendsViewModel.deleteFriendRequest(friend.sender_id, friend.receiver_id, friend.sender_id == userId)
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red,  // Background color
@@ -356,9 +357,7 @@ fun ReceivedFriendRow(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 //Accept button
                 Button(
-                    onClick = {
-                        friendsViewModel.acceptFriendRequest(userId, friend.id)
-                        friendsViewModel.getAllFriends(userId) },
+                    onClick = { friendsViewModel.acceptFriendRequest(userId, friend.id) },
                     modifier = Modifier
                         .weight(1f)
                         .height(40.dp),
@@ -411,8 +410,7 @@ fun ReceivedFriendRow(
                     TextButton(
                         onClick = {
                             showDialog = false
-                            friendsViewModel.deleteFriendRequest(friend.sender_id, friend.receiver_id)
-                            friendsViewModel.getAllFriends(userId)
+                            friendsViewModel.deleteFriendRequest(friend.sender_id, friend.receiver_id, friend.sender_id == userId)
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red,  // Background color
@@ -650,8 +648,7 @@ fun SentFriendRow(
                     TextButton(
                         onClick = {
                             showDialog = false
-                            friendsViewModel.deleteFriendRequest(friend.sender_id, friend.receiver_id)
-                            friendsViewModel.getAllFriends(userId)
+                            friendsViewModel.deleteFriendRequest(friend.sender_id, friend.receiver_id, friend.sender_id == userId)
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Red,  // Background color
