@@ -6,6 +6,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -31,20 +32,21 @@ import com.example.musicbuddy.ui.components.SectionHeader
 import com.example.musicbuddy.ui.components.FriendRow
 import com.example.musicbuddy.data.models.*
 import com.example.musicbuddy.ui.auth.FriendsViewModel
+import com.example.musicbuddy.ui.components.ReceivedFriendRow
+import com.example.musicbuddy.ui.components.SentFriendRow
 import com.example.musicbuddy.ui.theme.AppColors
 import com.example.musicbuddy.ui.viewmodels.LocationViewModel
-import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+//@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun FriendsScreen(
     authViewModel: AuthViewModel,
-    onNavigateToChat: (friendId: Int) -> Unit,
+    onNavigateToChat: (friendId: Int, friendName: String, friendSurname: String) -> Unit,
     onBackClick: () -> Unit = {}
 ) {
     val userData by authViewModel.userData.collectAsState()
 
-    val locationViewModel: LocationViewModel = viewModel()
+    //val locationViewModel: LocationViewModel = viewModel()
     val friendsViewModel: FriendsViewModel = viewModel()
 
     val allFriends by friendsViewModel.allFriends.collectAsState()
@@ -73,110 +75,6 @@ fun FriendsScreen(
     }
 
     //Funzioni da usare: acceptFriendRequest(...), deleteFriendRequest(...)
-
-    // Funzioni stub per le tue chiamate Retrofit
-    /*val cancelRequest: (Friend) -> Unit = { friend ->
-        // TODO: Invocare API Retrofit per annullare la richiesta inviata
-        uiState = uiState.copy(sentRequests = uiState.sentRequests.filter { it.id != friend.id })
-    }
-
-    val acceptRequest: (Friend) -> Unit = { friend ->
-        // TODO: Invocare API Retrofit per accettare la richiesta
-        uiState = uiState.copy(
-            receivedRequests = uiState.receivedRequests.filter { it.id != friend.id },
-            friendsList = uiState.friendsList + friend.copy(status = FriendStatus.ACCEPTED)
-        )
-    }
-
-    val rejectRequest: (Friend) -> Unit = { friend ->
-        // TODO: Invocare API Retrofit per rifiutare la richiesta ricevuta
-        uiState = uiState.copy(receivedRequests = uiState.receivedRequests.filter { it.id != friend.id })
-    }
-
-    val removeFriend: (Friend) -> Unit = { friend ->
-        // TODO: Invocare API Retrofit per rimuovere l'amico
-        uiState = uiState.copy(friendsList = uiState.friendsList.filter { it.id != friend.id })
-    }*/
-
-    /*Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Your friends list", fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
-            )
-        }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            // SEZIONE 1: Richieste Ricevute (Pending in ingresso)
-            if (/*uiState.receivedRequests.isNotEmpty()*/true) {
-                stickyHeader { SectionHeader(title = "Received requests") }
-                items(uiState.receivedRequests, key = { it.id }) { friend ->
-                    FriendRow(
-                        friend = friend,
-                        actions = {
-                            IconButton(onClick = { acceptRequest(friend) }) {
-                                Icon(Icons.Default.Check, contentDescription = "Accetta", tint = Color.Green)
-                            }
-                            IconButton(onClick = { rejectRequest(friend) }) {
-                                Icon(Icons.Default.Close, contentDescription = "Rifiuta", tint = MaterialTheme.colorScheme.error)
-                            }
-                        }
-                    )
-                }
-            }
-
-            // SEZIONE 2: Richieste Inviate (Pending in uscita)
-            if (uiState.sentRequests.isNotEmpty()) {
-                stickyHeader { SectionHeader(title = "Sent requests (${uiState.sentRequests.size})") }
-                items(uiState.sentRequests, key = { it.id }) { friend ->
-                    FriendRow(
-                        friend = friend,
-                        actions = {
-                            Button(
-                                onClick = { cancelRequest(friend) },
-                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.errorContainer, contentColor = MaterialTheme.colorScheme.onErrorContainer)
-                            ) {
-                                Text("Annulla", style = MaterialTheme.typography.bodySmall)
-                            }
-                        }
-                    )
-                }
-            }
-
-            // SEZIONE 3: Lista Amici (Accettati)
-            stickyHeader { SectionHeader(title = "I Tuoi Amici (${uiState.friendsList.size})") }
-            if (uiState.friendsList.isEmpty()) {
-                item {
-                    Text(
-                        text = "Non hai ancora aggiunto amici. Inizia a suonare con qualcuno!",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(vertical = 16.dp),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            } else {
-                items(uiState.friendsList, key = { it.id }) { friend ->
-                    FriendRow(
-                        friend = friend,
-                        actions = {
-                            IconButton(onClick = { onNavigateToChat(friend.id) }) {
-                                Icon(Icons.Default.Chat, contentDescription = "Apri Chat", tint = MaterialTheme.colorScheme.primary)
-                            }
-                            IconButton(onClick = { removeFriend(friend) }) {
-                                Icon(Icons.Default.PersonRemove, contentDescription = "Rimuovi Amico", tint = MaterialTheme.colorScheme.outline)
-                            }
-                        }
-                    )
-                }
-            }
-        }
-    }*/
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -221,7 +119,7 @@ fun FriendsScreen(
                     .fillMaxSize()
                     .background(AppColors.LightBackground)
                     .verticalScroll(scrollState),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 //COLONNA AMICI ACCETTATI
@@ -243,7 +141,31 @@ fun FriendsScreen(
                         thickness = 1.dp,
                         color = Color.Gray
                     )
-                    //...
+
+                    if (!musiciansLoaded) {
+                        Text(
+                            "No friends found",
+                            fontSize = 14.sp,
+                            color = AppColors.LightText,
+                            modifier = Modifier.padding(vertical = 16.dp)
+                        )
+                    } else {
+                        var listTest = false
+                        allFriends.forEach { friend ->
+                            if((friend.sender_id == userId || friend.receiver_id == userId) && friend.status == "ACCEPTED") {
+                                listTest = true
+                                FriendRow(userId, friend, { id, name, surname -> onNavigateToChat(id, name, surname) }, friendsViewModel)
+                            }
+                        }
+                        if(!listTest) {
+                            Text(
+                                "No friends found",
+                                fontSize = 14.sp,
+                                color = AppColors.LightText,
+                                modifier = Modifier.padding(vertical = 16.dp)
+                            )
+                        }
+                    }
                 }
 
                 //COLONNA RICHIESTE RICEVUTE
@@ -265,7 +187,31 @@ fun FriendsScreen(
                         thickness = 1.dp,
                         color = Color.Gray
                     )
-                    //...
+
+                    if (!musiciansLoaded) {
+                        Text(
+                            "No requests found",
+                            fontSize = 14.sp,
+                            color = AppColors.LightText,
+                            modifier = Modifier.padding(vertical = 16.dp)
+                        )
+                    } else {
+                        var listTest = false
+                        allFriends.forEach { friend ->
+                            if(friend.sender_id == friend.id && friend.receiver_id == userId && friend.status == "PENDING") {
+                                listTest = true
+                                ReceivedFriendRow(userId, friend, friendsViewModel)
+                            }
+                        }
+                        if(!listTest) {
+                            Text(
+                                "No requests found",
+                                fontSize = 14.sp,
+                                color = AppColors.LightText,
+                                modifier = Modifier.padding(vertical = 16.dp)
+                            )
+                        }
+                    }
                 }
 
                 //COLONNA RICHIESTE INVIATE
@@ -287,7 +233,31 @@ fun FriendsScreen(
                         thickness = 1.dp,
                         color = Color.Gray
                     )
-                    //...
+
+                    if (!musiciansLoaded) {
+                        Text(
+                            "No requests found",
+                            fontSize = 14.sp,
+                            color = AppColors.LightText,
+                            modifier = Modifier.padding(vertical = 16.dp)
+                        )
+                    } else {
+                        var listTest = false
+                        allFriends.forEach { friend ->
+                            if(friend.sender_id == userId && friend.receiver_id == friend.id && friend.status == "PENDING") {
+                                listTest = true
+                                SentFriendRow(userId, friend, friendsViewModel)
+                            }
+                        }
+                        if(!listTest) {
+                            Text(
+                                "No requests found",
+                                fontSize = 14.sp,
+                                color = AppColors.LightText,
+                                modifier = Modifier.padding(vertical = 16.dp)
+                            )
+                        }
+                    }
                 }
             }
         }

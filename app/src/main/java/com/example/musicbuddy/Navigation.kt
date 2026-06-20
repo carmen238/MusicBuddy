@@ -14,15 +14,7 @@ import androidx.navigation.navArgument
 import com.example.musicbuddy.ui.auth.AuthState
 import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.components.TunerLogic
-import com.example.musicbuddy.ui.screens.HomeScreen
-import com.example.musicbuddy.ui.screens.LoginScreen
-import com.example.musicbuddy.ui.screens.ProfileScreen
-import com.example.musicbuddy.ui.screens.SearchScreen
-import com.example.musicbuddy.ui.screens.SignUpScreen
-import com.example.musicbuddy.ui.screens.SignUpScreenMusicalProfile
-import com.example.musicbuddy.ui.screens.StartScreen
-import com.example.musicbuddy.ui.screens.TunerScreen
-import com.example.musicbuddy.ui.screens.FriendsScreen
+import com.example.musicbuddy.ui.screens.*
 
 /**
  * Definizione delle route dell'app
@@ -38,6 +30,7 @@ sealed class Screen(val route: String) {
     object Profile : Screen("profile")
     object Tuner : Screen("tuner")
     object Friends : Screen("friends")
+    object Chat : Screen("chat/{friendId}/{friendName}/{friendSurname}")
 }
 
 /**
@@ -235,9 +228,29 @@ fun NavigationGraph(
                 onBackClick = {
                     navController.navigate(Screen.Home.route)
                 },
-                onNavigateToChat = {
-
+                onNavigateToChat = {friendId, friendName, friendSurname ->
+                    navController.navigate("chat/${friendId}/${friendName}/${friendSurname}") {
+                        popUpTo(Screen.Friends.route) { saveState = true }
+                        launchSingleTop = true
+                    }
                 })
+        }
+
+        composable(
+            route = "chat/{friendId}",
+            arguments = listOf(
+                navArgument("friendId") { type = NavType.IntType },
+                navArgument("friendName") { type = NavType.StringType },
+                navArgument("friendSurname") { type = NavType.StringType },
+            )
+        ) { backStackEntry ->
+            val friendId = backStackEntry.arguments?.getInt("friendId") ?: 0
+            val friendName = backStackEntry.arguments?.getString("friendName") ?: ""
+            val friendSurname = backStackEntry.arguments?.getString("friendSurname") ?: ""
+
+            ChatScreen(authViewModel, friendId, friendName, friendSurname, onBackClick = {
+                navController.navigate(Screen.Friends.route)
+            })
         }
     }
 }
