@@ -72,6 +72,7 @@ fun SearchScreen(
     val locationState by locationViewModel.locationState.collectAsState()
     val userLocation by locationViewModel.userLocation.collectAsState()
     val nearbyMusicians by locationViewModel.nearbyMusicians.collectAsState()
+    val nearbyMusiciansState by locationViewModel.nearbyMusiciansState.collectAsState()
 
     // User data
     val userId = userData?.get("userId") as? Int
@@ -82,7 +83,6 @@ fun SearchScreen(
     val userIsInBand = userData?.get("isInBand") as? Boolean ?: false
     val currentPhotoUrl = userData?.get("photo_url") as? String
 
-    var musiciansLoaded by remember { mutableStateOf(false) }
     val scrollState = rememberScrollState()
 
     // Permission launcher
@@ -125,8 +125,6 @@ fun SearchScreen(
             locationViewModel.fetchNearbyMusicians(userId as Int, it.latitude, it.longitude)
         }
     }
-
-    if(nearbyMusicians.isNotEmpty()) musiciansLoaded = true
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -197,92 +195,88 @@ fun SearchScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Column(
-                modifier = Modifier.fillMaxSize().verticalScroll(scrollState),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(scrollState),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                when (locationState) {
-                    is LocationState.Success -> {
-                        userLocation?.let {
-                            // Show map
-                            if(musiciansLoaded) {
-                                MusicianMapView(
-                                    userLatitude = it.latitude,
-                                    userLongitude = it.longitude,
-                                    nearbyMusicians = nearbyMusicians,
-                                    modifier = Modifier.padding(bottom = 16.dp)
-                                )
+                if (locationState is LocationState.Success && nearbyMusiciansState is NearbyMusiciansState.Success) {
+                    userLocation?.let {
+                        // Show map
+                        MusicianMapView(
+                            userLatitude = it.latitude,
+                            userLongitude = it.longitude,
+                            nearbyMusicians = nearbyMusicians,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
 
-                                // Show list
-                                NearbyMusiciansList(
-                                    userId as Int,
-                                    userLatitude = it.latitude,
-                                    userLongitude = it.longitude,
-                                    musicians = nearbyMusicians,
-                                    modifier = Modifier.padding(bottom = 16.dp),
-                                    friendsViewModel
-                                )
-                            }
-                        }
+                        // Show list
+                        NearbyMusiciansList(
+                            userId as Int,
+                            userLatitude = it.latitude,
+                            userLongitude = it.longitude,
+                            musicians = nearbyMusicians,
+                            modifier = Modifier.padding(bottom = 16.dp),
+                            friendsViewModel
+                        )
                     }
+                }
 
-                    is LocationState.Loading -> {
-                        Card(
+                else if (locationState is LocationState.Loading && nearbyMusiciansState is NearbyMusiciansState.Loading) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFFF5F5F5)
+                        )
+                    ) {
+                        Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color(0xFFF5F5F5)
-                            )
+                                .height(100.dp),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(100.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(
-                                    color = AppColors.PrimaryGreen
-                                )
-                            }
+                            CircularProgressIndicator(
+                                color = AppColors.PrimaryGreen
+                            )
                         }
                     }
+                }
 
-                    is LocationState.PermissionDenied -> {
-                        Card(
+                else if (locationState is LocationState.PermissionDenied && nearbyMusiciansState is NearbyMusiciansState.Error) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 16.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color(0xFFF5F5F5)
+                        )
+                    ) {
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(bottom = 16.dp),
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = Color(0xFFF5F5F5)
-                            )
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.Center,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.LocationOn,
-                                    contentDescription = null,
-                                    tint = AppColors.LightText,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    "Enable the localization permissions",
-                                    color = AppColors.LightText,
-                                    fontSize = 13.sp
-                                )
-                            }
+                            Icon(
+                                imageVector = Icons.Default.LocationOn,
+                                contentDescription = null,
+                                tint = AppColors.LightText,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                "Enable the localization permissions",
+                                color = AppColors.LightText,
+                                fontSize = 13.sp
+                            )
                         }
                     }
-
-                    else -> {}
                 }
             }
         }
