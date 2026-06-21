@@ -118,7 +118,7 @@ fun MusicianMapView(
         if (nearbyMusicians.isNotEmpty()) {
             Text(
                 "${nearbyMusicians.size} musicians found",
-                fontSize = 12.sp,
+                fontSize = 16.sp,
                 color = AppColors.LightText,
                 fontWeight = FontWeight.Medium
             )
@@ -157,7 +157,7 @@ fun NearbyMusiciansList(
         // Title
         Text(
             "🎸 Nearby musicians",
-            fontSize = 16.sp,
+            fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             color = AppColors.PrimaryGreen,
             modifier = Modifier.padding(bottom = 12.dp)

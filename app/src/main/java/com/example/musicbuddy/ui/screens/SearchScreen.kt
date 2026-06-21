@@ -22,6 +22,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -54,7 +58,8 @@ import com.example.musicbuddy.ui.components.*
 @Composable
 fun SearchScreen(
     authViewModel: AuthViewModel,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onRefreshClick: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val userData by authViewModel.userData.collectAsState()
@@ -92,7 +97,6 @@ fun SearchScreen(
     // Initialize
     LaunchedEffect(Unit) {
         authViewModel.fetchUserData()
-        println("QUI 1")
         locationViewModel.initializeLocationClient(context)
 
         // Request location permission
@@ -102,7 +106,6 @@ fun SearchScreen(
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             locationViewModel.requestCurrentLocation(context)
-            println("QUI 2")
         } else {
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
         }
@@ -163,6 +166,35 @@ fun SearchScreen(
                     color = AppColors.DarkText
                 )
             }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(
+                    onClick = onRefreshClick,
+                    modifier = Modifier
+                        .height(40.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = AppColors.PrimaryGreen
+                    ),
+                    shape = RoundedCornerShape(10.dp),
+                    border = androidx.compose.material3.ButtonDefaults.outlinedButtonBorder
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Refresh,
+                        contentDescription = "Refresh button",
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
+                    )
+
+                    Text("Refresh", color = Color.White, fontWeight = FontWeight.SemiBold, fontSize = 18.sp, maxLines = 1, softWrap = false)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Column(
                 modifier = Modifier.fillMaxSize().verticalScroll(scrollState),

@@ -200,7 +200,13 @@ fun NavigationGraph(
         composable(Screen.Search.route) {
             SearchScreen(authViewModel = authViewModel, onBackClick = {
                 navController.navigate(Screen.Home.route)
-            })
+            },
+                onRefreshClick = { navController.navigate(Screen.Search.route) {
+                    launchSingleTop = true
+                    popUpTo(Screen.Search.route) { inclusive = true }
+                    }
+                }
+            )
         }
 
         // ===== SCHERMATA 7: ProfileScreen (collegata alla navbar) =====
@@ -237,7 +243,7 @@ fun NavigationGraph(
         }
 
         composable(
-            route = "chat/{friendId}",
+            route = "chat/{friendId}/{friendName}/{friendSurname}",
             arguments = listOf(
                 navArgument("friendId") { type = NavType.IntType },
                 navArgument("friendName") { type = NavType.StringType },
