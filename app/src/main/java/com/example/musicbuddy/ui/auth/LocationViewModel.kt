@@ -14,10 +14,12 @@ import com.example.musicbuddy.network.RetrofitClient
 import com.example.musicbuddy.ui.auth.AuthState
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import retrofit2.http.Body
 import kotlin.Int
 
@@ -102,8 +104,23 @@ class LocationViewModel : ViewModel() {
 
                 _locationState.value = LocationState.Loading
 
-                val location = fusedLocationClient?.lastLocation?.await()
+                // 1. Prova a prendere l'ultima posizione conosciuta (rapida, dalla cache)
+                var location = fusedLocationClient?.lastLocation?.await()
 
+                // 2. SE LA CACHE È VUOTA, forza una richiesta in tempo reale
+                if (location == null) {
+                    Log.d("LocationViewModel", "Cache location is null, requesting fresh location...")
+
+                    //withContext(NonCancellable) impedisce il crash "Job was cancelled" se l'interfaccia si aggiorna
+                    location = withContext(NonCancellable) {
+                        fusedLocationClient?.getCurrentLocation(
+                            com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY,
+                            com.google.android.gms.tasks.CancellationTokenSource().token
+                        )?.await()
+                    }
+                }
+
+                // 3. Gestione del risultato finale
                 if (location != null) {
                     val userLocation = UserLocation(
                         latitude = location.latitude,
@@ -114,8 +131,9 @@ class LocationViewModel : ViewModel() {
                     _locationState.value = LocationState.Success(userLocation)
                     Log.d("LocationViewModel", "Location obtained: ${location.latitude}, ${location.longitude}")
                 } else {
+                    // Se è ancora null (es. il GPS è spento del tutto a livello hardware)
                     _locationState.value = LocationState.Error("Location not available")
-                    Log.w("LocationViewModel", "Location is null")
+                    Log.w("LocationViewModel", "Location is still null after fresh request")
                 }
 
             } catch (e: Exception) {

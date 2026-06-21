@@ -223,7 +223,7 @@ fun SearchScreen(
                     }
                 }
 
-                else if (locationState is LocationState.Loading && nearbyMusiciansState is NearbyMusiciansState.Loading) {
+                else if (locationState is LocationState.Loading || nearbyMusiciansState is NearbyMusiciansState.Loading) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -246,7 +246,7 @@ fun SearchScreen(
                     }
                 }
 
-                else if (locationState is LocationState.PermissionDenied && nearbyMusiciansState is NearbyMusiciansState.Error) {
+                else if (locationState is LocationState.PermissionDenied || nearbyMusiciansState is NearbyMusiciansState.Error) {
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
