@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Logout
@@ -32,7 +33,8 @@ import com.example.musicbuddy.ui.components.Validators
 fun ProfileScreen(
     authViewModel: AuthViewModel,
     onLogoutClick: () -> Unit = {},
-    onDeleteAccountClick: () -> Unit = {}
+    onDeleteAccountClick: () -> Unit = {},
+    onBackClick: () -> Unit = {}
 ) {
 
     val userData by authViewModel.userData.collectAsState()
@@ -83,9 +85,22 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                IconButton(
+                    onClick = onBackClick,
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = AppColors.DarkText,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(10.dp))
+
                 Text(
                     "Profile",
                     fontSize = 32.sp,

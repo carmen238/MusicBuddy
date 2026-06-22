@@ -340,7 +340,7 @@ fun HomeScreen(
                         modifier = Modifier.size(18.dp)
                     )
 
-                    Text("Profile", color = AppColors.DarkText, fontWeight = FontWeight.SemiBold)
+                    Text("Profile", color = AppColors.DarkText, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
                 }
             }
 

@@ -1,15 +1,25 @@
 package com.example.musicbuddy.ui.components
 
+import android.Manifest
+import android.media.AudioFormat
+import android.media.AudioRecord
+import android.media.MediaRecorder
+import android.util.Log
+import androidx.annotation.RequiresPermission
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import be.tarsos.dsp.AudioDispatcher
 import be.tarsos.dsp.AudioProcessor
 import be.tarsos.dsp.AudioEvent
+import be.tarsos.dsp.io.TarsosDSPAudioFormat
+import be.tarsos.dsp.io.android.AndroidAudioInputStream
 import be.tarsos.dsp.io.android.AudioDispatcherFactory
 import be.tarsos.dsp.pitch.PitchProcessor
 import be.tarsos.dsp.pitch.PitchDetectionHandler
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlin.math.log10
 import kotlin.math.log2
@@ -21,56 +31,20 @@ class TunerLogic : ViewModel() {
     /**
      * Avvia il thread di TarsosDSP per il pitch detection
      */
-    /*suspend fun startPitchDetection(onPitchDetected: (Float, Float) -> Unit) {
-        withContext(Dispatchers.IO) {
-            val sampleRate = 44100
-            val bufferSize = 512
-            val overlap = 0
 
-            val dispatcher: AudioDispatcher =
-                AudioDispatcherFactory.fromDefaultMicrophone(sampleRate, bufferSize, overlap)
-
-            val pdh = PitchDetectionHandler { result, audioEvent ->
-                val pitch =
-                    result.pitch // Frequenza in Hertz (-1 se non viene rilevato un tono chiaro)
-                val dbSPL = audioEvent.getdBSPL() // Intensità in Decibel
-                if (pitch != -1f && dbSPL <= 0f) {
-                    // Ritorna al thread principale per aggiornare la UI di Compose
-                    onPitchDetected(pitch, dbSPL.toFloat())
-                }
-            }
-
-            /*val pdh = PitchProcessor(
-                PitchProcessor.PitchEstimationAlgorithm.FFT_YIN,
-                sampleRate.toFloat(),
-                bufferSize
-            ) { result, _ ->
-                val pitch = result.pitch
-                if (pitch != -1f) {
-                    // Ritorna al thread principale per aggiornare la UI di Compose
-                    onPitchDetected(pitch)
-                }
-            }*/
-
-            val pitchProcessor = PitchProcessor(
-                PitchProcessor.PitchEstimationAlgorithm.FFT_YIN,
-                sampleRate.toFloat(),
-                bufferSize,
-                pdh
-            )
-
-            dispatcher.addAudioProcessor(pitchProcessor)
-            dispatcher.run() // Esegue il loop di ascolto
-        }
-    }*/
-
-    //VERSIONE ALTERNATIVA
     private var dispatcher: AudioDispatcher? = null
+
+    //private var nativeAudioRecord: AudioRecord? = null
 
     var pitch = mutableFloatStateOf(0f)
     var decibels = mutableFloatStateOf(-160f) // Silenzio di default
 
+    @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     fun startListening() {
+        if (dispatcher != null) {
+            stopListening()
+        }
+
         val sampleRate = 44100
         val bufferSize = 4096
         val overlap = 0
@@ -114,11 +88,33 @@ class TunerLogic : ViewModel() {
         })
 
         // Avvia il thread audio
-        Thread(dispatcher, "Audio Thread").start()
+        //Thread(dispatcher, "Audio Thread").start()
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                dispatcher?.run() // .run() blocca il thread corrente, perfetto per Dispatchers.IO
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
 
     fun stopListening() {
-        dispatcher?.stop()
+        try {
+            // 1. Ferma il dispatcher di TarsosDSP
+            dispatcher?.stop()
+            dispatcher = null
+
+        } catch (e: Exception) {
+            Log.e("TunerLogic", "Errore stop hardware: ${e.message}")
+        } finally {
+            pitch.floatValue = 0f
+            decibels.floatValue = -160f
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        stopListening()
     }
 
     //Matrix to map sound pitches to musical notes. The rows are the notes, the columns are the octaves

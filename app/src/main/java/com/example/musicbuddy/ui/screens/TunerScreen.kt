@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -33,13 +34,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 
 import com.example.musicbuddy.ui.components.TunerLogic
 import com.example.musicbuddy.ui.theme.AppColors
+import kotlinx.coroutines.delay
 import kotlin.math.abs
 import kotlin.math.log2
 import kotlin.math.roundToInt
 
-@Preview
 @Composable
-fun TunerScreen(tunerLogic: TunerLogic = viewModel(), onBackClick: () -> Unit = {}) {
+fun TunerScreen(tunerLogic: TunerLogic, onBackClick: () -> Unit = {}) {
     /*var frequency by remember { mutableFloatStateOf(0f) }
     var decibel by remember { mutableFloatStateOf(0f) }
     var noteName by remember { mutableStateOf("--") }*/
@@ -67,9 +68,15 @@ fun TunerScreen(tunerLogic: TunerLogic = viewModel(), onBackClick: () -> Unit = 
     }
 
     if (hasPermission) {
+        LaunchedEffect(Unit) {
+            // Un piccolo delay di 300ms dà il tempo a Jetpack Compose di completare
+            // il disegno dello schermo e ad Android di stabilizzare il canale audio.
+            delay(300)
+            tunerLogic.startListening()
+        }
         // Gestione ciclo di vita: avvia all'ingresso, stoppa all'uscita
         DisposableEffect(Unit) {
-            tunerLogic.startListening()
+            //tunerLogic.startListening()
             onDispose {
                 tunerLogic.stopListening()
             }
@@ -130,7 +137,10 @@ fun TunerScreen(tunerLogic: TunerLogic = viewModel(), onBackClick: () -> Unit = 
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(
-                    onClick = onBackClick,
+                    onClick = {
+                        tunerLogic.stopListening()
+                        onBackClick()
+                    },
                     modifier = Modifier.size(48.dp)
                 ) {
                     Icon(
@@ -140,6 +150,15 @@ fun TunerScreen(tunerLogic: TunerLogic = viewModel(), onBackClick: () -> Unit = 
                         modifier = Modifier.size(28.dp)
                     )
                 }
+
+                Spacer(modifier = Modifier.width(10.dp))
+
+                Text(
+                    "Tuner",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = AppColors.PrimaryGreen
+                )
             }
 
             Column(

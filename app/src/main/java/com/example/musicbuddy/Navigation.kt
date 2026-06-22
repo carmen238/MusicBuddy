@@ -190,8 +190,12 @@ fun NavigationGraph(
         }
 
         // SCHERMATA 8: TunerScreen
-        composable(Screen.Tuner.route) {
-            TunerScreen(tunerLogic = TunerLogic(), onBackClick = {
+        composable(Screen.Tuner.route) {backStackEntry ->
+            // Legando il ViewModel al backStackEntry, Android lo distruggerà
+            // e libererà la memoria al 100% appena l'utente torna indietro alla Home.
+            val tunerLogic: TunerLogic = viewModel(viewModelStoreOwner = backStackEntry)
+
+            TunerScreen(tunerLogic, onBackClick = {
                 navController.navigate(Screen.Home.route)
             })
         }
@@ -224,6 +228,9 @@ fun NavigationGraph(
                     navController.navigate(Screen.Start.route) {
                         popUpTo(Screen.Profile.route) { inclusive = true }
                     }
+                },
+                onBackClick = {
+                    navController.navigate(Screen.Home.route)
                 }
             )
         }
