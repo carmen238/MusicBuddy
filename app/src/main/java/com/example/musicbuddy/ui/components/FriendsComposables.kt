@@ -62,7 +62,7 @@ fun SectionHeader(title: String) {
 fun FriendRow(
     userId: Int,
     friend: FriendInfo,
-    onNavigateToChat: (friendId: Int, friendName: String, friendSurname: String) -> Unit,
+    onNavigateToChat: (friendId: Int, friendName: String, friendSurname: String, userId: Int) -> Unit,
     friendsViewModel: FriendsViewModel
 ) {
     var showDialog by remember { mutableStateOf(false) }
@@ -120,7 +120,7 @@ fun FriendRow(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 //Chat button
                 Button(
-                    onClick = { onNavigateToChat(friend.id, friend.name, friend.surname) },
+                    onClick = { onNavigateToChat(friend.id, friend.name, friend.surname,userId) },
                     modifier = Modifier
                         .weight(1f)
                         .height(40.dp),
