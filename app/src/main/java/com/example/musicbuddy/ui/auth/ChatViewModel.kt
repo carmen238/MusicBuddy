@@ -4,6 +4,7 @@ import com.example.musicbuddy.network.ChatWebSocketManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.musicbuddy.data.models.Message
+import com.example.musicbuddy.data.models.getChatId
 import com.example.musicbuddy.repository.ChatRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,32 +15,44 @@ class ChatViewModel(
 ) : ViewModel() {
 
     private lateinit var socket: ChatWebSocketManager
+
     private val _messages = MutableStateFlow<List<Message>>(emptyList())
     val messages = _messages.asStateFlow()
 
+    private var myUserId: String = ""
+    private var currentChatId: String = ""
+
     fun init(userId: String) {
+        myUserId = userId
         socket = ChatWebSocketManager(userId)
 
-        socket.onMessageReceived = { text, from ->
+        socket.onMessageReceived = { text, from, chatId ->
 
-            val message = Message(
-                id = System.currentTimeMillis().toString(),
-                senderId = from,
-                receiverId = userId,
-                text = text,
-                timestamp = System.currentTimeMillis()
-            )
+            if (chatId != currentChatId) {
+                // skip
+            } else {
 
-            _messages.value = _messages.value + message
+                val message = Message(
+                    id = System.currentTimeMillis().toString(),
+                    chatId = chatId,
+                    senderId = from,
+                    text = text,
+                    timestamp = System.currentTimeMillis()
+                )
+
+                _messages.value = _messages.value + message
+            }
         }
 
         socket.connect()
     }
 
-    fun loadMessages(friendId: String) {
+    fun loadMessages(chatId: String) {
+        currentChatId = chatId
         viewModelScope.launch {
             try {
-                _messages.value = repository.getMessages(friendId)
+                val response = repository.getMessages(chatId)
+                _messages.value = response.messages
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -53,22 +66,28 @@ class ChatViewModel(
     ) {
         viewModelScope.launch {
 
+            val chatId = getChatId(currentUserId, friendId)
+
             val message = Message(
                 id = System.currentTimeMillis().toString(),
+                chatId = chatId,
                 senderId = currentUserId,
-                receiverId = friendId,
                 text = text,
                 timestamp = System.currentTimeMillis()
             )
 
             try {
+                // 🔥 REALTIME
+                socket.sendMessage(
+                    text = text,
+                    chatId = chatId,
+                    from = currentUserId
+                )
 
-                // REALTIME (WEBSOCKET)
-                socket.sendMessage(text, friendId)
-
-                // SALVATAGGIO (HTTP)
+                // 💾 SAVE DB
                 repository.sendMessage(message)
 
+                // 📱 UI (optimistic)
                 _messages.value = _messages.value + message
 
             } catch (e: Exception) {

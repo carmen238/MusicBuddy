@@ -9,12 +9,12 @@ import retrofit2.http.Path
 
 interface ChatApi {
 
-    @GET("chat/messages/{friendId}")
+    @GET("api/chat/messages/{chatId}")
     suspend fun getMessages(
-        @Path("friendId") friendId: String
-    ): List<Message>
+        @Path("chatId") chatId: String
+    ): ChatResponse
 
-    @POST("chat/send")
+    @POST("api/chat/messages")
     suspend fun sendMessage(
         @Body message: Message
     )

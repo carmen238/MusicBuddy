@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.example.musicbuddy.data.models.getChatId
 import com.example.musicbuddy.repository.ChatRepository
 import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.auth.ChatViewModel
@@ -31,15 +32,24 @@ fun ChatScreen(
     var text by remember { mutableStateOf("") }
 
     val listState = rememberLazyListState()
+    val chatId = getChatId(currentUserId, friendId)
 
-    LaunchedEffect(friendId) {
-        viewModel.loadMessages(friendId)
-    }
+    // 🔥 FIX 1: init solo una volta
+    val initialized = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
-        viewModel.init(currentUserId)
+        if (!initialized.value) {
+            viewModel.init(currentUserId)
+            initialized.value = true
+        }
     }
 
+    // 🔥 FIX 2: load chat
+    LaunchedEffect(chatId) {
+        viewModel.loadMessages(chatId)
+    }
+
+    // scroll
     LaunchedEffect(messages.size) {
         if (messages.isNotEmpty()) {
             listState.animateScrollToItem(messages.lastIndex)
@@ -52,7 +62,10 @@ fun ChatScreen(
             modifier = Modifier.weight(1f),
             state = listState
         ) {
-            items(messages) { message ->
+            items(
+                messages,
+                key = { it.id } // 🔥 FIX IMPORTANTE
+            ) { message ->
 
                 val isMine = message.senderId == currentUserId
 

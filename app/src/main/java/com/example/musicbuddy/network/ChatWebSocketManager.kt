@@ -14,12 +14,10 @@ class ChatWebSocketManager(
     private val client = OkHttpClient()
     private lateinit var webSocket: WebSocket
 
-    var onMessageReceived: ((String, String) -> Unit)? = null
+    var onMessageReceived: ((String, String, String) -> Unit)? = null
 
     fun connect() {
-        val request = Request.Builder()
-            .url("ws://10.0.2.2:3000")
-            .build()
+        val request = Request.Builder().url("ws://10.0.2.2:3000").build()
 
         webSocket = client.newWebSocket(request, object : WebSocketListener() {
 
@@ -39,24 +37,27 @@ class ChatWebSocketManager(
                 val json = JSONObject(text)
 
                 if (json.getString("type") == "MESSAGE") {
-                    val message = json.getString("text")
+                    val text = json.getString("text")
                     val from = json.getString("from")
+                    val chatId = json.getString("chatId")
 
-                    onMessageReceived?.invoke(message, from)
+                    onMessageReceived?.invoke(text, from, chatId)
                 }
             }
         })
     }
 
-    fun sendMessage(text: String, to: String) {
+    fun sendMessage(
+        text: String, chatId: String, from: String
+    ) {
         val message = """
-            {
-                "type": "MESSAGE",
-                "text": "$text",
-                "from": "$userId",
-                "to": "$to"
-            }
-        """.trimIndent()
+        {
+            "type": "MESSAGE",
+            "text": "$text",
+            "from": "$from",
+            "chatId": "$chatId"
+        }
+    """.trimIndent()
 
         webSocket.send(message)
     }
