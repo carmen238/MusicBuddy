@@ -2,6 +2,7 @@ package com.example.musicbuddy.ui.screens
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -84,12 +85,22 @@ fun SearchScreen(
     val currentPhotoUrl = userData?.get("photo_url") as? String
 
     val scrollState = rememberScrollState()
+    var isScrollEnabled by remember { mutableStateOf(true) }
 
     // Permission launcher
-    val permissionLauncher = rememberLauncherForActivityResult(
+    /*val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
+            locationViewModel.requestCurrentLocation(context)
+        }
+    }*/
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val fineGranted = permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        val coarseGranted = permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+        if (fineGranted || coarseGranted) {
             locationViewModel.requestCurrentLocation(context)
         }
     }
@@ -100,7 +111,7 @@ fun SearchScreen(
         locationViewModel.initializeLocationClient(context)
 
         // Request location permission
-        if (ContextCompat.checkSelfPermission(
+        /*if (ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
@@ -108,6 +119,20 @@ fun SearchScreen(
             locationViewModel.requestCurrentLocation(context)
         } else {
             permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }*/
+        val hasFine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        val hasCoarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+
+        if (hasFine && hasCoarse) {
+            locationViewModel.requestCurrentLocation(context)
+        } else {
+            // Richiedi entrambi i permessi insieme
+            permissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
         }
     }
 

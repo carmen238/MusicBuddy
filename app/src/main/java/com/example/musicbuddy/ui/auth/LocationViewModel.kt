@@ -12,8 +12,10 @@ import com.example.musicbuddy.data.models.DeleteUserRequest
 import com.example.musicbuddy.data.models.*
 import com.example.musicbuddy.network.RetrofitClient
 import com.example.musicbuddy.ui.auth.AuthState
+import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -113,8 +115,15 @@ class LocationViewModel : ViewModel() {
 
                     //withContext(NonCancellable) impedisce il crash "Job was cancelled" se l'interfaccia si aggiorna
                     location = withContext(NonCancellable) {
+                        // Creiamo una richiesta esplicita con un timeout di 5 secondi (5000 ms)
+                        val locationRequest = CurrentLocationRequest.Builder()
+                            .setPriority(Priority.PRIORITY_BALANCED_POWER_ACCURACY) // Usa reti Wi-Fi/Celle se il GPS puro fatica
+                            .setMaxUpdateAgeMillis(60000) // Accetta posizioni vecchie fino a un minuto
+                            .setDurationMillis(5000)      // IMPORTANTE: Se entro 5 secondi non risponde, sblocca la chiamata
+                            .build()
+
                         fusedLocationClient?.getCurrentLocation(
-                            com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY,
+                            locationRequest,
                             com.google.android.gms.tasks.CancellationTokenSource().token
                         )?.await()
                     }
