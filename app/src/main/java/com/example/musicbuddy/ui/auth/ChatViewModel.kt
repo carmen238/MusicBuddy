@@ -1,6 +1,6 @@
 package com.example.musicbuddy.ui.auth
 
-import ChatWebSocketManager
+import com.example.musicbuddy.network.ChatWebSocketManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.musicbuddy.data.models.Message
@@ -63,13 +63,12 @@ class ChatViewModel(
 
             try {
 
-                // 🔥 REALTIME (WEBSOCKET)
+                // REALTIME (WEBSOCKET)
                 socket.sendMessage(text, friendId)
 
-                // 💾 SALVATAGGIO (HTTP)
+                // SALVATAGGIO (HTTP)
                 repository.sendMessage(message)
 
-                // UI ottimistica
                 _messages.value = _messages.value + message
 
             } catch (e: Exception) {

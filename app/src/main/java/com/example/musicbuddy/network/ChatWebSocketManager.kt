@@ -1,4 +1,11 @@
-import okhttp3.*
+package com.example.musicbuddy.network
+
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.WebSocket
+import okhttp3.WebSocketListener
+import org.json.JSONObject
 
 class ChatWebSocketManager(
     private val userId: String
@@ -29,7 +36,7 @@ class ChatWebSocketManager(
             }
 
             override fun onMessage(webSocket: WebSocket, text: String) {
-                val json = org.json.JSONObject(text)
+                val json = JSONObject(text)
 
                 if (json.getString("type") == "MESSAGE") {
                     val message = json.getString("text")
