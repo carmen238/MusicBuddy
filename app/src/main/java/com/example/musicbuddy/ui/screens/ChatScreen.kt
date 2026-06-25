@@ -16,10 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.example.musicbuddy.data.models.getChatId
-import com.example.musicbuddy.repository.ChatRepository
-import com.example.musicbuddy.ui.auth.AuthViewModel
 import com.example.musicbuddy.ui.auth.ChatViewModel
 import com.example.musicbuddy.ui.theme.AppColors
 
@@ -39,7 +36,6 @@ fun ChatScreen(
     val listState = rememberLazyListState()
     val chatId = getChatId(currentUserId, friendId)
 
-    // 🔥 FIX 1: init solo una volta
     val initialized = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -49,7 +45,6 @@ fun ChatScreen(
         }
     }
 
-    // 🔥 FIX 2: load chat
     LaunchedEffect(chatId) {
         viewModel.loadMessages(chatId)
     }
@@ -95,7 +90,7 @@ fun ChatScreen(
         ) {
             items(
                 messages,
-                key = { it.id } // 🔥 FIX IMPORTANTE
+                key = { it.id }
             ) { message ->
 
                 val isMine = message.senderId == currentUserId

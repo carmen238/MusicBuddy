@@ -22,15 +22,21 @@ class ChatViewModel(
     private var myUserId: String = ""
     private var currentChatId: String = ""
 
+    private var initialized = false
+
     fun init(userId: String) {
+        if (initialized) return
+        initialized = true
+
         myUserId = userId
         socket = ChatWebSocketManager(userId)
 
         socket.onMessageReceived = { text, from, chatId ->
 
-            if (chatId != currentChatId) {
+            if (chatId != currentChatId || from == myUserId) {
                 // skip
-            } else {
+            }
+            else {
 
                 val message = Message(
                     id = System.currentTimeMillis().toString(),
