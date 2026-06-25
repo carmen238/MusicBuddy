@@ -49,6 +49,10 @@ object RetrofitClient {
         return retrofit!!
     }
 
+    val chatApi: ChatApi by lazy {
+        getRetrofitInstance().create(ChatApi::class.java)
+    }
+
     /**
      * Create OkHttpClient with logging and timeouts
      */

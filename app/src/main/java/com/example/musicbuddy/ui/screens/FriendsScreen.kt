@@ -41,7 +41,7 @@ import com.example.musicbuddy.ui.viewmodels.LocationViewModel
 @Composable
 fun FriendsScreen(
     authViewModel: AuthViewModel,
-    onNavigateToChat: (friendId: Int, friendName: String, friendSurname: String) -> Unit,
+    onNavigateToChat: (friendId: Int, friendName: String, friendSurname: String, userId: Int) -> Unit,
     onBackClick: () -> Unit = {}
 ) {
     val userData by authViewModel.userData.collectAsState()
@@ -69,7 +69,7 @@ fun FriendsScreen(
         friendsViewModel.getAllFriends(userId as Int)
     }
 
-    if(allFriends.isNotEmpty()) {
+    if (allFriends.isNotEmpty()) {
         musiciansLoaded = true
         println("AMICI: $allFriends")
     }
@@ -152,12 +152,19 @@ fun FriendsScreen(
                     } else {
                         var listTest = false
                         allFriends.forEach { friend ->
-                            if((friend.sender_id == userId || friend.receiver_id == userId) && friend.status == "ACCEPTED") {
+                            if ((friend.sender_id == userId || friend.receiver_id == userId) && friend.status == "ACCEPTED") {
                                 listTest = true
-                                FriendRow(userId, friend, { id, name, surname -> onNavigateToChat(id, name, surname) }, friendsViewModel)
+                                FriendRow(
+                                    userId = userId,
+                                    friend = friend,
+                                    onNavigateToChat = { id, name, surname, userId ->
+                                        onNavigateToChat(id, name, surname, userId)
+                                    },
+                                    friendsViewModel = friendsViewModel
+                                )
                             }
                         }
-                        if(!listTest) {
+                        if (!listTest) {
                             Text(
                                 "No friends found",
                                 fontSize = 14.sp,
@@ -198,12 +205,12 @@ fun FriendsScreen(
                     } else {
                         var listTest = false
                         allFriends.forEach { friend ->
-                            if(friend.sender_id == friend.id && friend.receiver_id == userId && friend.status == "PENDING") {
+                            if (friend.sender_id == friend.id && friend.receiver_id == userId && friend.status == "PENDING") {
                                 listTest = true
                                 ReceivedFriendRow(userId, friend, friendsViewModel)
                             }
                         }
-                        if(!listTest) {
+                        if (!listTest) {
                             Text(
                                 "No requests found",
                                 fontSize = 14.sp,
@@ -244,12 +251,12 @@ fun FriendsScreen(
                     } else {
                         var listTest = false
                         allFriends.forEach { friend ->
-                            if(friend.sender_id == userId && friend.receiver_id == friend.id && friend.status == "PENDING") {
+                            if (friend.sender_id == userId && friend.receiver_id == friend.id && friend.status == "PENDING") {
                                 listTest = true
                                 SentFriendRow(userId, friend, friendsViewModel)
                             }
                         }
-                        if(!listTest) {
+                        if (!listTest) {
                             Text(
                                 "No requests found",
                                 fontSize = 14.sp,

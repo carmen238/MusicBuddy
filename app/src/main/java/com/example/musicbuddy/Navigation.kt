@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -11,10 +12,15 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.example.musicbuddy.network.RetrofitClient
+import com.example.musicbuddy.repository.ChatRepository
 import com.example.musicbuddy.ui.auth.AuthState
 import com.example.musicbuddy.ui.auth.AuthViewModel
+import com.example.musicbuddy.ui.auth.ChatViewModel
 import com.example.musicbuddy.ui.components.TunerLogic
 import com.example.musicbuddy.ui.screens.*
+import kotlin.String
+import kotlin.math.log
 
 /**
  * Definizione delle route dell'app
@@ -175,16 +181,32 @@ fun NavigationGraph(
             HomeScreen(
                 authViewModel = authViewModel,
                 onNavigateToProfile = {
-                    navController.navigate(Screen.Profile.route) { popUpTo(Screen.Home.route) { inclusive = true } }
+                    navController.navigate(Screen.Profile.route) {
+                        popUpTo(Screen.Home.route) {
+                            inclusive = true
+                        }
+                    }
                 },
                 onNavigateToTuner = {
-                    navController.navigate(Screen.Tuner.route) { popUpTo(Screen.Home.route) { inclusive = true } }
+                    navController.navigate(Screen.Tuner.route) {
+                        popUpTo(Screen.Home.route) {
+                            inclusive = true
+                        }
+                    }
                 },
                 onNavigateToFriends = {
-                    navController.navigate(Screen.Friends.route) { popUpTo(Screen.Home.route) { inclusive = true } }
+                    navController.navigate(Screen.Friends.route) {
+                        popUpTo(Screen.Home.route) {
+                            inclusive = true
+                        }
+                    }
                 },
                 onNavigateToSearch = {
-                    navController.navigate(Screen.Search.route) { popUpTo(Screen.Home.route) { inclusive = true } }
+                    navController.navigate(Screen.Search.route) {
+                        popUpTo(Screen.Home.route) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }
@@ -202,12 +224,14 @@ fun NavigationGraph(
 
         // ===== SCHERMATA 6: SearchScreen (collegata alla navbar) =====
         composable(Screen.Search.route) {
-            SearchScreen(authViewModel = authViewModel, onBackClick = {
-                navController.navigate(Screen.Home.route)
-            },
-                onRefreshClick = { navController.navigate(Screen.Search.route) {
-                    launchSingleTop = true
-                    popUpTo(Screen.Search.route) { inclusive = true }
+            SearchScreen(
+                authViewModel = authViewModel, onBackClick = {
+                    navController.navigate(Screen.Home.route)
+                },
+                onRefreshClick = {
+                    navController.navigate(Screen.Search.route) {
+                        launchSingleTop = true
+                        popUpTo(Screen.Search.route) { inclusive = true }
                     }
                 }
             )
@@ -237,12 +261,15 @@ fun NavigationGraph(
 
         // SCHERMATA 9: FriendsScreen
         composable(Screen.Friends.route) {
-            FriendsScreen(authViewModel,
+            FriendsScreen(
+                authViewModel,
                 onBackClick = {
                     navController.navigate(Screen.Home.route)
                 },
-                onNavigateToChat = {friendId, friendName, friendSurname ->
-                    navController.navigate("chat/${friendId}/${friendName}/${friendSurname}") {
+
+                onNavigateToChat = { friendId, friendName, friendSurname, userId ->
+
+                    navController.navigate("chat/${friendId}/${friendName}/${friendSurname}/${userId}") {
                         popUpTo(Screen.Friends.route) { saveState = true }
                         launchSingleTop = true
                     }
@@ -250,20 +277,32 @@ fun NavigationGraph(
         }
 
         composable(
-            route = "chat/{friendId}/{friendName}/{friendSurname}",
+            route = "chat/{friendId}/{friendName}/{friendSurname}/{userId}",
             arguments = listOf(
                 navArgument("friendId") { type = NavType.IntType },
                 navArgument("friendName") { type = NavType.StringType },
                 navArgument("friendSurname") { type = NavType.StringType },
+                navArgument("userId") { type = NavType.StringType }
             )
         ) { backStackEntry ->
-            val friendId = backStackEntry.arguments?.getInt("friendId") ?: 0
+
+            val friendId = backStackEntry.arguments?.getInt("friendId")?.toString() ?: ""
             val friendName = backStackEntry.arguments?.getString("friendName") ?: ""
             val friendSurname = backStackEntry.arguments?.getString("friendSurname") ?: ""
+            val userId = backStackEntry.arguments?.getString("userId") ?: ""
 
-            ChatScreen(authViewModel, friendId, friendName, friendSurname, onBackClick = {
-                navController.navigate(Screen.Friends.route)
-            })
+            val repository = remember { ChatRepository(RetrofitClient.chatApi) }
+            val viewModel = remember { ChatViewModel(repository) }
+            ChatScreen(
+                friendId = friendId,
+                currentUserId = userId,
+                friendName = friendName,
+                friendSurname = friendSurname,
+                onBackClick = {
+                    navController.navigate(Screen.Friends.route)
+                },
+                viewModel = viewModel
+            )
         }
     }
 }
