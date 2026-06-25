@@ -101,7 +101,7 @@ fun ChatScreen(
                 val isMine = message.senderId == currentUserId
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp),
                     horizontalArrangement =
                         if (isMine) Arrangement.End else Arrangement.Start
                 ) {

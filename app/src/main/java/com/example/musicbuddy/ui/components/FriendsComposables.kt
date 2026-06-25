@@ -59,243 +59,176 @@ fun SectionHeader(title: String) {
 }
 
 @Composable
+fun FriendAvatar(photoUrl: String?, name: String) {
+    if (!photoUrl.isNullOrEmpty()) {
+        AsyncImage(
+            model = photoUrl,
+            contentDescription = "Profile photo",
+            modifier = Modifier
+                .size(50.dp)
+                .clip(CircleShape),
+            contentScale = ContentScale.Crop
+        )
+    } else {
+        Box(
+            modifier = Modifier
+                .size(50.dp)
+                .clip(CircleShape)
+                .background(AppColors.PrimaryGreen),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = name.first().toString(),
+                color = Color.White,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+fun FriendInfoDialog(friend: FriendInfo, onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(20.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                FriendAvatar(friend.photo_url, friend.name)
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Column {
+                    InfoRow("Name", friend.name)
+                    InfoRow("Surname", friend.surname)
+                    InfoRow("Bio", friend.bio)
+                    InfoRow("Instrument", friend.instrument)
+                    InfoRow("Experience", friend.experienceLevel)
+                    InfoRow("Genre", friend.genre)
+                    InfoRow("Band", if (friend.isInBand == 1) "Yes" else "No")
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Button(onClick = onDismiss) {
+                    Text("Close")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun InfoRow(label: String, value: String?) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(label, color = Color.Gray, fontSize = 14.sp)
+        Text(value ?: "-", fontWeight = FontWeight.Medium, fontSize = 14.sp)
+    }
+}
+
+@Composable
 fun FriendRow(
     userId: Int,
     friend: FriendInfo,
-    onNavigateToChat: (friendId: Int, friendName: String, friendSurname: String, userId: Int) -> Unit,
+    onNavigateToChat: (Int, String, String, Int) -> Unit,
     friendsViewModel: FriendsViewModel
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    var showFriendInfo by remember { mutableStateOf(false) }
+    var showInfo by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(6.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
-                    .clickable { showFriendInfo = true },
+                    .clickable { showInfo = true },
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (friend.photo_url != "") {
-                    AsyncImage(
-                        model = friend.photo_url,
-                        contentDescription = "Profile photo",
-                        modifier = Modifier.size(40.dp),
-                        contentScale = ContentScale.Crop
-                    )
 
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null,
-                        tint = Color.Gray,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                FriendAvatar(friend.photo_url, friend.name)
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                // Dettagli del musicista
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        friend.name + " " + friend.surname,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = AppColors.DarkText
+                        "${friend.name} ${friend.surname}",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp
                     )
+                    Text(
+                        friend.instrument ?: "",
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
+                }
+
+                IconButton(onClick = {
+                    onNavigateToChat(friend.id, friend.name, friend.surname, userId)
+                }) {
+                    Icon(Icons.Default.Chat, contentDescription = null)
+                }
+
+                IconButton(onClick = { showDialog = true }) {
+                    Icon(Icons.Default.Delete, contentDescription = null, tint = Color.Red)
                 }
             }
 
-            // Slot per i bottoni contestuali passati dal parent
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                //Chat button
-                Button(
-                    onClick = { onNavigateToChat(friend.id, friend.name, friend.surname,userId) },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(40.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = AppColors.PrimaryGreen
-                    ),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Chat,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp)
-                    )
+            Spacer(modifier = Modifier.height(12.dp))
 
-                    Text("Chat", color = Color.White, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
-                }
-                //Delete friend button
-                Button(
-                    onClick = {showDialog = true},
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(40.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red
-                    ),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp)
-                    )
-
-                    Text("Delete", color = Color.White, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
-                }
-            }
-        }
-
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = {
-                    // Si attiva quando l'utente tocca fuori dal popup o preme "Indietro"
-                    showDialog = false
-                },
-                title = {Text(text = "Delete friend?") },
-                text = {Text(text = "Do you really want to delete this friend?") },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            showDialog = false
-                            friendsViewModel.deleteFriendRequest(friend.sender_id, friend.receiver_id, friend.sender_id == userId)
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red,  // Background color
-                            contentColor = Color.White    // Text color
-                        )
-                    ) {
-                        Text("Delete")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = { showDialog = false }, // Chiude il popup
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.DarkGray,  // Background color
-                            contentColor = Color.White    // Text color
-                        )
-                    ) {
-                        Text("Back")
-                    }
-                }
-            )
-        }
-
-        if (showFriendInfo) {
-            Dialog(
-                onDismissRequest = { showFriendInfo = false },
-                properties = DialogProperties(
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = true
-                )
+            Column(
+                modifier = Modifier
+                    .background(Color(0xFFF5F5F5), RoundedCornerShape(12.dp))
+                    .padding(12.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(300.dp)
-                        .background(Color.White, shape = RoundedCornerShape(16.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        if (friend.photo_url != "") {
-                            AsyncImage(
-                                model = friend.photo_url,
-                                contentDescription = "Profile photo",
-                                modifier = Modifier.size(40.dp),
-                                contentScale = ContentScale.Crop
-                            )
-
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
-                                tint = Color.Gray,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // Dettagli del musicista
-                        Column(
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                "Name: "+friend.name,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Surname: "+friend.surname,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Biography: "+friend.bio,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Instrument: "+friend.instrument,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Experience: "+friend.experienceLevel,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Genre: "+friend.genre,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Band: "+ if(friend.isInBand==1) "Yes" else "No",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Button(onClick = { showFriendInfo = false },
-                            colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.DarkGray,  // Background color
-                            contentColor = Color.White    // Text color
-                        )) {
-                            Text("Close")
-                        }
-                    }
-                }
+                InfoRow("Genre", friend.genre)
+                InfoRow("Experience", friend.experienceLevel)
             }
         }
+    }
+
+    // DELETE DIALOG
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Delete friend?") },
+            text = { Text("Do you really want to delete this friend?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDialog = false
+                    friendsViewModel.deleteFriendRequest(
+                        friend.sender_id,
+                        friend.receiver_id,
+                        friend.sender_id == userId
+                    )
+                }) {
+                    Text("Delete", color = Color.Red)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("Back")
+                }
+            }
+        )
+    }
+
+    if (showInfo) {
+        FriendInfoDialog(friend) { showInfo = false }
     }
 }
 
@@ -306,236 +239,105 @@ fun ReceivedFriendRow(
     friendsViewModel: FriendsViewModel
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    var showFriendInfo by remember { mutableStateOf(false) }
+    var showInfo by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(6.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+
+            // 🔹 Header (avatar + nome)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp)
-                    .clickable { showFriendInfo = true },
+                    .clickable { showInfo = true },
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (friend.photo_url != "") {
-                    AsyncImage(
-                        model = friend.photo_url,
-                        contentDescription = "Profile photo",
-                        modifier = Modifier.size(40.dp),
-                        contentScale = ContentScale.Crop
-                    )
 
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null,
-                        tint = Color.Gray,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                FriendAvatar(friend.photo_url, friend.name)
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                // Dettagli del musicista
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        friend.name + " " + friend.surname,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = AppColors.DarkText
+                        "${friend.name} ${friend.surname}",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp
+                    )
+                    Text(
+                        friend.instrument ?: "",
+                        fontSize = 14.sp,
+                        color = Color.Gray
                     )
                 }
             }
 
-            // Slot per i bottoni contestuali passati dal parent
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                //Accept button
-                Button(
-                    onClick = { friendsViewModel.acceptFriendRequest(userId, friend.id) },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(40.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = AppColors.PrimaryGreen
-                    ),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ThumbUp,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp)
-                    )
+            Spacer(modifier = Modifier.height(12.dp))
 
-                    Text("Accept", color = Color.White, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
-                }
-                //Reject friend button
-                Button(
-                    onClick = {showDialog = true},
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(40.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red
-                    ),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.ThumbDown,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp)
-                    )
-
-                    Text("Reject", color = Color.White, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
-                }
-            }
-        }
-
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = {
-                    // Si attiva quando l'utente tocca fuori dal popup o preme "Indietro"
-                    showDialog = false
-                },
-                title = {Text(text = "Delete this friend request?") },
-                text = {Text(text = "Do you really want to reject this friend request?") },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            showDialog = false
-                            friendsViewModel.deleteFriendRequest(friend.sender_id, friend.receiver_id, friend.sender_id == userId)
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red,  // Background color
-                            contentColor = Color.White    // Text color
-                        )
-                    ) {
-                        Text("Reject")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = { showDialog = false }, // Chiude il popup
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.DarkGray,  // Background color
-                            contentColor = Color.White    // Text color
-                        )
-                    ) {
-                        Text("Back")
-                    }
-                }
-            )
-        }
-
-        if (showFriendInfo) {
-            Dialog(
-                onDismissRequest = { showFriendInfo = false },
-                properties = DialogProperties(
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = true
-                )
+            // 🔹 Bottoni
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(300.dp)
-                        .background(Color.White, shape = RoundedCornerShape(16.dp)),
-                    contentAlignment = Alignment.Center
+                Button(
+                    onClick = {
+                        friendsViewModel.acceptFriendRequest(userId, friend.id)
+                    },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(AppColors.PrimaryGreen),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        if (friend.photo_url != "") {
-                            AsyncImage(
-                                model = friend.photo_url,
-                                contentDescription = "Profile photo",
-                                modifier = Modifier.size(40.dp),
-                                contentScale = ContentScale.Crop
-                            )
+                    Icon(Icons.Default.ThumbUp, contentDescription = null)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Accept")
+                }
 
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
-                                tint = Color.Gray,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // Dettagli del musicista
-                        Column(
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                "Name: "+friend.name,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Surname: "+friend.surname,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Biography: "+friend.bio,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Instrument: "+friend.instrument,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Experience: "+friend.experienceLevel,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Genre: "+friend.genre,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Band: "+ if(friend.isInBand==1) "Yes" else "No",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Button(onClick = { showFriendInfo = false },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.DarkGray,  // Background color
-                                contentColor = Color.White    // Text color
-                            )) {
-                            Text("Close")
-                        }
-                    }
+                Button(
+                    onClick = { showDialog = true },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(Color.Red),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Icon(Icons.Default.ThumbDown, contentDescription = null)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Reject")
                 }
             }
         }
+    }
+
+    // 🔹 Dialog Reject
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Reject request?") },
+            text = { Text("Do you really want to reject this friend request?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showDialog = false
+                    friendsViewModel.deleteFriendRequest(
+                        friend.sender_id,
+                        friend.receiver_id,
+                        friend.sender_id == userId
+                    )
+                }) {
+                    Text("Reject", color = Color.Red)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("Back")
+                }
+            }
+        )
+    }
+
+    // 🔹 Dialog info
+    if (showInfo) {
+        FriendInfoDialog(friend) { showInfo = false }
     }
 }
 
@@ -546,236 +348,102 @@ fun SentFriendRow(
     friendsViewModel: FriendsViewModel
 ) {
     var showDialog by remember { mutableStateOf(false) }
-    var showFriendInfo by remember { mutableStateOf(false) }
+    var showInfo by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        shape = RoundedCornerShape(20.dp),
+        elevation = CardDefaults.cardElevation(6.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+
+            // 🔹 Header
             Row(
                 modifier = Modifier
-                    .padding(12.dp)
-                    .clickable { showFriendInfo = true },
+                    .fillMaxWidth()
+                    .clickable { showInfo = true },
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (friend.photo_url != "") {
-                    AsyncImage(
-                        model = friend.photo_url,
-                        contentDescription = "Profile photo",
-                        modifier = Modifier.size(40.dp),
-                        contentScale = ContentScale.Crop
-                    )
 
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = null,
-                        tint = Color.Gray,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
+                FriendAvatar(friend.photo_url, friend.name)
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                // Dettagli del musicista
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        friend.name + " " + friend.surname,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = AppColors.DarkText
+                        "${friend.name} ${friend.surname}",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp
+                    )
+                    Text(
+                        friend.instrument ?: "",
+                        fontSize = 14.sp,
+                        color = Color.Gray
                     )
                 }
             }
 
-            // Slot per i bottoni contestuali passati dal parent
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                //Sent button
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 🔹 Bottoni
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 Button(
                     onClick = {},
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(40.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.LightGray
-                    ),
-                    shape = RoundedCornerShape(10.dp)
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(Color.LightGray),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Send,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp)
-                    )
-
-                    Text("Sent", color = Color.White, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                    Icon(Icons.Default.Send, contentDescription = null)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Sent")
                 }
-                //Cancel friend button
+
                 Button(
-                    onClick = {showDialog = true},
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(40.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Red
-                    ),
-                    shape = RoundedCornerShape(10.dp)
+                    onClick = { showDialog = true },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(Color.Red),
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = null,
-                        tint = Color.White,
-                        modifier = Modifier.size(18.dp)
-                    )
-
-                    Text("Cancel", color = Color.White, fontWeight = FontWeight.SemiBold, maxLines = 1, softWrap = false)
+                    Icon(Icons.Default.Delete, contentDescription = null)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Cancel")
                 }
             }
         }
+    }
 
-        if (showDialog) {
-            AlertDialog(
-                onDismissRequest = {
-                    // Si attiva quando l'utente tocca fuori dal popup o preme "Indietro"
+    // 🔹 Dialog cancel
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Cancel request?") },
+            text = { Text("Do you really want to cancel this friend request?") },
+            confirmButton = {
+                TextButton(onClick = {
                     showDialog = false
-                },
-                title = {Text(text = "Delete this friend request?") },
-                text = {Text(text = "Do you really want to cancel this friend request?") },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            showDialog = false
-                            friendsViewModel.deleteFriendRequest(friend.sender_id, friend.receiver_id, friend.sender_id == userId)
-                        },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Red,  // Background color
-                            contentColor = Color.White    // Text color
-                        )
-                    ) {
-                        Text("Cancel")
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = { showDialog = false }, // Chiude il popup
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.DarkGray,  // Background color
-                            contentColor = Color.White    // Text color
-                        )
-                    ) {
-                        Text("Back")
-                    }
+                    friendsViewModel.deleteFriendRequest(
+                        friend.sender_id,
+                        friend.receiver_id,
+                        friend.sender_id == userId
+                    )
+                }) {
+                    Text("Cancel", color = Color.Red)
                 }
-            )
-        }
-
-        if (showFriendInfo) {
-            Dialog(
-                onDismissRequest = { showFriendInfo = false },
-                properties = DialogProperties(
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = true
-                )
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(300.dp)
-                        .background(Color.White, shape = RoundedCornerShape(16.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        if (friend.photo_url != "") {
-                            AsyncImage(
-                                model = friend.photo_url,
-                                contentDescription = "Profile photo",
-                                modifier = Modifier.size(40.dp),
-                                contentScale = ContentScale.Crop
-                            )
-
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.Person,
-                                contentDescription = null,
-                                tint = Color.Gray,
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        // Dettagli del musicista
-                        Column(
-                            horizontalAlignment = Alignment.Start,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            Text(
-                                "Name: "+friend.name,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Surname: "+friend.surname,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Biography: "+friend.bio,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Instrument: "+friend.instrument,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Experience: "+friend.experienceLevel,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Genre: "+friend.genre,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                            Text(
-                                "Band: "+ if(friend.isInBand==1) "Yes" else "No",
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = AppColors.DarkText
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(12.dp))
-
-                        Button(onClick = { showFriendInfo = false },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.DarkGray,  // Background color
-                                contentColor = Color.White    // Text color
-                            )) {
-                            Text("Close")
-                        }
-                    }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("Back")
                 }
             }
-        }
+        )
+    }
+
+    // 🔹 Dialog info
+    if (showInfo) {
+        FriendInfoDialog(friend) { showInfo = false }
     }
 }
