@@ -84,18 +84,6 @@ fun TunerScreen(tunerLogic: TunerLogic, onBackClick: () -> Unit = {}) {
 
         var noteName by remember { mutableStateOf("--") }
         val notesMatrix = tunerLogic.createNotesMatrix()
-        //noteName = if (tunerLogic.pitch.floatValue > 0) getNoteName(tunerLogic.pitch.floatValue) else "--"
-
-        /*
-        // Avvia il rilevamento all'avvio dello screen
-        LaunchedEffect(Unit) {
-            TunerLogic.startPitchDetection { pitch, intensity ->
-                frequency = pitch
-                decibel = intensity
-                noteName = if (pitch > 0) TunerLogic.getNoteName(pitch) else "--"
-            }
-        }
-        */
 
         // 1. Stato che controlla l'angolo obiettivo (inizialmente a 0)
         var targetAngle by remember { mutableFloatStateOf(0f) }
@@ -296,8 +284,6 @@ private fun getNoteName(frequency: Float): String {
 private fun getClosestNotePitch(currentPitch: Float, notesMatrix: Array<Array<Float>>): Float {
     var minDifference: Float = 10000f   //value greater than every matrix element
     var targetValue: Float = 0f
-    //var targetIndexI: Int = 0
-    //var targetIndexJ: Int = 0
 
     for (i in notesMatrix.indices) {
         for (j in notesMatrix[i].indices) {
@@ -305,8 +291,7 @@ private fun getClosestNotePitch(currentPitch: Float, notesMatrix: Array<Array<Fl
             if (currDifference <= minDifference) {
                 minDifference = currDifference
                 targetValue = notesMatrix[i][j]
-                //targetIndexI = i
-                //targetIndexJ = j
+
             }
         }
     }

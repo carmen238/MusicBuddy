@@ -29,7 +29,7 @@ object RetrofitClient {
     // For emulator: http://10.0.2.2:3000/
     // For physical device: http://172.20.10.4:3000/ o http://127.0.0.1:3000 in tethering USB
     // "adb -d reverse tcp:3000 tcp:3000" nel terminale di Android Studio per reindirizzare internet attraverso device fisico
-    private const val BASE_URL = "http://127.0.0.1:3000"
+    private const val BASE_URL = "http://10.0.2.2:3000"
 
     private var retrofit: Retrofit? = null
 
@@ -44,7 +44,7 @@ object RetrofitClient {
                 .addConverterFactory(GsonConverterFactory.create(GsonBuilder().create()))
                 .build()
 
-            println("✅ Retrofit initialized with base URL: $BASE_URL")
+            println(" Retrofit initialized with base URL: $BASE_URL")
         }
         return retrofit!!
     }

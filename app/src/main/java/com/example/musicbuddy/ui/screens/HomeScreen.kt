@@ -36,21 +36,11 @@ fun HomeScreen(
     onNavigateToFriends: () -> Unit = {},
     onNavigateToSearch: () -> Unit = {}
 ) {
-    val context = LocalContext.current
     val userData by authViewModel.userData.collectAsState()
-
-    //val allUsersData by authViewModel.allUsersInfos.collectAsState()    //non serve
     val genresStats by authViewModel.genreStatsState.collectAsState()
     val instrumentsStats by authViewModel.instrumentsStatsState.collectAsState()
     val totalUsers by authViewModel.totNumUsersState.collectAsState()
 
-    // ViewModels
-    /*val locationViewModel: LocationViewModel = viewModel()
-
-    // States
-    val locationState by locationViewModel.locationState.collectAsState()
-    val userLocation by locationViewModel.userLocation.collectAsState()
-    val nearbyMusicians by locationViewModel.nearbyMusicians.collectAsState()*/
 
     // User data
     val userName = userData?.get("name") as? String ?: "Utente"
@@ -58,18 +48,9 @@ fun HomeScreen(
     val userInstrument = userData?.get("instrument") as? String ?: "Non specificato"
     val userExperience = userData?.get("experienceLevel") as? String ?: "Non specificato"
     val userBio = userData?.get("bio") as? String ?: "Empty"
-    //val userIsInBand = (userData?.get("isInBand") ?: "false") as Boolean
     val userIsInBand = userData?.get("isInBand") as? Boolean ?: false
     val currentPhotoUrl = userData?.get("photo_url") as? String
 
-    // Permission launcher
-    /*val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            locationViewModel.requestCurrentLocation(context)
-        }
-    }*/
 
     // Initialize
     LaunchedEffect(Unit) {
@@ -84,9 +65,6 @@ fun HomeScreen(
     // Community statistics data - Refined colors
     val communityGenreData = mutableListOf<BarChartData>()
     val communityInstrumentData = mutableListOf<BarChartData>()
-
-    //if(allUsersData.isNotEmpty()) totalUsers = allUsersData.size
-    //METTERE SEMPRE isNotEmpty() PERCHé LA LISTA PARTE VUOTA E SI RIEMPE ASINCRONAMENTE
 
     genresStats.forEachIndexed { i, genreObj ->
         //visto che lista è già ordinata dal server, l'elemento in prima posizione è il più popolare

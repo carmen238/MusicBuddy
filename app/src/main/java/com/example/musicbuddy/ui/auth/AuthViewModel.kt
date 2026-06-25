@@ -65,7 +65,7 @@ class AuthViewModel : ViewModel() {
         experienceLevel: String,
         genre: String,
         isInBand: Boolean = false,
-        onNavigateToStart: () -> Unit  // ✅ Aggiungi questo parametro
+        onNavigateToStart: () -> Unit  //  Aggiungi questo parametro
     ) {
         viewModelScope.launch {
             try {
@@ -87,15 +87,15 @@ class AuthViewModel : ViewModel() {
 
                 val response = authApiService.register(request)
 
-                Log.d("AuthViewModel", "✅ Registration successful")
+                Log.d("AuthViewModel", " Registration successful")
 
-                // ✅ Salva il token
+                //  Salva il token
                 userPreferences?.saveAuthToken(response.token)
 
-                // ✅ Salva l'ID utente
+                //  Salva l'ID utente
                 userPreferences?.saveUserId(response.userId)
 
-                // ✅ Salva i dati utente
+                //  Salva i dati utente
                 userPreferences?.saveUserData(
                     name = name,
                     surname = surname,
@@ -111,7 +111,7 @@ class AuthViewModel : ViewModel() {
 
                 _authState.value = AuthState.Authenticated
 
-                // ✅ Chiama il callback per navigare
+                //  Chiama il callback per navigare
                 onNavigateToStart()
 
             } catch (e: HttpException) {

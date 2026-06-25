@@ -84,7 +84,7 @@ class PhotoViewModel : ViewModel() {
                 compressedFile.delete()
 
             } catch (e: Exception) {
-                Log.e("PhotoViewModel", "❌ Upload error: ${e.message}")
+                Log.e("PhotoViewModel", "Upload error: ${e.message}")
                 _photoUploadState.value =
                     PhotoUploadState.Error(e.message ?: "Unknown error")
             }
@@ -152,7 +152,7 @@ class PhotoViewModel : ViewModel() {
 
             Log.d(
                 "PhotoViewModel",
-                "✅ Compressed: ${imageFile.length()} → ${compressedFile.length()}"
+                " Compressed: ${imageFile.length()} → ${compressedFile.length()}"
             )
 
             compressedFile

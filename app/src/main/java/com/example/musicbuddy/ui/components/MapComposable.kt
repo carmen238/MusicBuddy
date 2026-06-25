@@ -58,14 +58,6 @@ fun MusicianMapView(
             )
             .padding(16.dp)
     ) {
-        // Title
-        /*Text(
-            "🎵 Musicisti Vicini",
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Bold,
-            color = AppColors.PrimaryGreen,
-            modifier = Modifier.padding(bottom = 12.dp)
-        )*/
 
         // Map
         AndroidView(

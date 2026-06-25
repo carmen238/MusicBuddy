@@ -77,24 +77,9 @@ fun SearchScreen(
 
     // User data
     val userId = userData?.get("userId") as? Int
-    val userName = userData?.get("name") as? String ?: "Utente"
-    val userGenre = userData?.get("genre").toString() ?: "Non specificato"
-    val userInstrument = userData?.get("instrument") as? String ?: "Non specificato"
-    val userExperience = userData?.get("experienceLevel") as? String ?: "Non specificato"
-    val userIsInBand = userData?.get("isInBand") as? Boolean ?: false
-    val currentPhotoUrl = userData?.get("photo_url") as? String
+
 
     val scrollState = rememberScrollState()
-    var isScrollEnabled by remember { mutableStateOf(true) }
-
-    // Permission launcher
-    /*val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            locationViewModel.requestCurrentLocation(context)
-        }
-    }*/
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
@@ -110,16 +95,6 @@ fun SearchScreen(
         authViewModel.fetchUserData()
         locationViewModel.initializeLocationClient(context)
 
-        // Request location permission
-        /*if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            locationViewModel.requestCurrentLocation(context)
-        } else {
-            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
-        }*/
         val hasFine = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
         val hasCoarse = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
 

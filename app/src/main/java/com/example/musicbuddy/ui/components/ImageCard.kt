@@ -20,17 +20,6 @@ fun ImageCard(userBio: String) {
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
     ) {
         Column {
-            /*AsyncImage(
-                model = "http://172.20.10.4:3000/uploads/profile-photos/undefined_1780492746157-590666397.jpg",
-                contentDescription = "Immagine",
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp)
-                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
-                contentScale = ContentScale.Crop
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))*/
 
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(

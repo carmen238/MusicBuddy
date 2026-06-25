@@ -49,7 +49,6 @@ fun ProfileScreen(
     val userInstrument = userData?.get("instrument") as? String ?: ""
     val userExperience = userData?.get("experienceLevel") as? String ?: ""
     val userGenre = userData?.get("genre").toString() ?: ""
-    //val userIsInBand = (userData?.get("isInBand") ?: "false") as Boolean
     val userIsInBand = userData?.get("isInBand") as? Boolean ?: false
 
     var bioEdit by remember { mutableStateOf(false) }

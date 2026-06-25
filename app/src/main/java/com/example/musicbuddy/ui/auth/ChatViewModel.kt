@@ -83,14 +83,13 @@ class ChatViewModel(
             )
 
             try {
-                // 🔥 REALTIME
+                // REALTIME
                 socket.sendMessage(
                     text = text,
                     chatId = chatId,
                     from = currentUserId
                 )
 
-                // 💾 SAVE DB
                 repository.sendMessage(message)
 
                 // 📱 UI (optimistic)

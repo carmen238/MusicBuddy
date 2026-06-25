@@ -33,16 +33,6 @@ data class UserLocation(
     val accuracy: Float
 )
 
-/*data class NearbyMusician(
-    val userId: String,
-    val name: String,
-    val instrument: String,
-    val genre: String,
-    val latitude: Double,
-    val longitude: Double,
-    val distance: Double, // in km
-    val profilePhotoUrl: String? = null
-)*/
 
 // ============= LOCATION STATE =============
 

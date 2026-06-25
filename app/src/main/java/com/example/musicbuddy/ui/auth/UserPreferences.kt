@@ -156,18 +156,18 @@ class UserPreferences(context: Context) {
         sharedPreferences.edit().putInt(KEY_USER_ID, userId).apply()
     }
 
-    // ✅ Recupera l'ID utente
+    //  Recupera l'ID utente
     fun getUserId(): Int? {
         val userId = sharedPreferences.getInt(KEY_USER_ID, 0)
         return if (userId != 0) userId else null
     }
 
-    // ✅ Salva l'URL della foto
+    //  Salva l'URL della foto
     fun savePhotoUrl(photoUrl: String) {
         sharedPreferences.edit().putString(KEY_PHOTO_URL, photoUrl).apply()
     }
 
-    // ✅ Recupera l'URL della foto
+    //  Recupera l'URL della foto
     fun getPhotoUrl(): String? =
         sharedPreferences.getString(KEY_PHOTO_URL, null)
 }

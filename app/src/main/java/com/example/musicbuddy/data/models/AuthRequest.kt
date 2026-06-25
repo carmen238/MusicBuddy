@@ -28,7 +28,7 @@ data class LoginRequest(
 data class UpdateFieldRequest(
     val idUser: String,
     val keyField: String,
-    val valueField: String  // ✅ Cambia da Any a String
+    val valueField: String  // Cambia da Any a String
 )
 
 data class DeleteUserRequest(

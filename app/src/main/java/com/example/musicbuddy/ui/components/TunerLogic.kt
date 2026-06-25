@@ -71,12 +71,6 @@ class TunerLogic : ViewModel() {
         dispatcher?.addAudioProcessor(object : AudioProcessor {
             override fun process(audioEvent: AudioEvent): Boolean {
                 val rms = audioEvent.rms
-                /*val buffer = audioEvent.floatBuffer
-                var sum = 0f
-                for (sample in buffer) {
-                    sum += sample * sample
-                }
-                val rms = sqrt((sum / buffer.size).toDouble())*/
                 val db = 20 * log10(rms)
 
                 // Aggiorna lo stato dei decibel

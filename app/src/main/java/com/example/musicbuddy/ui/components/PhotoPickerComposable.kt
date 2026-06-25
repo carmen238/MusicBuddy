@@ -39,10 +39,9 @@ fun PhotoPickerButton(
 
     var showDialog by remember { mutableStateOf(false) }
 
-    // 👉 URL finale UNIFICATO (questo è il trucco importante)
+    // URL finale UNIFICATO (questo è il trucco importante)
     val finalPhotoUrl = uploadedUrl ?: currentPhotoUrl
 
-    // 👉 comunica al parent quando cambia
     LaunchedEffect(finalPhotoUrl) {
         finalPhotoUrl?.let { onPhotoSelected(it) }
     }
@@ -132,14 +131,14 @@ fun PhotoPickerButton(
 
             is PhotoUploadState.Success -> {
                 Text(
-                    "✅ Foto aggiornata",
+                    " Foto aggiornata",
                     color = AppColors.SuccessGreen
                 )
             }
 
             is PhotoUploadState.Error -> {
                 Text(
-                    "❌ ${(uploadState as PhotoUploadState.Error).message}",
+                    " ${(uploadState as PhotoUploadState.Error).message}",
                     color = AppColors.ErrorRed
                 )
             }
